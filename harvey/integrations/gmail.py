@@ -40,7 +40,10 @@ TOKEN_FILE = PROJECT_ROOT / "data" / "gmail_token.json"
 API_BASE = "https://gmail.googleapis.com/gmail/v1/users/me"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
-SCOPE = "https://www.googleapis.com/auth/gmail.modify"
+SCOPE = (
+    "https://www.googleapis.com/auth/gmail.modify"
+    " https://www.googleapis.com/auth/spreadsheets"
+)
 LOOPBACK_PORT = 8765
 MAX_INBOX_PAGES = 40
 # A full 7-day read runs at least this often, whatever the history says.
