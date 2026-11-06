@@ -424,6 +424,10 @@ async def heartbeat(stop_event: asyncio.Event | None = None):
             if summary.get("unprofiled", 0):
                 tasks.append(("profile", run_profile_stage(state, limit=25, config=config)))
 
+            # GAMMA7 self-assessment leads ride along every cycle — zero Claude calls.
+            from harvey.integrations.gamma7_queue import process_queue as _gamma7_queue
+            tasks.append(("gamma7_queue", _gamma7_queue(state)))
+
             outcomes = await _run_agents(tasks)
 
             # Phase 2: send — only after every reply-reading task this cycle
