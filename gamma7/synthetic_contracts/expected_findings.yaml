@@ -1,0 +1,286 @@
+# Expected Findings — Synthetic Contract Test Dataset
+# Used to validate the gap analysis engine against known ground truth.
+# Version: 1.0 — 2026-11-08
+#
+# Format per contract:
+#   requirement_id: expected ComplianceStatus
+#   (only requirements where status is NOT "satisfied" are listed — satisfied is default)
+
+contract_01_cloudhost:
+  supplier: "NordCloud Hosting A/S"
+  classification: "critical_important"
+  expected_gaps:
+    - requirement_id: ART30-001
+      expected_status: ambiguous
+      reason: >
+        Sub-contracting clause present but conditions are vague ('material sub-contracting
+        arrangements', 'within 30 days of commencement'). No pre-approval requirement,
+        no right to object, no list of approved sub-contractors. Insufficient for critical function.
+      expected_risk: high
+
+    - requirement_id: ART30-004
+      expected_status: ambiguous
+      reason: >
+        Only one quantitative metric (99.5% uptime). No RTO, RPO, or qualitative standards.
+        Review process is 'annually' but no procedure defined.
+      expected_risk: medium
+
+    - requirement_id: ART30-005
+      expected_status: ambiguous
+      reason: >
+        Data return clause present but export format is not specified. 60-day window is acceptable.
+        Insolvency/resolution scenarios not explicitly addressed.
+      expected_risk: medium
+
+    - requirement_id: ART30-008
+      expected_status: ambiguous
+      reason: >
+        Incident notification clause present but timeframe is 'as soon as reasonably practicable'
+        — not a defined number of hours. For critical function, this is insufficient.
+      expected_risk: high
+
+    - requirement_id: ART30-009
+      expected_status: missing
+      reason: >
+        No TLPT cooperation clause. Contract predates DORA. As a critical/important function,
+        TLPT clause is required.
+      expected_risk: high
+
+    - requirement_id: ART30-011
+      expected_status: ambiguous
+      reason: >
+        Only one quantitative metric (uptime). No explicit monitoring rights beyond receiving reports.
+      expected_risk: medium
+
+    - requirement_id: ART30-013
+      expected_status: ambiguous
+      reason: >
+        BCP present. Annual 'review' referenced but no testing obligation. For critical function,
+        testing is mandatory.
+      expected_risk: high
+
+  gdpr_findings:
+    - requirement_id: ART28-005
+      expected_status: ambiguous
+      reason: >
+        Sub-processor clause present (requires prior written authorisation) but no change
+        notification mechanism or right to object described.
+      expected_risk: medium
+
+contract_02_payment:
+  supplier: "PayLink Technologies Ltd"
+  classification: "critical_important"
+  expected_gaps:
+    - requirement_id: ART30-001
+      expected_status: missing
+      reason: >
+        Sub-contracting permitted without prior notice. No approval requirement, no right to object,
+        no conditions specified. Supplier merely 'remains responsible'. Critical gap.
+      expected_risk: critical
+
+    - requirement_id: ART30-002
+      expected_status: ambiguous
+      reason: >
+        'Multiple locations within the European Union' — no specific countries or facilities named.
+        Change notification obligation absent.
+      expected_risk: high
+
+    - requirement_id: ART30-008
+      expected_status: ambiguous
+      reason: >
+        Security breach notification is 72 hours — this may not give financial entity enough time
+        for its own regulatory reporting. Service outage notification is 'as soon as confirmed'
+        (acceptable for operational incidents).
+      expected_risk: medium
+
+    - requirement_id: ART30-010
+      expected_status: missing
+      reason: >
+        Audit right limited to receiving PCI DSS ROC. Direct on-site audit explicitly refused.
+        DORA requires financial entity and competent authorities to have audit rights.
+        Pooled audit reports alone are insufficient without fallback direct access.
+      expected_risk: critical
+
+    - requirement_id: ART30-009
+      expected_status: missing
+      reason: "No TLPT clause. Critical/important function."
+      expected_risk: high
+
+    - requirement_id: ART30-013
+      expected_status: ambiguous
+      reason: >
+        BCP/DR present. Testing 'in accordance with PCI DSS requirements' is acceptable for
+        PCI but DORA requires explicit testing obligation in the contract.
+      expected_risk: medium
+
+  gdpr_findings:
+    - requirement_id: ART28-002
+      expected_status: missing
+      reason: >
+        No explicit 'processing only on documented instructions' clause. Section 9.2
+        says 'as necessary to provide the Services' — this is processing on own purposes,
+        not on controller instructions.
+      expected_risk: high
+
+    - requirement_id: ART28-005
+      expected_status: missing
+      reason: >
+        Sub-processor list 'available on compliance portal' with no change notification right
+        or objection mechanism. Insufficient under Art. 28(2).
+      expected_risk: high
+
+    - requirement_id: ART28-011
+      expected_status: ambiguous
+      reason: >
+        'Some processing may involve transfers within the EU' — but supplier is Irish, may use
+        processors outside EEA. No transfer mechanism identified.
+      expected_risk: high
+
+contract_03_legacy:
+  supplier: "DataCenter DK ApS"
+  classification: "non_critical"
+  expected_gaps:
+    - requirement_id: ART30-001
+      expected_status: missing
+      reason: "No sub-contracting clause."
+      expected_risk: medium
+
+    - requirement_id: ART30-003
+      expected_status: ambiguous
+      reason: >
+        'Physical security measures' and 'confidentiality' mentioned but no information security
+        clause covering CIA of data (not just physical security).
+      expected_risk: high
+
+    - requirement_id: ART30-004
+      expected_status: missing
+      reason: "No SLA metrics. 'Best efforts' only."
+      expected_risk: high
+
+    - requirement_id: ART30-005
+      expected_status: ambiguous
+      reason: >
+        'Kapital may remove its hardware' — data portability via physical hardware removal only.
+        No data export or format specification for digital data.
+      expected_risk: medium
+
+    - requirement_id: ART30-006
+      expected_status: missing
+      reason: "No regulatory cooperation clause."
+      expected_risk: medium
+
+    - requirement_id: ART30-007
+      expected_status: ambiguous
+      reason: >
+        Termination with 12 months notice present. Exit assistance absent.
+      expected_risk: medium
+
+    - requirement_id: ART30-008
+      expected_status: missing
+      reason: "No incident notification clause."
+      expected_risk: high
+
+    - requirement_id: ART30-009
+      expected_status: na
+      reason: "Non-critical function — TLPT requirement does not apply."
+
+    - requirement_id: ART30-010
+      expected_status: missing
+      reason: "No audit rights clause."
+      expected_risk: high
+
+    - requirement_id: ART30-013
+      expected_status: missing
+      reason: "No BCP or security measures beyond physical."
+      expected_risk: high
+
+  gdpr_findings:
+    - requirement_id: ART28-002
+      expected_status: missing
+      reason: "No DPA present. All GDPR Art. 28 requirements are missing."
+      expected_risk: critical
+    - requirement_id: ART28-003
+      expected_status: missing
+      expected_risk: critical
+    - requirement_id: ART28-004
+      expected_status: missing
+      expected_risk: critical
+    - requirement_id: ART28-005
+      expected_status: missing
+      expected_risk: critical
+    - requirement_id: ART28-006
+      expected_status: missing
+      expected_risk: critical
+    - requirement_id: ART28-007
+      expected_status: missing
+      expected_risk: critical
+    - requirement_id: ART28-008
+      expected_status: missing
+      expected_risk: critical
+    - requirement_id: ART28-009
+      expected_status: missing
+      expected_risk: critical
+    - requirement_id: ART28-010
+      expected_status: missing
+      expected_risk: critical
+
+contract_04_saas:
+  supplier: "ComplianceTools International BV"
+  classification: "non_critical"
+  expected_gaps:
+    - requirement_id: ART30-002
+      expected_status: ambiguous
+      reason: >
+        'Commercially reasonable efforts' to store in EU — not a firm commitment. 'May process
+        outside EU where required' with no conditions or notification obligation.
+      expected_risk: high
+
+    - requirement_id: ART30-009
+      expected_status: na
+      reason: "Non-critical function."
+
+    - requirement_id: ART30-010
+      expected_status: ambiguous
+      reason: >
+        Only ISO cert and SOC 2 report available. 'Direct customer audits not feasible' — no
+        fallback direct audit right. For non-critical function this is borderline; flag for review.
+      expected_risk: medium
+
+    - requirement_id: ART30-013
+      expected_status: missing
+      reason: >
+        BCP/DRP present but 'does not test — testing would be disruptive'. Testing obligation
+        explicitly waived. This is a gap regardless of function classification.
+      expected_risk: high
+
+  gdpr_findings:
+    - requirement_id: ART28-011
+      expected_status: missing
+      reason: >
+        Supplier is Dutch (NL = EEA), but uses Datadog (US) and Zendesk (US) as sub-processors.
+        No transfer mechanism (SCCs or adequacy decision) identified for US sub-processors.
+      expected_risk: critical
+
+    - requirement_id: ART28-007
+      expected_status: ambiguous
+      reason: >
+        Breach notification 72 hours matches regulatory deadline but leaves no margin for
+        financial entity's own assessment. Standard practice requires processor notification
+        within 24-48 hours.
+      expected_risk: medium
+
+contract_05_good:
+  supplier: "SecureVault Nordic A/S"
+  classification: "critical_important"
+  expected_gaps:
+    - requirement_id: ART30-010
+      expected_status: ambiguous
+      reason: >
+        Audit right present (Clause 5.1) but notice period is 45 days for planned audits.
+        While the contract states exceptions for incidents, 45 days may be considered
+        excessive for routine compliance audits under DORA. 30 days is more typical.
+        Minor finding — does not constitute a critical gap.
+      expected_risk: low
+
+  gdpr_findings: []
+  note: "This contract is predominantly compliant. The 45-day audit notice period is the only flagged item."
