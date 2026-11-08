@@ -64,14 +64,27 @@ def run_all() -> dict:
         print(f"{icon} {spec['key']:30s}  accuracy={val['accuracy_pct']:5.1f}%  matched={val['matched']}/{val['expected_gaps']}  fp={len(val['false_positives'])}")
         for m in val.get("missed", []):
             print(f"    MISSED  {m['id']:15s}  expected={m['expected']:10s}  actual={m['actual']}")
-    overall = round(aggregate["total_matched"] / aggregate["total_gaps"] * 100, 1) if aggregate["total_gaps"] else 100.0
-    aggregate["overall_accuracy_pct"] = overall
+    tp = aggregate["total_matched"]
+    fp = aggregate["total_false_positives"]
+    fn = aggregate["total_gaps"] - tp
+    precision = round(tp / (tp + fp) * 100, 1) if (tp + fp) > 0 else 0.0
+    recall = round(tp / (tp + fn) * 100, 1) if (tp + fn) > 0 else 100.0
+    f1 = round(2 * precision * recall / (precision + recall), 1) if (precision + recall) > 0 else 0.0
+    aggregate["overall_accuracy_pct"] = recall
+    aggregate["tp"] = tp
+    aggregate["fp"] = fp
+    aggregate["fn"] = fn
+    aggregate["precision_pct"] = precision
+    aggregate["recall_pct"] = recall
+    aggregate["f1_pct"] = f1
     import datetime
-    report = {"run_date": datetime.datetime.now(datetime.timezone.utc).isoformat(), "engine_version": "gamma7-engine-v1", "contracts_tested": len(CONTRACTS), "aggregate": aggregate, "results": validation_results}
+    report = {"run_date": datetime.datetime.now(datetime.timezone.utc).isoformat(), "engine_version": "gamma7-engine-v2", "contracts_tested": len(CONTRACTS), "aggregate": aggregate, "results": validation_results}
     report_path = OUTPUT_DIR / "validation_report.json"
     report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
-    print(f"\n{'─'*60}\nOverall accuracy: {overall}%  ({aggregate['total_matched']}/{aggregate['total_gaps']} gaps detected)")
-    print(f"False positives:  {aggregate['total_false_positives']}\n\nReport written to: {report_path}")
+    print(f"\n{'─'*60}")
+    print(f"TP={tp}  FP={fp}  FN={fn}")
+    print(f"Precision: {precision}%   Recall: {recall}%   F1: {f1}%")
+    print(f"\nReport written to: {report_path}")
     return report
 
 

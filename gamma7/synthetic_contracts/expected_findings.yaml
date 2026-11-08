@@ -1,6 +1,6 @@
 # Expected Findings — Synthetic Contract Test Dataset
 # Used to validate the gap analysis engine against known ground truth.
-# Version: 1.0 — 2026-11-08
+# Version: 1.1 — 2026-11-08
 #
 # Format per contract:
 #   requirement_id: expected ComplianceStatus
@@ -59,13 +59,10 @@ contract_01_cloudhost:
         testing is mandatory.
       expected_risk: high
 
-  gdpr_findings:
-    - requirement_id: ART28-005
-      expected_status: ambiguous
-      reason: >
-        Sub-processor clause present (requires prior written authorisation) but no change
-        notification mechanism or right to object described.
-      expected_risk: medium
+  gdpr_findings: []
+  note: >
+    DPA (Exhibit B, Section 3) explicitly states prior written authorisation + change notification +
+    right to object — ART28-005 is SATISFIED. Removed from expected_gaps (v1.1 correction).
 
 contract_02_payment:
   supplier: "PayLink Technologies Ltd"
@@ -83,6 +80,20 @@ contract_02_payment:
       reason: >
         'Multiple locations within the European Union' — no specific countries or facilities named.
         Change notification obligation absent.
+      expected_risk: high
+
+    - requirement_id: ART30-005
+      expected_status: missing
+      reason: >
+        No data portability, export, or deletion clause. Contract covers only payment processing;
+        no provisions for end-of-contract data handling.
+      expected_risk: high
+
+    - requirement_id: ART30-007
+      expected_status: missing
+      reason: >
+        No exit assistance or transition support clause. Contract may be terminated on notice
+        but supplier has no obligation to support migration.
       expected_risk: high
 
     - requirement_id: ART30-008
@@ -122,11 +133,51 @@ contract_02_payment:
         not on controller instructions.
       expected_risk: high
 
+    - requirement_id: ART28-003
+      expected_status: missing
+      reason: >
+        No confidentiality obligation on processor's staff. Contract has no DPA confidentiality
+        clause for personnel.
+      expected_risk: high
+
+    - requirement_id: ART28-004
+      expected_status: missing
+      reason: >
+        No reference to Art. 32 or equivalent technical/organisational security measures in DPA context.
+        General 'appropriate security' without regulatory standard reference.
+      expected_risk: high
+
     - requirement_id: ART28-005
       expected_status: missing
       reason: >
         Sub-processor list 'available on compliance portal' with no change notification right
         or objection mechanism. Insufficient under Art. 28(2).
+      expected_risk: high
+
+    - requirement_id: ART28-006
+      expected_status: missing
+      reason: >
+        No data subject rights assistance clause. No mechanism for access, erasure, or
+        restriction requests.
+      expected_risk: high
+
+    - requirement_id: ART28-008
+      expected_status: missing
+      reason: >
+        No data deletion or return clause on termination.
+      expected_risk: high
+
+    - requirement_id: ART28-009
+      expected_status: missing
+      reason: >
+        No audit right under GDPR Art. 28(3)(h). PCI DSS certification is provided but
+        no GDPR-specific audit right.
+      expected_risk: high
+
+    - requirement_id: ART28-010
+      expected_status: missing
+      reason: >
+        No flow-down clause imposing same GDPR obligations on sub-processors.
       expected_risk: high
 
     - requirement_id: ART28-011
@@ -144,6 +195,13 @@ contract_03_legacy:
       expected_status: missing
       reason: "No sub-contracting clause."
       expected_risk: medium
+
+    - requirement_id: ART30-002
+      expected_status: missing
+      reason: >
+        No data processing location clause. No commitment to process within any specific
+        geography. Bare-bones contract with no mention of service locations.
+      expected_risk: high
 
     - requirement_id: ART30-003
       expected_status: ambiguous
@@ -195,31 +253,46 @@ contract_03_legacy:
       expected_risk: high
 
   gdpr_findings:
+    - requirement_id: ART28-001
+      expected_status: missing
+      reason: >
+        No DPA present. No evidence of processor due diligence, certification, or sufficient
+        guarantees. Bare-bones colocation contract with no data protection provisions.
+      expected_risk: critical
+
     - requirement_id: ART28-002
       expected_status: missing
       reason: "No DPA present. All GDPR Art. 28 requirements are missing."
       expected_risk: critical
+
     - requirement_id: ART28-003
       expected_status: missing
       expected_risk: critical
+
     - requirement_id: ART28-004
       expected_status: missing
       expected_risk: critical
+
     - requirement_id: ART28-005
       expected_status: missing
       expected_risk: critical
+
     - requirement_id: ART28-006
       expected_status: missing
       expected_risk: critical
+
     - requirement_id: ART28-007
       expected_status: missing
       expected_risk: critical
+
     - requirement_id: ART28-008
       expected_status: missing
       expected_risk: critical
+
     - requirement_id: ART28-009
       expected_status: missing
       expected_risk: critical
+
     - requirement_id: ART28-010
       expected_status: missing
       expected_risk: critical
@@ -228,12 +301,42 @@ contract_04_saas:
   supplier: "ComplianceTools International BV"
   classification: "non_critical"
   expected_gaps:
+    - requirement_id: ART30-001
+      expected_status: ambiguous
+      reason: >
+        Section 8.5 names sub-processors (Azure, Datadog, Zendesk) with 30-day change notification
+        but NO prior written authorisation requirement and NO right to object.
+        Notification-only model is insufficient for DORA sub-contracting controls.
+      expected_risk: medium
+
     - requirement_id: ART30-002
       expected_status: ambiguous
       reason: >
         'Commercially reasonable efforts' to store in EU — not a firm commitment. 'May process
         outside EU where required' with no conditions or notification obligation.
       expected_risk: high
+
+    - requirement_id: ART30-006
+      expected_status: missing
+      reason: >
+        No regulatory cooperation clause. No obligation to cooperate with Finanstilsynet or
+        other competent authorities.
+      expected_risk: medium
+
+    - requirement_id: ART30-007
+      expected_status: missing
+      reason: >
+        No exit assistance or transition support clause. 30-day data export window does not
+        constitute exit assistance under DORA.
+      expected_risk: medium
+
+    - requirement_id: ART30-008
+      expected_status: ambiguous
+      reason: >
+        Breach notification 72 hours matches regulatory deadline but leaves no margin for
+        financial entity's own assessment. Standard practice requires processor notification
+        within 24-48 hours. '72 hours' is a gap indicator for DORA.
+      expected_risk: medium
 
     - requirement_id: ART30-009
       expected_status: na
@@ -254,12 +357,12 @@ contract_04_saas:
       expected_risk: high
 
   gdpr_findings:
-    - requirement_id: ART28-011
-      expected_status: missing
+    - requirement_id: ART28-005
+      expected_status: ambiguous
       reason: >
-        Supplier is Dutch (NL = EEA), but uses Datadog (US) and Zendesk (US) as sub-processors.
-        No transfer mechanism (SCCs or adequacy decision) identified for US sub-processors.
-      expected_risk: critical
+        Sub-processors named with 30-day change notification but NO right to object. This satisfies
+        the notification obligation but not the objection right under Art. 28(2).
+      expected_risk: medium
 
     - requirement_id: ART28-007
       expected_status: ambiguous
@@ -268,6 +371,20 @@ contract_04_saas:
         financial entity's own assessment. Standard practice requires processor notification
         within 24-48 hours.
       expected_risk: medium
+
+    - requirement_id: ART28-010
+      expected_status: missing
+      reason: >
+        No flow-down clause imposing same GDPR obligations on sub-processors (Datadog, Zendesk).
+        30-day change notification does not constitute flow-down.
+      expected_risk: high
+
+    - requirement_id: ART28-011
+      expected_status: missing
+      reason: >
+        Supplier is Dutch (NL = EEA), but uses Datadog (US) and Zendesk (US) as sub-processors.
+        No transfer mechanism (SCCs or adequacy decision) identified for US sub-processors.
+      expected_risk: critical
 
 contract_05_good:
   supplier: "SecureVault Nordic A/S"

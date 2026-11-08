@@ -1,315 +1,366 @@
-# GDPR Art. 28 — Data Processing Agreement Requirements Library
-# Source: Regulation (EU) 2016/679 (GDPR), Article 28
-# Version: 1.0 — 2026-11-08
-# Status: DRAFT — requires legal review before production use
-#
-# RELATIONSHIP TO DORA ART. 30:
-#   For ICT contracts with financial entities, GDPR Art. 28 DPA obligations
-#   overlap significantly with DORA Art. 30. The same contract often needs
-#   to satisfy both simultaneously. Cross-references to dora_art30.yaml
-#   are included where requirements overlap.
-
 meta:
-  regulation: "Regulation (EU) 2016/679 of the European Parliament and of the Council"
-  common_name: "General Data Protection Regulation (GDPR)"
-  article: "Article 28 — Processor"
+  regulation: Regulation (EU) 2016/679 of the European Parliament and of the Council
+  common_name: General Data Protection Regulation (GDPR)
+  article: Article 28 — Processor
   applies_to:
-    - "Any controller engaging a processor to process personal data on its behalf"
-    - "In financial services context: same contracts as DORA Art. 30 when personal data is processed"
-  effective_date: "2018-05-25"
-  disclaimer: >
-    This library is a structured interpretation aid. It is not legal advice.
-    Requirements must be validated against the official Regulation text and
-    applicable supervisory guidance (EDPB, national DPAs).
+  - Any controller engaging a processor to process personal data on its behalf
+  - 'In financial services context: same contracts as DORA Art. 30 when personal data is processed'
+  effective_date: '2018-05-25'
+  disclaimer: 'This library is a structured interpretation aid. It is not legal advice. Requirements must
+    be validated against the official Regulation text and applicable supervisory guidance (EDPB, national
+    DPAs).
 
+    '
 requirements:
+- id: ART28-001
+  article: Art. 28(1)
+  category: Processor selection
+  obligation_level: mandatory
+  text_en: 'Where processing is to be carried out on behalf of a controller, the controller shall use
+    only processors providing sufficient guarantees to implement appropriate technical and organisational
+    measures in such a manner that processing will meet the requirements of this Regulation and ensure
+    the protection of the rights of the data subject.
 
-  # ─── Art. 28(1) ──────────────────────────────────────────────────────────
-  - id: ART28-001
-    article: "Art. 28(1)"
-    category: "Processor selection"
-    obligation_level: mandatory
-    text_en: >
-      Where processing is to be carried out on behalf of a controller, the
-      controller shall use only processors providing sufficient guarantees to
-      implement appropriate technical and organisational measures in such a
-      manner that processing will meet the requirements of this Regulation
-      and ensure the protection of the rights of the data subject.
-    text_da: >
-      Hvis behandling skal udføres på vegne af en dataansvarlig, må den
-      dataansvarlige kun anvende databehandlere, der yder tilstrækkelige
-      garantier for, at de gennemfører passende tekniske og organisatoriske
-      foranstaltninger, således at behandlingen opfylder kravene i denne
-      forordning og sikrer beskyttelsen af den registreredes rettigheder.
-    evidence_criteria:
-      - "Processor has demonstrated compliance via certification (ISO 27001, SOC 2 Type II) OR"
-      - "Controller has conducted a due diligence assessment of processor's security measures OR"
-      - "Processor provides transparency reports or audit rights enabling assessment"
-    gap_indicators:
-      - "No due diligence evidence on file"
-      - "No certification and no audit right to assess measures"
-    dora_art30_overlap: true
-    dora_art30_ref: "ART30-010 (audit rights)"
-    notes: "Pre-contractual obligation. Document the basis for 'sufficient guarantees' decision."
+    '
+  text_da: 'Hvis behandling skal udføres på vegne af en dataansvarlig, må den dataansvarlige kun anvende
+    databehandlere, der yder tilstrækkelige garantier for, at de gennemfører passende tekniske og organisatoriske
+    foranstaltninger, således at behandlingen opfylder kravene i denne forordning og sikrer beskyttelsen
+    af den registreredes rettigheder.
 
-  # ─── Art. 28(3)(a) ───────────────────────────────────────────────────────
-  - id: ART28-002
-    article: "Art. 28(3)(a)"
-    category: "Processing on instructions"
-    obligation_level: mandatory
-    text_en: >
-      The processor shall process the personal data only on documented
-      instructions from the controller, including with regard to transfers of
-      personal data to a third country or an international organisation,
-      unless required to do so by Union or Member State law.
-    text_da: >
-      Databehandleren behandler kun personoplysninger efter dokumenteret
-      instruks fra den dataansvarlige, herunder med hensyn til overførsel af
-      personoplysninger til et tredjeland eller en international organisation,
-      medmindre det kræves i henhold til EU-ret eller medlemsstaternes nationale ret.
-    evidence_criteria:
-      - "DPA contains explicit statement that processor acts only on controller's instructions"
-      - "Legal obligation exception is addressed (notification to controller unless prohibited)"
-    gap_indicators:
-      - "No instruction-based processing clause"
-      - "Processor retains broad discretion over processing purposes"
-    dora_art30_overlap: false
-    notes: "Foundation of controller-processor relationship. Must be explicit, not implied."
+    '
+  evidence_criteria:
+  - Processor has demonstrated compliance via certification (ISO 27001, SOC 2 Type II) OR
+  - Controller has conducted a due diligence assessment of processor's security measures OR
+  - Processor provides transparency reports or audit rights enabling assessment
+  gap_indicators:
+  - No due diligence evidence on file
+  - No certification and no audit right to assess measures
+  dora_art30_overlap: true
+  dora_art30_ref: ART30-010 (audit rights)
+  notes: Pre-contractual obligation. Document the basis for 'sufficient guarantees' decision.
+  match_terms_evidence:
+  - iso 27001
+  - soc 2 type ii
+  - technical and organisational measures
+  - sufficient guarantees
+  match_terms_gap: []
+- id: ART28-002
+  article: Art. 28(3)(a)
+  category: Processing on instructions
+  obligation_level: mandatory
+  text_en: 'The processor shall process the personal data only on documented instructions from the controller,
+    including with regard to transfers of personal data to a third country or an international organisation,
+    unless required to do so by Union or Member State law.
 
-  # ─── Art. 28(3)(b) ───────────────────────────────────────────────────────
-  - id: ART28-003
-    article: "Art. 28(3)(b)"
-    category: "Confidentiality"
-    obligation_level: mandatory
-    text_en: >
-      Persons authorised to process the personal data have committed themselves
-      to confidentiality or are under an appropriate statutory obligation of
-      confidentiality.
-    text_da: >
-      De personer, der er autoriseret til at behandle personoplysningerne,
-      har forpligtet sig til fortrolighed eller er underlagt en passende
-      lovbestemt fortrolighedspligt.
-    evidence_criteria:
-      - "DPA states that authorized personnel are bound by confidentiality"
-      - "Mechanism stated: employment contracts, NDAs, or statutory obligation"
-    gap_indicators:
-      - "No confidentiality obligation on processor's staff"
-    dora_art30_overlap: true
-    dora_art30_ref: "ART30-003 (confidentiality)"
-    notes: "Often satisfied by reference to processor's employment practices. Explicit statement preferred."
+    '
+  text_da: 'Databehandleren behandler kun personoplysninger efter dokumenteret instruks fra den dataansvarlige,
+    herunder med hensyn til overførsel af personoplysninger til et tredjeland eller en international organisation,
+    medmindre det kræves i henhold til EU-ret eller medlemsstaternes nationale ret.
 
-  # ─── Art. 28(3)(c) ───────────────────────────────────────────────────────
-  - id: ART28-004
-    article: "Art. 28(3)(c)"
-    category: "Security measures"
-    obligation_level: mandatory
-    text_en: >
-      The processor shall take all measures required pursuant to Article 32.
-    text_da: >
-      Databehandleren træffer alle foranstaltninger, der kræves i henhold til artikel 32.
-    evidence_criteria:
-      - "DPA references Art. 32 or equivalent obligation to implement technical/organisational measures"
-      - "Security measures are described or referenced (Annex, security policy, certification)"
-    gap_indicators:
-      - "No security obligation in DPA"
-      - "Security described only as 'reasonable' without reference to Art. 32 standard"
-    dora_art30_overlap: true
-    dora_art30_ref: "ART30-003 (security), ART30-013 (BCP/security for critical functions)"
-    notes: "Art. 32 requires measures appropriate to risk. DPA should at minimum cross-reference this obligation."
+    '
+  evidence_criteria:
+  - DPA contains explicit statement that processor acts only on controller's instructions
+  - Legal obligation exception is addressed (notification to controller unless prohibited)
+  gap_indicators:
+  - No instruction-based processing clause
+  - Processor retains broad discretion over processing purposes
+  dora_art30_overlap: false
+  notes: Foundation of controller-processor relationship. Must be explicit, not implied.
+  match_terms_evidence:
+  - process personal data only on documented instructions
+  - only on documented instructions from
+  match_terms_gap:
+  - only as necessary to provide the services
+  - as necessary to provide the services
+- id: ART28-003
+  article: Art. 28(3)(b)
+  category: Confidentiality
+  obligation_level: mandatory
+  text_en: 'Persons authorised to process the personal data have committed themselves to confidentiality
+    or are under an appropriate statutory obligation of confidentiality.
 
-  # ─── Art. 28(3)(d) ───────────────────────────────────────────────────────
-  - id: ART28-005
-    article: "Art. 28(3)(d)"
-    category: "Sub-processor restrictions"
-    obligation_level: mandatory
-    text_en: >
-      The processor shall not engage another processor without prior specific
-      or general written authorisation of the controller and shall inform the
-      controller of any intended changes concerning the addition or replacement
-      of other processors, thereby giving the controller the opportunity to
-      object to such changes.
-    text_da: >
-      Databehandleren må ikke benytte sig af en anden databehandler uden
-      forudgående specifik eller generel skriftlig tilladelse fra den
-      dataansvarlige og skal underrette den dataansvarlige om eventuelle
-      planlagte ændringer vedrørende tilføjelse eller udskiftning af andre
-      databehandlere og derved give den dataansvarlige mulighed for at
-      gøre indsigelse mod sådanne ændringer.
-    evidence_criteria:
-      - "Sub-processor clause present"
-      - "Authorisation model stated: specific (named sub-processors) OR general (with change notification)"
-      - "Change notification obligation with right to object is present"
-    gap_indicators:
-      - "No sub-processor clause"
-      - "Sub-processors permitted without any notification obligation"
-      - "Change notification present but no right to object"
-    dora_art30_overlap: true
-    dora_art30_ref: "ART30-001 (sub-contracting conditions)"
-    notes: "General authorisation model (listing sub-processors with change notification) is widely used and acceptable under GDPR."
+    '
+  text_da: 'De personer, der er autoriseret til at behandle personoplysningerne, har forpligtet sig til
+    fortrolighed eller er underlagt en passende lovbestemt fortrolighedspligt.
 
-  # ─── Art. 28(3)(e) ───────────────────────────────────────────────────────
-  - id: ART28-006
-    article: "Art. 28(3)(e)"
-    category: "Data subject rights assistance"
-    obligation_level: mandatory
-    text_en: >
-      The processor shall assist the controller insofar as this is possible,
-      taking into account the nature of the processing, by appropriate technical
-      and organisational measures, in fulfilling the controller's obligation
-      to respond to requests for exercising the data subject's rights.
-    text_da: >
-      Databehandleren bistår under hensyntagen til behandlingens karakter,
-      om muligt, den dataansvarlige via passende tekniske og organisatoriske
-      foranstaltninger med opfyldelse af den dataansvarliges forpligtelse til
-      at besvare anmodninger om udøvelse af den registreredes rettigheder.
-    evidence_criteria:
-      - "DPA contains obligation to assist with data subject rights requests"
-      - "Mechanism described: access to data, deletion capability, restriction flagging"
-    gap_indicators:
-      - "No data subject rights assistance clause"
-    dora_art30_overlap: false
-    notes: "Critical for financial sector: data subjects can request access, erasure, restriction. Processor must have capability to assist."
+    '
+  evidence_criteria:
+  - DPA states that authorized personnel are bound by confidentiality
+  - 'Mechanism stated: employment contracts, NDAs, or statutory obligation'
+  gap_indicators:
+  - No confidentiality obligation on processor's staff
+  dora_art30_overlap: true
+  dora_art30_ref: ART30-003 (confidentiality)
+  notes: Often satisfied by reference to processor's employment practices. Explicit statement preferred.
+  match_terms_evidence:
+  - individual confidentiality agreements
+  - written confidentiality
+  - confidentiality obligations
+  - personnel are bound by
+  - bound by.*confidentiality
+  match_terms_gap: []
+- id: ART28-004
+  article: Art. 28(3)(c)
+  category: Security measures
+  obligation_level: mandatory
+  text_en: 'The processor shall take all measures required pursuant to Article 32.
 
-  # ─── Art. 28(3)(f) ───────────────────────────────────────────────────────
-  - id: ART28-007
-    article: "Art. 28(3)(f)"
-    category: "Security and breach notification assistance"
-    obligation_level: mandatory
-    text_en: >
-      The processor shall assist the controller in ensuring compliance with
-      the obligations pursuant to Articles 32 to 36, taking into account
-      the nature of processing and the information available to the processor.
-    text_da: >
-      Databehandleren bistår den dataansvarlige med at sikre overholdelse af
-      forpligtelserne i henhold til artikel 32-36, under hensyntagen til
-      behandlingens karakter og de oplysninger, databehandleren har til rådighed.
-    evidence_criteria:
-      - "Obligation to notify controller of personal data breaches — with timeframe"
-      - "Obligation to assist with DPIA (Art. 35) where relevant"
-      - "Cooperation on security measures (Art. 32)"
-    gap_indicators:
-      - "No breach notification clause"
-      - "Breach notification present but no timeframe (must enable controller's 72-hour EDPB deadline)"
-    dora_art30_overlap: true
-    dora_art30_ref: "ART30-008 (incident notification)"
-    notes: "Controller must report to supervisory authority within 72 hours. Processor notification must be faster — typically 24-48 hours is recommended in DPAs."
+    '
+  text_da: 'Databehandleren træffer alle foranstaltninger, der kræves i henhold til artikel 32.
 
-  # ─── Art. 28(3)(g) ───────────────────────────────────────────────────────
-  - id: ART28-008
-    article: "Art. 28(3)(g)"
-    category: "Data return and deletion"
-    obligation_level: mandatory
-    text_en: >
-      At the choice of the controller, the processor shall delete or return all
-      personal data to the controller after the end of the provision of services
-      relating to processing, and shall delete existing copies unless Union or
-      Member State law requires storage.
-    text_da: >
-      Databehandleren sletter eller returnerer alt personoplysningerne til den
-      dataansvarlige efter behandlingsaktiviteternes afslutning, alt efter hvad
-      den dataansvarlige foretrækker, og sletter eksisterende kopier, medmindre
-      EU-retten eller den nationale ret kræver opbevaring af personoplysningerne.
-    evidence_criteria:
-      - "Delete or return clause present on termination"
-      - "Controller has choice between deletion and return"
-      - "Deletion of copies addressed"
-      - "Legal retention exception addressed"
-    gap_indicators:
-      - "Only deletion, no return option"
-      - "No deletion of copies requirement"
-      - "Retention on termination without legal basis"
-    dora_art30_overlap: true
-    dora_art30_ref: "ART30-005 (data portability and return)"
-    notes: "Confirm whether 'return' format is specified — especially relevant for cloud migration scenarios."
+    '
+  evidence_criteria:
+  - DPA references Art. 32 or equivalent obligation to implement technical/organisational measures
+  - Security measures are described or referenced (Annex, security policy, certification)
+  gap_indicators:
+  - No security obligation in DPA
+  - Security described only as 'reasonable' without reference to Art. 32 standard
+  dora_art30_overlap: true
+  dora_art30_ref: ART30-003 (security), ART30-013 (BCP/security for critical functions)
+  notes: Art. 32 requires measures appropriate to risk. DPA should at minimum cross-reference this obligation.
+  match_terms_evidence:
+  - pursuant to article 32
+  - measures pursuant to article 32
+  - gdpr art. 32
+  - art. 32
+  - technical and organisational security measures
+  match_terms_gap: []
+- id: ART28-005
+  article: Art. 28(3)(d)
+  category: Sub-processor restrictions
+  obligation_level: mandatory
+  text_en: 'The processor shall not engage another processor without prior specific or general written
+    authorisation of the controller and shall inform the controller of any intended changes concerning
+    the addition or replacement of other processors, thereby giving the controller the opportunity to
+    object to such changes.
 
-  # ─── Art. 28(3)(h) ───────────────────────────────────────────────────────
-  - id: ART28-009
-    article: "Art. 28(3)(h)"
-    category: "Audit and information rights"
-    obligation_level: mandatory
-    text_en: >
-      The processor shall make available to the controller all information
-      necessary to demonstrate compliance with the obligations laid down in
-      this Article and allow for and contribute to audits, including
-      inspections, conducted by the controller or another auditor mandated
-      by the controller.
-    text_da: >
-      Databehandleren stiller alle oplysninger, der er nødvendige for at
-      påvise overholdelse af forpligtelserne i denne artikel, til rådighed
-      for den dataansvarlige og muliggør og bidrager til revision, herunder
-      inspektioner, foretaget af den dataansvarlige eller en anden revisor,
-      som den dataansvarlige har bemyndiget hertil.
-    evidence_criteria:
-      - "Obligation to provide compliance information on request"
-      - "Audit right present (direct or via mandated auditor)"
-      - "Third-party certification acceptable as alternative is explicitly stated, OR"
-      - "Direct inspection right retained"
-    gap_indicators:
-      - "No audit right"
-      - "Information only 'on request' with no audit right"
-    dora_art30_overlap: true
-    dora_art30_ref: "ART30-010 (audit rights)"
-    notes: "EDPB guidance: processor offering only certification as audit substitute must still grant direct audit right if controller insists."
+    '
+  text_da: 'Databehandleren må ikke benytte sig af en anden databehandler uden forudgående specifik eller
+    generel skriftlig tilladelse fra den dataansvarlige og skal underrette den dataansvarlige om eventuelle
+    planlagte ændringer vedrørende tilføjelse eller udskiftning af andre databehandlere og derved give
+    den dataansvarlige mulighed for at gøre indsigelse mod sådanne ændringer.
 
-  # ─── Art. 28(2) — Sub-processor chain ────────────────────────────────────
-  - id: ART28-010
-    article: "Art. 28(2) + (4)"
-    category: "Sub-processor obligations (flow-down)"
-    obligation_level: mandatory
-    text_en: >
-      Where the processor engages another processor, the same data protection
-      obligations as set out in the contract between controller and processor
-      shall be imposed on that other processor by way of a contract.
-    text_da: >
-      Hvis databehandleren benytter sig af en anden databehandler, pålægges
-      denne anden databehandler de samme databeskyttelsesforpligtelser som dem,
-      der er fastsat i kontrakten mellem den dataansvarlige og databehandleren.
-    evidence_criteria:
-      - "Flow-down obligation: same GDPR obligations imposed on sub-processors"
-      - "Processor remains liable to controller for sub-processor compliance"
-    gap_indicators:
-      - "No flow-down clause"
-      - "Processor not liable for sub-processor non-compliance"
-    dora_art30_overlap: true
-    dora_art30_ref: "ART30-001 (sub-contracting conditions)"
-    notes: "Critical gap in many older DPAs. Must be explicit — general 'comply with applicable law' is insufficient."
+    '
+  evidence_criteria:
+  - Sub-processor clause present
+  - 'Authorisation model stated: specific (named sub-processors) OR general (with change notification)'
+  - Change notification obligation with right to object is present
+  gap_indicators:
+  - No sub-processor clause
+  - Sub-processors permitted without any notification obligation
+  - Change notification present but no right to object
+  dora_art30_overlap: true
+  dora_art30_ref: ART30-001 (sub-contracting conditions)
+  notes: General authorisation model (listing sub-processors with change notification) is widely used
+    and acceptable under GDPR.
+  match_terms_evidence:
+  - prior specific or general written authorisation
+  - right to object
+  - prior written authorisation
+  match_terms_gap:
+  - compliance portal
+  - without any notification obligation
+- id: ART28-006
+  article: Art. 28(3)(e)
+  category: Data subject rights assistance
+  obligation_level: mandatory
+  text_en: 'The processor shall assist the controller insofar as this is possible, taking into account
+    the nature of the processing, by appropriate technical and organisational measures, in fulfilling
+    the controller''s obligation to respond to requests for exercising the data subject''s rights.
 
-  # ─── International transfers ──────────────────────────────────────────────
-  - id: ART28-011
-    article: "Art. 28(3)(a) + Chapter V"
-    category: "International data transfers"
-    obligation_level: conditional
-    condition: "Applies when personal data is transferred outside EEA"
-    text_en: >
-      Transfers to third countries must be based on an adequacy decision,
-      appropriate safeguards (SCCs, BCRs), or a derogation. Processing
-      instructions must address transfer conditions.
-    text_da: >
-      Overførsler til tredjelande skal baseres på en tilstrækkelighedsafgørelse,
-      passende garantier (SCC, BCR) eller en undtagelse.
-    evidence_criteria:
-      - "Transfer mechanism identified: adequacy decision (e.g. UK, Switzerland) OR"
-      - "Standard Contractual Clauses (SCCs — 2021 version) incorporated OR"
-      - "BCRs (Binding Corporate Rules) referenced"
-      - "If SCCs: Annex I (parties, data, purposes) is completed"
-    gap_indicators:
-      - "Data transferred outside EEA with no transfer mechanism identified"
-      - "SCCs referenced but Annexes not completed"
-      - "Pre-2021 SCCs still in use without update"
-    dora_art30_overlap: true
-    dora_art30_ref: "ART30-002 (data processing locations)"
-    notes: "Combined assessment: ART30-002 identifies where data goes; this requirement verifies the legal basis. Pre-Schrems II SCCs (2010 versions) are invalid — flag immediately."
+    '
+  text_da: 'Databehandleren bistår under hensyntagen til behandlingens karakter, om muligt, den dataansvarlige
+    via passende tekniske og organisatoriske foranstaltninger med opfyldelse af den dataansvarliges forpligtelse
+    til at besvare anmodninger om udøvelse af den registreredes rettigheder.
 
-# ─── DPA COMPLETENESS CHECKLIST ──────────────────────────────────────────────
-# Minimum elements that should be present in a GDPR-compliant DPA
-# per EDPB Guidelines 07/2020 on the concepts of controller and processor
+    '
+  evidence_criteria:
+  - DPA contains obligation to assist with data subject rights requests
+  - 'Mechanism described: access to data, deletion capability, restriction flagging'
+  gap_indicators:
+  - No data subject rights assistance clause
+  dora_art30_overlap: false
+  notes: 'Critical for financial sector: data subjects can request access, erasure, restriction. Processor
+    must have capability to assist.'
+  match_terms_evidence:
+  - data subject rights
+  - 5 business days
+  - erasure, rectification
+  - respond to.*rights requests
+  match_terms_gap: []
+- id: ART28-007
+  article: Art. 28(3)(f)
+  category: Security and breach notification assistance
+  obligation_level: mandatory
+  text_en: 'The processor shall assist the controller in ensuring compliance with the obligations pursuant
+    to Articles 32 to 36, taking into account the nature of processing and the information available to
+    the processor.
+
+    '
+  text_da: 'Databehandleren bistår den dataansvarlige med at sikre overholdelse af forpligtelserne i henhold
+    til artikel 32-36, under hensyntagen til behandlingens karakter og de oplysninger, databehandleren
+    har til rådighed.
+
+    '
+  evidence_criteria:
+  - Obligation to notify controller of personal data breaches — with timeframe
+  - Obligation to assist with DPIA (Art. 35) where relevant
+  - Cooperation on security measures (Art. 32)
+  gap_indicators:
+  - No breach notification clause
+  - Breach notification present but no timeframe (must enable controller's 72-hour EDPB deadline)
+  dora_art30_overlap: true
+  dora_art30_ref: ART30-008 (incident notification)
+  notes: Controller must report to supervisory authority within 72 hours. Processor notification must
+    be faster — typically 24-48 hours is recommended in DPAs.
+  match_terms_evidence:
+  - within 24 hours of detection
+  - within 24 hours of
+  - within 48 hours
+  - within 72 hours of detecting
+  match_terms_gap:
+  - within 72 hours of confirmation
+  - within 72 hours of confirming
+- id: ART28-008
+  article: Art. 28(3)(g)
+  category: Data return and deletion
+  obligation_level: mandatory
+  text_en: 'At the choice of the controller, the processor shall delete or return all personal data to
+    the controller after the end of the provision of services relating to processing, and shall delete
+    existing copies unless Union or Member State law requires storage.
+
+    '
+  text_da: 'Databehandleren sletter eller returnerer alt personoplysningerne til den dataansvarlige efter
+    behandlingsaktiviteternes afslutning, alt efter hvad den dataansvarlige foretrækker, og sletter eksisterende
+    kopier, medmindre EU-retten eller den nationale ret kræver opbevaring af personoplysningerne.
+
+    '
+  evidence_criteria:
+  - Delete or return clause present on termination
+  - Controller has choice between deletion and return
+  - Deletion of copies addressed
+  - Legal retention exception addressed
+  gap_indicators:
+  - Only deletion, no return option
+  - No deletion of copies requirement
+  - Retention on termination without legal basis
+  dora_art30_overlap: true
+  dora_art30_ref: ART30-005 (data portability and return)
+  notes: Confirm whether 'return' format is specified — especially relevant for cloud migration scenarios.
+  match_terms_evidence:
+  - return or securely delete
+  - certified confirmation of deletion
+  - delete.*personal data
+  - securely delete all personal data
+  match_terms_gap: []
+- id: ART28-009
+  article: Art. 28(3)(h)
+  category: Audit and information rights
+  obligation_level: mandatory
+  text_en: 'The processor shall make available to the controller all information necessary to demonstrate
+    compliance with the obligations laid down in this Article and allow for and contribute to audits,
+    including inspections, conducted by the controller or another auditor mandated by the controller.
+
+    '
+  text_da: 'Databehandleren stiller alle oplysninger, der er nødvendige for at påvise overholdelse af
+    forpligtelserne i denne artikel, til rådighed for den dataansvarlige og muliggør og bidrager til revision,
+    herunder inspektioner, foretaget af den dataansvarlige eller en anden revisor, som den dataansvarlige
+    har bemændiget hertil.
+
+    '
+  evidence_criteria:
+  - Obligation to provide compliance information on request
+  - Audit right present (direct or via mandated auditor)
+  - Third-party certification acceptable as alternative is explicitly stated, OR
+  - Direct inspection right retained
+  gap_indicators:
+  - No audit right
+  - Information only 'on request' with no audit right
+  dora_art30_overlap: true
+  dora_art30_ref: ART30-010 (audit rights)
+  notes: 'EDPB guidance: processor offering only certification as audit substitute must still grant direct
+    audit right if controller insists.'
+  match_terms_evidence:
+  - allow and contribute to audits
+  - contribute to and allow audits
+  - demonstrate compliance with gdpr
+  - demonstrate compliance with.*art. 28
+  - iso 27001 certificate
+  - audit reports available
+  match_terms_gap: []
+- id: ART28-010
+  article: Art. 28(2) + (4)
+  category: Sub-processor obligations (flow-down)
+  obligation_level: mandatory
+  text_en: 'Where the processor engages another processor, the same data protection obligations as set
+    out in the contract between controller and processor shall be imposed on that other processor by way
+    of a contract.
+
+    '
+  text_da: 'Hvis databehandleren benytter sig af en anden databehandler, pålægges denne anden databehandler
+    de samme databeskyttelsesforpligtelser som dem, der er fastsat i kontrakten mellem den dataansvarlige
+    og databehandleren.
+
+    '
+  evidence_criteria:
+  - 'Flow-down obligation: same GDPR obligations imposed on sub-processors'
+  - Processor remains liable to controller for sub-processor compliance
+  gap_indicators:
+  - No flow-down clause
+  - Processor not liable for sub-processor non-compliance
+  dora_art30_overlap: true
+  dora_art30_ref: ART30-001 (sub-contracting conditions)
+  notes: Critical gap in many older DPAs. Must be explicit — general 'comply with applicable law' is insufficient.
+  match_terms_evidence:
+  - same gdpr obligations
+  - art. 28(4)
+  - same data protection obligations
+  - prior written authorisation
+  match_terms_gap: []
+- id: ART28-011
+  article: Art. 28(3)(a) + Chapter V
+  category: International data transfers
+  scope: conditional
+  obligation_level: conditional
+  condition: Applies when personal data is transferred outside EEA
+  text_en: 'Transfers to third countries must be based on an adequacy decision, appropriate safeguards
+    (SCCs, BCRs), or a derogation. Processing instructions must address transfer conditions.
+
+    '
+  text_da: 'Overførsler til tredjelande skal baseres på en tilstrækkelighedsafgørelse, passende garantier
+    (SCC, BCR) eller en undtagelse.
+
+    '
+  evidence_criteria:
+  - 'Transfer mechanism identified: adequacy decision (e.g. UK, Switzerland) OR'
+  - Standard Contractual Clauses (SCCs — 2021 version) incorporated OR
+  - BCRs (Binding Corporate Rules) referenced
+  - 'If SCCs: Annex I (parties, data, purposes) is completed'
+  gap_indicators:
+  - Data transferred outside EEA with no transfer mechanism identified
+  - SCCs referenced but Annexes not completed
+  - Pre-2021 SCCs still in use without update
+  dora_art30_overlap: true
+  dora_art30_ref: ART30-002 (data processing locations)
+  notes: 'Combined assessment: ART30-002 identifies where data goes; this requirement verifies the legal
+    basis. Pre-Schrems II SCCs (2010 versions) are invalid — flag immediately.'
+  match_terms_evidence:
+  - adequacy decision or sccs
+  - standard contractual clauses
+  - no personal data shall be transferred outside the eea
+  - no personal data shall be transferred outside
+  - adequacy decision
+  match_terms_gap:
+  - reserves the right to process data outside the eu where required
+  - datadog
+  - some processing may involve transfers
 dpa_completeness_checklist:
-  - "Subject matter of processing"
-  - "Duration of processing"
-  - "Nature and purpose of processing"
-  - "Type of personal data"
-  - "Categories of data subjects"
-  - "Controller's obligations and rights"
-  - "All Art. 28(3)(a)-(h) obligations (ART28-002 through ART28-009)"
-  - "Sub-processor clause with change notification (ART28-005)"
-  - "Transfer mechanism if non-EEA processing (ART28-011)"
+- Subject matter of processing
+- Duration of processing
+- Nature and purpose of processing
+- Type of personal data
+- Categories of data subjects
+- Controller's obligations and rights
+- All Art. 28(3)(a)-(h) obligations (ART28-002 through ART28-009)
+- Sub-processor clause with change notification (ART28-005)
+- Transfer mechanism if non-EEA processing (ART28-011)

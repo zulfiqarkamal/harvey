@@ -127,10 +127,14 @@ def load_requirements(framework: str = "dora_art30") -> list[dict]:
 SCOPE_MAP = {
     "all": {"critical_important", "non_critical"},
     "critical_only": {"critical_important"},
+    "conditional": {"critical_important", "non_critical"},  # assessed only when evidence of trigger condition found
 }
 
 
 def _normalise(text: str) -> str:
+    # Strip markdown bold/italic markers before lowercasing so **word** doesn't break phrase matching
+    text = re.sub(r'\*\*|__', '', text)
+    text = re.sub(r'(?<!\w)\*(?!\*)(?!\w)', '', text)
     return re.sub(r"\s+", " ", text.lower().strip())
 
 
@@ -140,6 +144,20 @@ def _keyword_hits(contract_norm: str, keywords: list[str]) -> list[str]:
         pattern = re.escape(kw.lower())
         if re.search(pattern, contract_norm):
             found.append(kw)
+    return found
+
+
+def _phrase_hits(contract_norm: str, phrases: list[str]) -> list[str]:
+    """Phrase-level literal matching — no word decomposition. Supports basic .* wildcards."""
+    found = []
+    for phrase in phrases:
+        # Allow .* as a simple wildcard (for patterns like "notify.*within")
+        if ".*" in phrase:
+            pattern = phrase.lower()
+        else:
+            pattern = re.escape(phrase.lower())
+        if re.search(pattern, contract_norm):
+            found.append(phrase)
     return found
 
 
@@ -178,18 +196,26 @@ def assess_requirement(
     evidence_criteria: list[str] = req.get("evidence_criteria", [])
     gap_indicators: list[str] = req.get("gap_indicators", [])
 
-    def flatten_terms(phrases: list[str]) -> list[str]:
-        result = []
-        for p in phrases:
-            result.append(p.lower())
-            words = [w for w in p.lower().split() if len(w) > 4]
-            result.extend(words)
-        return list(dict.fromkeys(result))
+    # Use phrase-level match_terms when available; fall back to flatten_terms decomposition
+    match_terms_evidence: Optional[list[str]] = req.get("match_terms_evidence")
+    match_terms_gap: Optional[list[str]] = req.get("match_terms_gap")
 
-    evidence_terms = flatten_terms(evidence_criteria)
-    gap_terms = flatten_terms(gap_indicators)
-    evidence_hits = _keyword_hits(contract_norm, evidence_terms)
-    gap_hits = _keyword_hits(contract_norm, gap_terms)
+    if match_terms_evidence is not None:
+        evidence_hits = _phrase_hits(contract_norm, match_terms_evidence)
+        gap_hits = _phrase_hits(contract_norm, match_terms_gap or [])
+    else:
+        def flatten_terms(phrases: list[str]) -> list[str]:
+            result = []
+            for p in phrases:
+                result.append(p.lower())
+                words = [w for w in p.lower().split() if len(w) > 4]
+                result.extend(words)
+            return list(dict.fromkeys(result))
+
+        evidence_terms = flatten_terms(evidence_criteria)
+        gap_terms = flatten_terms(gap_indicators)
+        evidence_hits = _keyword_hits(contract_norm, evidence_terms)
+        gap_hits = _keyword_hits(contract_norm, gap_terms)
 
     passages = []
     for kw in evidence_hits[:3]:
@@ -201,9 +227,19 @@ def assess_requirement(
     gap_score = len(gap_hits)
 
     if evidence_score == 0 and gap_score == 0:
-        status = ComplianceStatus.NOT_ASSESSED
-        gap_desc = "No relevant clauses detected. Manual review required."
-        risk = RiskLevel.MEDIUM
+        if scope == "conditional":
+            # Conditional requirement: no trigger evidence found → not applicable to this contract
+            return RequirementAssessment(
+                requirement_id=req_id,
+                requirement_article=req.get("article", ""),
+                requirement_summary=req.get("text_en", "")[:120],
+                status=ComplianceStatus.NOT_APPLICABLE,
+                na_rationale="No evidence of condition trigger (e.g. international data transfer) found in contract.",
+            )
+        # Closed-world assumption: absence of compliance language = gap requiring review
+        status = ComplianceStatus.MISSING
+        gap_desc = "No relevant clauses detected in contract. Requirement appears absent."
+        risk = _default_risk(req, classification)
     elif gap_score > 0 and evidence_score == 0:
         status = ComplianceStatus.MISSING
         gap_desc = f"Gap indicators found: {', '.join(gap_hits[:3])}. No satisfying evidence detected."
@@ -345,7 +381,7 @@ def validate_against_expected(
     result_map = {
         a.requirement_id: a
         for a in result.assessments
-        if a.status not in (ComplianceStatus.SATISFIED, ComplianceStatus.NOT_ASSESSED)
+        if a.status not in (ComplianceStatus.SATISFIED, ComplianceStatus.NOT_ASSESSED, ComplianceStatus.NOT_APPLICABLE)
     }
     matched = []
     missed = []
