@@ -30,6 +30,7 @@ import yaml
 
 class ComplianceStatus(str, Enum):
     SATISFIED = "satisfied"
+    EVIDENCE_FOUND = "evidence_found"  # evidence phrases detected — human review required
     MISSING = "missing"
     AMBIGUOUS = "ambiguous"
     NOT_APPLICABLE = "na"
@@ -104,6 +105,8 @@ class ContractAnalysisResult:
             self.overall_status = ComplianceStatus.MISSING
         elif counts[ComplianceStatus.AMBIGUOUS.value] > 0:
             self.overall_status = ComplianceStatus.AMBIGUOUS
+        elif counts.get(ComplianceStatus.EVIDENCE_FOUND.value, 0) > 0 or counts[ComplianceStatus.NOT_ASSESSED.value] > 0:
+            self.overall_status = ComplianceStatus.NOT_ASSESSED
         else:
             self.overall_status = ComplianceStatus.SATISFIED
 
@@ -228,13 +231,13 @@ def assess_requirement(
 
     if evidence_score == 0 and gap_score == 0:
         if scope == "conditional":
-            # Conditional requirement: no trigger evidence found → not applicable to this contract
+            # Conditional requirement: no trigger phrases detected — applicability uncertain (not confirmed absent)
             return RequirementAssessment(
                 requirement_id=req_id,
                 requirement_article=req.get("article", ""),
                 requirement_summary=req.get("text_en", "")[:120],
-                status=ComplianceStatus.NOT_APPLICABLE,
-                na_rationale="No evidence of condition trigger (e.g. international data transfer) found in contract.",
+                status=ComplianceStatus.NOT_ASSESSED,
+                na_rationale="Trigger condition not detected in contract — applicability uncertain. Human review required.",
             )
         # Closed-world assumption: absence of compliance language = gap requiring review
         status = ComplianceStatus.MISSING
@@ -253,8 +256,12 @@ def assess_requirement(
         )
         risk = _default_risk(req, classification)
     else:
-        status = ComplianceStatus.SATISFIED
-        gap_desc = None
+        # Evidence phrases found, no gap indicators — conservative: flag for human review
+        status = ComplianceStatus.EVIDENCE_FOUND
+        gap_desc = (
+            f"Evidence candidates found ({', '.join(evidence_hits[:3])}). "
+            "Keyword matching cannot confirm compliance — human review of clause text required."
+        )
         risk = None
 
     remediation = ""
@@ -373,20 +380,33 @@ def validate_against_expected(
     contract_key: str,
 ) -> dict:
     contract_expected = expected.get(contract_key, {})
-    expected_gaps = {
+    all_expected = {
         item["requirement_id"]: item
         for item in contract_expected.get("expected_gaps", [])
         + contract_expected.get("gdpr_findings", [])
     }
+    # Separate genuine gaps from N/A expectations
+    genuine_expected = {k: v for k, v in all_expected.items() if v.get("expected_status") != "na"}
+    na_expected = {k: v for k, v in all_expected.items() if v.get("expected_status") == "na"}
+
+    # Active-gap findings: only MISSING/AMBIGUOUS qualify; SATISFIED/EVIDENCE_FOUND/NOT_APPLICABLE/NOT_ASSESSED are excluded
+    _excluded = (
+        ComplianceStatus.SATISFIED,
+        ComplianceStatus.EVIDENCE_FOUND,
+        ComplianceStatus.NOT_ASSESSED,
+        ComplianceStatus.NOT_APPLICABLE,
+    )
     result_map = {
         a.requirement_id: a
         for a in result.assessments
-        if a.status not in (ComplianceStatus.SATISFIED, ComplianceStatus.NOT_ASSESSED, ComplianceStatus.NOT_APPLICABLE)
+        if a.status not in _excluded
     }
+
     matched = []
     missed = []
     false_positives = []
-    for req_id, exp in expected_gaps.items():
+
+    for req_id, exp in genuine_expected.items():
         exp_status = exp["expected_status"]
         if req_id in result_map:
             actual_status = result_map[req_id].status.value
@@ -397,20 +417,38 @@ def validate_against_expected(
         else:
             actual = next((a for a in result.assessments if a.requirement_id == req_id), None)
             actual_status = actual.status.value if actual else "not_found"
-            if exp_status == "na":
-                matched.append(req_id)
-            else:
-                missed.append({"id": req_id, "expected": exp_status, "actual": actual_status})
+            missed.append({"id": req_id, "expected": exp_status, "actual": actual_status})
+
+    # Check N/A expectations are resolved correctly (should be NOT_APPLICABLE or NOT_ASSESSED)
+    na_matched = []
+    na_missed = []
+    _na_ok = (ComplianceStatus.NOT_APPLICABLE, ComplianceStatus.NOT_ASSESSED)
+    for req_id in na_expected:
+        actual = next((a for a in result.assessments if a.requirement_id == req_id), None)
+        if actual and actual.status in _na_ok:
+            na_matched.append(req_id)
+        else:
+            na_missed.append({
+                "id": req_id,
+                "expected": "na",
+                "actual": actual.status.value if actual else "not_found",
+            })
+
+    # FP = active-gap findings not in genuine_expected
     for req_id in result_map:
-        if req_id not in expected_gaps:
+        if req_id not in genuine_expected:
             false_positives.append({"id": req_id, "actual_status": result_map[req_id].status.value})
-    total = len(expected_gaps)
-    accuracy_pct = round(len(matched) / total * 100, 1) if total > 0 else 100.0
+
+    total_genuine = len(genuine_expected)
+    accuracy_pct = round(len(matched) / total_genuine * 100, 1) if total_genuine > 0 else 100.0
     return {
         "contract_key": contract_key,
-        "expected_gaps": total,
+        "expected_genuine_gaps": total_genuine,
+        "na_expectations": len(na_expected),
         "matched": len(matched),
+        "na_matched": len(na_matched),
         "missed": missed,
+        "na_missed": na_missed,
         "false_positives": false_positives,
         "accuracy_pct": accuracy_pct,
     }
@@ -445,4 +483,4 @@ if __name__ == "__main__":
         with open(args.validate, encoding="utf-8") as f:
             expected = _yaml.safe_load(f)
         report = validate_against_expected(result, expected, args.contract_key)
-        print(f"\nValidation: {report['accuracy_pct']}% ({report['matched']}/{report['expected_gaps']} gaps detected)", file=sys.stderr)
+        print(f"\nValidation: {report['accuracy_pct']}% ({report['matched']}/{report['expected_genuine_gaps']} gaps detected)", file=sys.stderr)

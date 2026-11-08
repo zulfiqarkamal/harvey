@@ -39,7 +39,7 @@ def run_all() -> dict:
         expected = yaml.safe_load(f)
     analyser = ContractAnalyser()
     validation_results = []
-    aggregate = {"total_gaps": 0, "total_matched": 0, "total_false_positives": 0}
+    aggregate = {"total_gaps": 0, "total_na": 0, "total_matched": 0, "total_na_matched": 0, "total_false_positives": 0}
     for spec in CONTRACTS:
         contract_path = CONTRACTS_DIR / spec["file"]
         metadata = ContractMetadata(
@@ -57,13 +57,17 @@ def run_all() -> dict:
         val["classification"] = spec["classification"]
         val["summary_stats"] = result.summary_stats
         validation_results.append(val)
-        aggregate["total_gaps"] += val["expected_gaps"]
+        aggregate["total_gaps"] += val["expected_genuine_gaps"]
+        aggregate["total_na"] += val["na_expectations"]
         aggregate["total_matched"] += val["matched"]
+        aggregate["total_na_matched"] += val["na_matched"]
         aggregate["total_false_positives"] += len(val["false_positives"])
         icon = "✓" if val["accuracy_pct"] >= 80 else "⚠" if val["accuracy_pct"] >= 50 else "✗"
-        print(f"{icon} {spec['key']:30s}  accuracy={val['accuracy_pct']:5.1f}%  matched={val['matched']}/{val['expected_gaps']}  fp={len(val['false_positives'])}")
+        print(f"{icon} {spec['key']:30s}  accuracy={val['accuracy_pct']:5.1f}%  matched={val['matched']}/{val['expected_genuine_gaps']}  na={val['na_matched']}/{val['na_expectations']}  fp={len(val['false_positives'])}")
         for m in val.get("missed", []):
             print(f"    MISSED  {m['id']:15s}  expected={m['expected']:10s}  actual={m['actual']}")
+        for m in val.get("na_missed", []):
+            print(f"    NA-MISS {m['id']:15s}  expected=na          actual={m['actual']}")
     tp = aggregate["total_matched"]
     fp = aggregate["total_false_positives"]
     fn = aggregate["total_gaps"] - tp
@@ -78,12 +82,25 @@ def run_all() -> dict:
     aggregate["recall_pct"] = recall
     aggregate["f1_pct"] = f1
     import datetime
-    report = {"run_date": datetime.datetime.now(datetime.timezone.utc).isoformat(), "engine_version": "gamma7-engine-v2", "contracts_tested": len(CONTRACTS), "aggregate": aggregate, "results": validation_results}
+    report = {
+        "run_date": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "engine_version": "gamma7-engine-v2",
+        "contracts_tested": len(CONTRACTS),
+        "caveat": (
+            "Precision/recall measured on the same 5 contracts used to tune match_terms. "
+            "Figures reflect in-sample fit only — not independently verified on held-out data."
+        ),
+        "aggregate": aggregate,
+        "results": validation_results,
+    }
     report_path = OUTPUT_DIR / "validation_report.json"
     report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(f"\n{'─'*60}")
-    print(f"TP={tp}  FP={fp}  FN={fn}")
+    print(f"Genuine gaps:  TP={tp}  FP={fp}  FN={fn}")
+    print(f"N/A scope:     matched={aggregate['total_na_matched']}/{aggregate['total_na']}")
     print(f"Precision: {precision}%   Recall: {recall}%   F1: {f1}%")
+    print(f"\n⚠ CAVEAT: Figures are in-sample (same 5 contracts used to tune match_terms).")
+    print(f"  Precision/recall not independently verified on held-out data.")
     print(f"\nReport written to: {report_path}")
     return report
 

@@ -67,11 +67,12 @@ def _make_req(req_id, evidence_phrases, gap_phrases, scope="all", obligation="mu
 
 # ── SATISFIED: evidence present, no gap ────────────────────────────────────
 
-def test_satisfied_when_evidence_present_no_gap():
+def test_evidence_found_when_evidence_present_no_gap():
+    """Evidence found, no gap indicators → EVIDENCE_FOUND (conservative, not SATISFIED)."""
     req = _make_req("T-001", ["iso 27001"], [])
     contract = "Supplier maintains ISO 27001 certification for all services."
     result = assess_requirement(req, contract, _normalise(contract), "critical_important")
-    assert result.status == ComplianceStatus.SATISFIED
+    assert result.status == ComplianceStatus.EVIDENCE_FOUND
     assert result.risk_level is None
 
 
@@ -122,14 +123,14 @@ def test_assessed_when_scope_critical_only_and_critical():
 # ── False-positive prevention ────────────────────────────────────────────────
 
 def test_no_fp_on_good_contract_tlpt():
-    """ART30-009: contract with TLPT clause must be SATISFIED, not AMBIGUOUS."""
+    """ART30-009: contract with TLPT clause → EVIDENCE_FOUND (conservative, requires human review)."""
     req = _make_req("ART30-009", ["threat-led penetration testing", "tlpt"], [], scope="critical_only")
     contract = (
         "Clause 7: Threat-Led Penetration Testing (TLPT). "
         "SecureVault cooperates fully with TLPT exercises."
     )
     result = assess_requirement(req, contract, _normalise(contract), "critical_important")
-    assert result.status == ComplianceStatus.SATISFIED
+    assert result.status == ComplianceStatus.EVIDENCE_FOUND
 
 
 def test_no_fp_on_good_contract_audit_rights():
@@ -149,7 +150,7 @@ def test_no_fp_on_good_contract_audit_rights():
 
 
 def test_no_fp_audit_rights_no_blocking():
-    """ART30-010 with audit rights but no blocking gap phrase → SATISFIED."""
+    """ART30-010 with audit rights but no blocking gap phrase → EVIDENCE_FOUND (conservative)."""
     req = _make_req(
         "ART30-010",
         ["right to audit", "third-party auditor"],
@@ -160,7 +161,7 @@ def test_no_fp_audit_rights_no_blocking():
         "A third-party auditor appointed by Customer may conduct the audit."
     )
     result = assess_requirement(req, contract, _normalise(contract), "critical_important")
-    assert result.status == ComplianceStatus.SATISFIED
+    assert result.status == ComplianceStatus.EVIDENCE_FOUND
 
 
 # ── Evidence passage extraction ───────────────────────────────────────────────
@@ -171,3 +172,65 @@ def test_evidence_passages_extracted():
     result = assess_requirement(req, contract, _normalise(contract), "critical_important")
     assert len(result.evidence) >= 1
     assert "iso 27001" in result.evidence[0]["text"].lower()
+
+
+# ── Held-out tests (language NOT derived from the 5 synthetic training contracts) ─────
+
+def test_held_out_evidence_found_not_satisfied():
+    """Held-out: evidence found → EVIDENCE_FOUND (conservative, not SATISFIED)."""
+    req = _make_req("T-H01", ["exit assistance", "transition support"], [])
+    contract = "Provider shall offer exit assistance and transition support for 90 days after termination."
+    result = assess_requirement(req, contract, _normalise(contract), "critical_important")
+    assert result.status == ComplianceStatus.EVIDENCE_FOUND
+    assert len(result.evidence) > 0
+
+
+def test_held_out_conditional_no_trigger_not_assessed():
+    """Held-out: conditional scope, no trigger detected → NOT_ASSESSED (not NOT_APPLICABLE)."""
+    req = _make_req(
+        "T-H02",
+        ["standard contractual clauses", "adequacy decision"],
+        ["some processing may involve transfers"],
+        scope="conditional",
+    )
+    contract = "All data processing occurs within the European Economic Area."
+    result = assess_requirement(req, contract, _normalise(contract), "non_critical")
+    assert result.status == ComplianceStatus.NOT_ASSESSED
+
+
+def test_held_out_bcp_critical_only_non_critical_na():
+    """Held-out: critical_only scope on non_critical contract → NOT_APPLICABLE."""
+    req = _make_req(
+        "T-H03",
+        ["test the bcp and drp", "test the bcp"],
+        ["reviews but does not test", "annual review of the bcp"],
+        scope="critical_only",
+    )
+    contract = "Provider shall test the BCP and DRP on an annual basis."
+    result = assess_requirement(req, contract, _normalise(contract), "non_critical")
+    assert result.status == ComplianceStatus.NOT_APPLICABLE
+
+
+def test_held_out_bcp_review_not_testing_critical():
+    """Held-out: gap indicator 'annual review of the bcp' present without testing evidence → MISSING or AMBIGUOUS."""
+    req = _make_req(
+        "T-H04",
+        ["test the bcp and drp", "test the bcp", "test the drp", "live failover"],
+        ["reviews but does not test", "testing would be disruptive", "annual review of the bcp"],
+        scope="critical_only",
+    )
+    contract = "Provider conducts an annual review of the BCP and updates it as required by management."
+    result = assess_requirement(req, contract, _normalise(contract), "critical_important")
+    assert result.status in (ComplianceStatus.MISSING, ComplianceStatus.AMBIGUOUS)
+
+
+def test_held_out_audit_no_rights_missing():
+    """Held-out: no audit rights language at all → MISSING (closed-world assumption)."""
+    req = _make_req(
+        "T-H05",
+        ["right to audit", "third-party auditor", "on-site audit"],
+        ["not operationally feasible", "not available for direct customer audit"],
+    )
+    contract = "Provider shall maintain ISO 27001 certification and provide quarterly security reports."
+    result = assess_requirement(req, contract, _normalise(contract), "critical_important")
+    assert result.status == ComplianceStatus.MISSING

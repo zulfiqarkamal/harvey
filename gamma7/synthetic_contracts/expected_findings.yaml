@@ -1,10 +1,18 @@
 # Expected Findings — Synthetic Contract Test Dataset
 # Used to validate the gap analysis engine against known ground truth.
-# Version: 1.1 — 2026-11-08
+# Version: 1.2 — 2026-11-08
+#
+# Total entries: 56 genuine gaps + 4 N/A expectations = 60 rows
+#   N/A expectations (critical_only requirements on non_critical contracts):
+#     ART30-009 × 2 (contract_03, contract_04) + ART30-013 × 2 (contract_03, contract_04)
+#
+# CAVEAT: All 5 contracts were used both to tune match_terms and to measure accuracy.
+#   Precision/recall figures are NOT independently verified — they reflect in-sample fit only.
+#   Add held-out contracts before claiming production-grade accuracy.
 #
 # Format per contract:
 #   requirement_id: expected ComplianceStatus
-#   (only requirements where status is NOT "satisfied" are listed — satisfied is default)
+#   (only requirements where status is NOT "evidence_found"/"satisfied" are listed)
 
 contract_01_cloudhost:
   supplier: "NordCloud Hosting A/S"
@@ -248,9 +256,8 @@ contract_03_legacy:
       expected_risk: high
 
     - requirement_id: ART30-013
-      expected_status: missing
-      reason: "No BCP or security measures beyond physical."
-      expected_risk: high
+      expected_status: na
+      reason: "Non-critical function — BCP testing requirement (Art. 30(3)(c)) applies only to critical/important functions."
 
   gdpr_findings:
     - requirement_id: ART28-001
@@ -350,11 +357,8 @@ contract_04_saas:
       expected_risk: medium
 
     - requirement_id: ART30-013
-      expected_status: missing
-      reason: >
-        BCP/DRP present but 'does not test — testing would be disruptive'. Testing obligation
-        explicitly waived. This is a gap regardless of function classification.
-      expected_risk: high
+      expected_status: na
+      reason: "Non-critical function — BCP testing requirement (Art. 30(3)(c)) applies only to critical/important functions."
 
   gdpr_findings:
     - requirement_id: ART28-005

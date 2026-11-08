@@ -325,7 +325,7 @@ requirements:
   - tlpt
   match_terms_gap: []
 - id: ART30-010
-  article: Art. 30(2)(j)
+  article: Art. 30(4)
   category: Audit rights
   scope: all
   obligation_level: mandatory
@@ -425,7 +425,7 @@ requirements:
 - id: ART30-013
   article: Art. 30(3)(c)
   category: Business continuity and security
-  scope: all
+  scope: critical_only
   obligation_level: mandatory
   text_en: 'Requirement for the ICT third-party service provider to implement and test business continuity
     plans and to have in place ICT security measures, tools and policies that provide an appropriate level
