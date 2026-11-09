@@ -8,6 +8,9 @@ Usage:
     python -m gamma7.audit_intelligence workpapers --org "Nordbank A/S" --scope iso27001 --output output/
     python -m gamma7.audit_intelligence workpapers --org "Fjord Finans" --scope iso27001 --exclude A.7.1,A.7.8 --output output/
     python -m gamma7.audit_intelligence workpapers --org "Name" --scope iso27001 --print-summary
+
+    python -m gamma7.audit_intelligence report --org "Nordbank A/S" --scope iso27001 --output output/
+    python -m gamma7.audit_intelligence report --org "Name" --scope iso27001 --auditor "Zulfiqar Kamal" --output output/
 """
 
 from __future__ import annotations
@@ -77,6 +80,36 @@ def cmd_workpapers(args: argparse.Namespace) -> None:
         print(generate_summary_report(wps))
 
 
+def cmd_report(args: argparse.Namespace) -> None:
+    from .workpaper import build_workpapers
+    from .audit_report import generate_audit_report, save_audit_report
+
+    exclude = [x.strip() for x in (args.exclude or "").split(",") if x.strip()]
+    scope = [s.strip() for s in args.scope.split(",") if s.strip()]
+
+    universe = build_universe(
+        organisation=args.org,
+        scope=scope,
+        exclude_control_ids=exclude or None,
+    )
+    wps = build_workpapers(universe)
+
+    if args.output:
+        path = save_audit_report(
+            wps,
+            pathlib.Path(args.output),
+            auditor_name=args.auditor,
+            engagement_period=args.period or None,
+        )
+        print(f"Audit report saved: {path}")
+    else:
+        print(generate_audit_report(
+            wps,
+            auditor_name=args.auditor,
+            engagement_period=args.period or None,
+        ))
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="python -m gamma7.audit_intelligence",
@@ -110,6 +143,20 @@ def build_parser() -> argparse.ArgumentParser:
     wp.add_argument("--print-summary", action="store_true",
                     help="Print management summary report to stdout and exit")
 
+    # --- report subcommand ---
+    rp = sub.add_parser("report", help="Generate formal audit report (Markdown)")
+    rp.add_argument("--org", required=True, metavar="NAME", help="Organisation name")
+    rp.add_argument("--scope", default="iso27001", metavar="SCOPES",
+                    help="Comma-separated scope keys (default: iso27001)")
+    rp.add_argument("--exclude", default="", metavar="CONTROL_IDS",
+                    help="Comma-separated control IDs to exclude")
+    rp.add_argument("--auditor", default="Gamma7 Audit Intelligence", metavar="NAME",
+                    help="Auditor name for the report header")
+    rp.add_argument("--period", default="", metavar="TEXT",
+                    help="Engagement period description (e.g. 'Q4 2026')")
+    rp.add_argument("--output", default=None, metavar="DIR",
+                    help="Output directory for Markdown report (prints to stdout if omitted)")
+
     return p
 
 
@@ -120,6 +167,8 @@ def main() -> None:
         cmd_plan(args)
     elif args.command == "workpapers":
         cmd_workpapers(args)
+    elif args.command == "report":
+        cmd_report(args)
 
 
 if __name__ == "__main__":
