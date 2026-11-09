@@ -4,6 +4,10 @@ CLI entrypoint for Gamma7 Audit Intelligence Agent.
 Usage:
     python -m gamma7.audit_intelligence plan --org "Nordbank A/S" --scope iso27001 --output output/
     python -m gamma7.audit_intelligence plan --org "Fjord Finans" --scope iso27001 --exclude A.7.1,A.7.8 --quarters 4 --output output/
+
+    python -m gamma7.audit_intelligence workpapers --org "Nordbank A/S" --scope iso27001 --output output/
+    python -m gamma7.audit_intelligence workpapers --org "Fjord Finans" --scope iso27001 --exclude A.7.1,A.7.8 --output output/
+    python -m gamma7.audit_intelligence workpapers --org "Name" --scope iso27001 --print-summary
 """
 
 from __future__ import annotations
@@ -41,13 +45,46 @@ def cmd_plan(args: argparse.Namespace) -> None:
         print(generate_markdown(universe, program))
 
 
+def cmd_workpapers(args: argparse.Namespace) -> None:
+    from .workpaper import build_workpapers, generate_summary_report, save_workpapers
+
+    exclude = [x.strip() for x in (args.exclude or "").split(",") if x.strip()]
+    scope = [s.strip() for s in args.scope.split(",") if s.strip()]
+
+    universe = build_universe(
+        organisation=args.org,
+        scope=scope,
+        exclude_control_ids=exclude or None,
+    )
+    wps = build_workpapers(universe)
+
+    if args.print_summary:
+        print(generate_summary_report(wps))
+        return
+
+    if args.output:
+        output_dir = pathlib.Path(args.output)
+        paths = save_workpapers(wps, output_dir, include_individual=not args.no_individual)
+        m = wps.engagement_metadata
+        print(f"Working papers generated: {wps.engagement_id}")
+        print(f"Organisation: {args.org}")
+        print(f"Scope: {', '.join(scope)}")
+        print(f"Work papers: {m['total_workpapers']} ({wps.tested_count} tested, {wps.exception_count} with exceptions)")
+        print(f"\nOutput:")
+        for key, path in paths.items():
+            print(f"  {key:30s}: {path}")
+    else:
+        print(generate_summary_report(wps))
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="python -m gamma7.audit_intelligence",
-        description="Gamma7 Audit Intelligence Agent — audit universe and risk-scored audit program",
+        description="Gamma7 Audit Intelligence Agent — audit universe, risk-scored program, and working papers",
     )
     sub = p.add_subparsers(dest="command", required=True)
 
+    # --- plan subcommand ---
     plan = sub.add_parser("plan", help="Generate audit universe and program")
     plan.add_argument("--org", required=True, metavar="NAME", help="Organisation name")
     plan.add_argument("--scope", default="iso27001", metavar="SCOPES",
@@ -59,6 +96,20 @@ def build_parser() -> argparse.ArgumentParser:
     plan.add_argument("--output", default=None, metavar="DIR",
                       help="Output directory for YAML + Markdown (prints to stdout if omitted)")
 
+    # --- workpapers subcommand ---
+    wp = sub.add_parser("workpapers", help="Generate blank IIA-standard working papers for all in-scope controls")
+    wp.add_argument("--org", required=True, metavar="NAME", help="Organisation name")
+    wp.add_argument("--scope", default="iso27001", metavar="SCOPES",
+                    help="Comma-separated scope keys (default: iso27001)")
+    wp.add_argument("--exclude", default="", metavar="CONTROL_IDS",
+                    help="Comma-separated control IDs to exclude (e.g. A.7.1,A.7.8)")
+    wp.add_argument("--output", default=None, metavar="DIR",
+                    help="Output directory for JSON + YAML + Markdown (prints summary to stdout if omitted)")
+    wp.add_argument("--no-individual", action="store_true",
+                    help="Skip individual per-control Markdown files (only write summary and JSON/YAML)")
+    wp.add_argument("--print-summary", action="store_true",
+                    help="Print management summary report to stdout and exit")
+
     return p
 
 
@@ -67,6 +118,8 @@ def main() -> None:
     args = parser.parse_args()
     if args.command == "plan":
         cmd_plan(args)
+    elif args.command == "workpapers":
+        cmd_workpapers(args)
 
 
 if __name__ == "__main__":
