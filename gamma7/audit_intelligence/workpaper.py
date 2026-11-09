@@ -218,6 +218,63 @@ class WorkPaperSet:
     def to_json(self) -> str:
         return json.dumps(asdict(self), indent=2, default=str)
 
+    @classmethod
+    def from_dict(cls, data: dict) -> "WorkPaperSet":
+        work_papers = []
+        for wp_data in data.get("work_papers", []):
+            findings = []
+            for f in wp_data.pop("findings", []):
+                findings.append(Finding(
+                    finding_id=f["finding_id"],
+                    control_id=f["control_id"],
+                    title=f["title"],
+                    condition=f["condition"],
+                    criteria=f["criteria"],
+                    cause=f["cause"],
+                    effect=f["effect"],
+                    recommendation=f["recommendation"],
+                    severity=FindingSeverity(f["severity"]),
+                    status=FindingStatus(f.get("status", FindingStatus.OPEN.value)),
+                    owner=f.get("owner"),
+                    target_remediation_date=f.get("target_remediation_date"),
+                    management_response=f.get("management_response"),
+                    actual_remediation_date=f.get("actual_remediation_date"),
+                ))
+            wp = WorkPaper(
+                workpaper_id=wp_data["workpaper_id"],
+                control_id=wp_data["control_id"],
+                control_title=wp_data["control_title"],
+                control_domain=wp_data["control_domain"],
+                inherent_risk=wp_data["inherent_risk"],
+                planned_quarter=wp_data.get("planned_quarter"),
+                audit_objective=wp_data["audit_objective"],
+                test_steps_performed=wp_data.get("test_steps_performed", []),
+                evidence_gathered=wp_data.get("evidence_gathered", []),
+                test_result=TestResult(wp_data.get("test_result", TestResult.NOT_TESTED.value)),
+                findings=findings,
+                auditor_notes=wp_data.get("auditor_notes"),
+                tested_by=wp_data.get("tested_by"),
+                tested_date=wp_data.get("tested_date"),
+                reviewed_by=wp_data.get("reviewed_by"),
+                reviewed_date=wp_data.get("reviewed_date"),
+                expected_evidence_artifacts=wp_data.get("expected_evidence_artifacts", []),
+                risk_indicators=wp_data.get("risk_indicators", []),
+            )
+            work_papers.append(wp)
+        return cls(
+            engagement_id=data["engagement_id"],
+            universe_id=data["universe_id"],
+            organisation=data["organisation"],
+            scope=data["scope"],
+            generated_at=data["generated_at"],
+            work_papers=work_papers,
+            engagement_metadata=data.get("engagement_metadata", {}),
+        )
+
+    @classmethod
+    def from_json(cls, text: str) -> "WorkPaperSet":
+        return cls.from_dict(json.loads(text))
+
 
 # ---------------------------------------------------------------------------
 # Factory — build blank work papers from an AuditUniverse
