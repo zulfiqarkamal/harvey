@@ -65,7 +65,7 @@ class RequirementAssessment:
     remediation_suggestion: str = ""
     na_rationale: Optional[str] = None
     assessed_by: str = "gamma7-engine-v1"
-    assessed_at: str = field(default_factory=lambda: datetime.datetime.utcnow().isoformat())
+    assessed_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
 
 
 @dataclass
@@ -320,7 +320,7 @@ class ContractAnalyser:
         contract_norm = _normalise(contract_text)
         if contract_metadata is None:
             contract_metadata = ContractMetadata(
-                contract_id=f"contract-{datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
+                contract_id=f"contract-{datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d%H%M%S')}",
                 supplier_name="Unknown",
                 customer_name="Unknown",
                 classification=classification,
@@ -339,7 +339,7 @@ class ContractAnalyser:
                         action=assessment.remediation_suggestion,
                     ))
         result = ContractAnalysisResult(
-            analysis_id=f"GA-{datetime.datetime.utcnow().strftime('%Y%m%d-%H%M%S')}",
+            analysis_id=f"GA-{datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d-%H%M%S')}",
             framework="+".join(fw.upper() for fw in self.frameworks),
             contract=contract_metadata,
             assessments=all_assessments,

@@ -60,7 +60,7 @@ class RequirementAssessment:
     remediation_suggestion: str = ""         # Suggested contractual language or action
     na_rationale: Optional[str] = None       # Required if status = NOT_APPLICABLE
     assessed_by: str = "gamma7-engine-v1"
-    assessed_at: str = field(default_factory=lambda: datetime.datetime.utcnow().isoformat())
+    assessed_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
 
 
 @dataclass
@@ -93,7 +93,7 @@ class ContractAnalysisResult:
     summary_stats: dict = field(default_factory=dict)
     remediation_tasks: list[RemediationTask] = field(default_factory=list)
     analysis_version: str = "1.0"
-    analysed_at: str = field(default_factory=lambda: datetime.datetime.utcnow().isoformat())
+    analysed_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
     human_reviewed: bool = False
     human_reviewer: Optional[str] = None
     human_reviewed_at: Optional[str] = None
