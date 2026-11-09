@@ -1,0 +1,498 @@
+meta:
+  regulation: Regulation (EU) 2022/2554 of the European Parliament and of the Council
+  common_name: Digital Operational Resilience Act (DORA)
+  article: Article 30 — Key contractual provisions
+  applies_to:
+  - Credit institutions
+  - Payment institutions
+  - Electronic money institutions
+  - Investment firms
+  - Crypto-asset service providers
+  - Insurance and reinsurance undertakings
+  - IORP (pension funds)
+  - Other financial entities as defined in Art. 2
+  effective_date: '2025-01-17'
+  disclaimer: 'This library is a structured interpretation aid. It is not legal advice. Requirements must
+    be validated against the official Regulation text. Financial entities must consult qualified legal
+    counsel for compliance determinations.
+
+    '
+requirements:
+- id: ART30-001
+  article: Art. 30(2)(a)
+  category: Service description
+  scope: all
+  obligation_level: mandatory
+  text_en: 'A clear and complete description of all functions and ICT services to be provided by the ICT
+    third-party service provider, indicating whether sub-contracting of an ICT service supporting a critical
+    or important function, or material parts thereof, is permitted and, when it is, what conditions apply
+    to such sub-contracting.
+
+    '
+  text_da: 'En klar og fuldstændig beskrivelse af alle funktioner og IKT-tjenester, der skal leveres af
+    IKT-tredjepartsleverandøren, herunder angivelse af, om underleverance af en IKT-tjeneste, der understøtter
+    en kritisk eller vigtig funktion, eller væsentlige dele heraf, er tilladt, og i givet fald på hvilke
+    betingelser.
+
+    '
+  evidence_criteria:
+  - Contract contains a service description schedule or exhibit
+  - Services are enumerated with sufficient specificity
+  - Sub-contracting permission is explicitly stated (permitted / not permitted)
+  - 'If sub-contracting permitted: conditions and approval process are specified'
+  - Critical/important function classification is referenced or determinable
+  gap_indicators:
+  - Service description is vague or generic (e.g. 'IT services as agreed')
+  - No sub-contracting clause present
+  - Sub-contracting permitted with no conditions or approval rights
+  gdpr_art28_overlap: true
+  gdpr_art28_ref: Art. 28(2) — sub-processor restrictions
+  notes: This is typically the longest gap in older contracts. Focus on whether sub-contracting is addressed
+    at all, then on conditions.
+  match_terms_evidence:
+  - prior written approval
+  - prior written consent
+  - sub-contractor register
+  - not sub-contract any element
+  - pre-approved sub-contractors
+  - written notice.*subprocessor
+  - subprocessor.*written notice
+  - subprocessor.*consent
+  - subprocessor.*prior written
+  - consent.*subprocessor
+  - 30 days.*written notice.*subprocessor
+  match_terms_gap:
+  - without prior notice to
+  - within 30 days of commencement
+  - material sub-contracting
+- id: ART30-002
+  article: Art. 30(2)(b)
+  category: Data and processing locations
+  scope: all
+  obligation_level: mandatory
+  text_en: 'The locations, namely the regions or countries, where the contracted or sub-contracted functions
+    and ICT services are to be provided and where data is to be processed, including the storage location,
+    and the requirement for the ICT third-party service provider to notify the financial entity if it
+    envisages changing such locations.
+
+    '
+  text_da: 'De steder, dvs. regioner eller lande, hvor de kontraherede eller underleverandørleverede funktioner
+    og IKT-tjenester skal leveres, og hvor data skal behandles, herunder lagringsstedet, samt kravet om,
+    at IKT-tredjepartsleverandøren skal underrette det finansielle institut, hvis leverandøren planlægger
+    at ændre disse steder.
+
+    '
+  evidence_criteria:
+  - Contract specifies country/region where services are delivered
+  - Data processing location is explicitly stated
+  - Data storage location is specified
+  - Change notification obligation for location changes is present
+  gap_indicators:
+  - No data location specified
+  - Location described only as 'globally' or 'as required'
+  - No notification obligation for location changes
+  gdpr_art28_overlap: true
+  gdpr_art28_ref: Art. 28(3)(a) — processing only on instructions; Art. 46 — international transfers
+  notes: EEA vs. non-EEA distinction matters for GDPR simultaneously. Check for adequacy decisions or
+    SCCs if non-EEA.
+  match_terms_evidence:
+  - data centres located in
+  - data centers located in
+  - data cent
+  - 60 days prior to any change in service location
+  - 60 days prior to any change
+  - no processing shall occur outside
+  - service locations
+  - european economic area
+  - eea
+  match_terms_gap:
+  - commercially reasonable efforts to store customer data
+  - reserves the right to process data outside
+  - multiple locations within the european union
+- id: ART30-003
+  article: Art. 30(2)(c)
+  category: Availability, integrity, security
+  scope: all
+  obligation_level: mandatory
+  text_en: 'Provisions on availability, authenticity, integrity and confidentiality in relation to the
+    protection of data, including personal data.
+
+    '
+  text_da: 'Bestemmelser om tilgængelighed, autenticitet, integritet og fortrolighed i forbindelse med
+    beskyttelse af data, herunder personoplysninger.
+
+    '
+  evidence_criteria:
+  - Contract references confidentiality obligations
+  - Integrity protections are addressed (checksums, audit logs, or equivalent)
+  - Availability targets or SLA metrics are present
+  - Authentication/access controls are addressed
+  gap_indicators:
+  - Security obligations described only as 'reasonable measures' without specifics
+  - No confidentiality clause covering data at rest and in transit
+  - No availability metrics or SLA present
+  gdpr_art28_overlap: true
+  gdpr_art28_ref: Art. 28(3)(e) — security measures; Art. 32 — security of processing
+  notes: Often satisfied partially. Check whether availability is in SLA (ART30-004) or here — either
+    location is acceptable.
+  match_terms_evidence:
+  - iso 27001
+  - cryptographic audit logs
+  - authenticity and integrity
+  - encryption in transit
+  - aes-256
+  - technical and organisational measures
+  match_terms_gap: []
+- id: ART30-004
+  article: Art. 30(2)(d)
+  category: Service levels
+  scope: all
+  obligation_level: mandatory
+  text_en: 'Arrangements regarding service levels, including updates and revisions thereof.
+
+    '
+  text_da: 'Ordninger vedrørende serviceniveauer, herunder opdateringer og revisioner heraf.
+
+    '
+  evidence_criteria:
+  - Service level agreement (SLA) is present or referenced
+  - SLA includes at least one measurable metric (uptime, RTO, RPO)
+  - Process for SLA review or revision is described
+  gap_indicators:
+  - No SLA or service level metrics in contract
+  - SLA present but no revision process
+  - Metrics are purely qualitative without measurable targets
+  gdpr_art28_overlap: false
+  notes: SLA may be a separate exhibit — confirm whether the main contract references it and whether it
+    is contractually binding.
+  match_terms_evidence:
+  - recovery time objective
+  - recovery point objective
+  - sla metrics
+  - monthly availability
+  match_terms_gap:
+  - best efforts to maintain continuous availability
+  - commercially reasonable efforts to maintain
+  - bcp technical annex
+- id: ART30-005
+  article: Art. 30(2)(e)
+  category: Data access and portability
+  scope: all
+  obligation_level: mandatory
+  text_en: 'Provisions on the accessibility, recovery and return in an easily accessible format of personal
+    and other data processed by the ICT third-party service provider in the case of insolvency, resolution
+    or discontinuation of the business operations of that provider, or in the case of termination of the
+    contractual arrangements.
+
+    '
+  text_da: 'Bestemmelser om adgang til, genoprettelse og tilbagelevering i et letlæseligt format af personoplysninger
+    og andre data, der behandles af IKT-tredjepartsleverandøren, i tilfælde af insolvens, afvikling eller
+    ophør af leverandørens virksomhed, eller i tilfælde af opsigelse af de kontraktmæssige ordninger.
+
+    '
+  evidence_criteria:
+  - Data return/portability clause present
+  - Format for data return is specified or defined as machine-readable/accessible
+  - 'Trigger events are addressed: termination, insolvency, resolution'
+  gap_indicators:
+  - No data return obligation on termination
+  - Data return clause exists but format is unspecified
+  - Insolvency/resolution scenarios not addressed
+  gdpr_art28_overlap: true
+  gdpr_art28_ref: Art. 28(3)(g) — return or deletion of data
+  notes: Often missing in older cloud contracts. 'Easily accessible format' implies no proprietary lock-in
+    — assess whether format is explicitly stated.
+  match_terms_evidence:
+  - machine-readable format
+  - certified confirmation of deletion
+  - written certification of deletion
+  - export all data
+  - return or securely delete
+  - data export
+  - csv format
+  match_terms_gap:
+  - remove its hardware
+  - agreed format
+- id: ART30-006
+  article: Art. 30(2)(f)
+  category: Cooperation and audit rights
+  scope: all
+  obligation_level: mandatory
+  text_en: 'A description of the ICT third-party service provider''s cooperation with the competent authorities
+    and resolution authorities of the financial entity, including competent authorities designated or
+    established in accordance with this Regulation.
+
+    '
+  text_da: 'En beskrivelse af IKT-tredjepartsleverandørens samarbejde med de kompetente myndigheder og
+    afviklingsmyndigheder for det finansielle institut, herunder kompetente myndigheder udpeget eller
+    oprettet i henhold til denne forordning.
+
+    '
+  evidence_criteria:
+  - Clause addressing cooperation with regulatory/supervisory authorities
+  - Obligation to assist with regulatory inspections or audits
+  - Cooperation with resolution authorities addressed
+  gap_indicators:
+  - No regulatory cooperation clause
+  - Clause limits cooperation to named authorities without broad coverage
+  gdpr_art28_overlap: false
+  notes: DORA-specific. Many pre-DORA contracts lack this entirely. Even a generic 'comply with applicable
+    law' clause may be insufficient — look for explicit cooperation language.
+  match_terms_evidence:
+  - finanstilsynet
+  - regulatory cooperation
+  - supervisory activities
+  - competent authorities and resolution authorities
+  - european banking authority
+  - applicable regulatory requirements
+  - cooperate with.*regulator
+  match_terms_gap: []
+- id: ART30-007
+  article: Art. 30(2)(g)
+  category: Termination rights
+  scope: all
+  obligation_level: mandatory
+  text_en: 'Termination rights and related minimum notice periods for the termination of the contractual
+    arrangements, in accordance with the expectations of competent authorities and resolution authorities.
+
+    '
+  text_da: 'Opsigelsesrettigheder og tilknyttede minimumsopsigelsesfrister for opsigelse af de kontraktmæssige
+    ordninger i overensstemmelse med de kompetente myndigheders og afviklingsmyndigheders forventninger.
+
+    '
+  evidence_criteria:
+  - Termination clause is present
+  - Minimum notice period is specified
+  - Termination for cause provisions are present
+  - Exit assistance obligations are addressed
+  gap_indicators:
+  - Termination only at contract expiry with no early termination right
+  - Notice period is excessively long without regulatory exit right
+  - No exit assistance or transition obligations
+  gdpr_art28_overlap: false
+  notes: RTS on subcontracting (Commission Del. Reg. (EU) 2024/1773) specifies that financial entities
+    must retain termination rights for DORA non-compliance.
+  match_terms_evidence:
+  - exit assistance
+  - exit period
+  - transition support
+  match_terms_gap: []
+- id: ART30-008
+  article: Art. 30(2)(h)
+  category: Incident reporting
+  scope: all
+  obligation_level: mandatory
+  text_en: 'ICT incident management provisions, including escalation and reporting, and obligations of
+    the ICT third-party service provider to support the financial entity in its management and reporting
+    of ICT incidents.
+
+    '
+  text_da: 'Bestemmelser om IKT-hændelsesstyring, herunder eskalering og rapportering, samt forpligtelser
+    for IKT-tredjepartsleverandøren til at støtte det finansielle institut i håndtering og rapportering
+    af IKT-hændelser.
+
+    '
+  evidence_criteria:
+  - Incident notification obligation present
+  - Notification timeframe specified
+  - Escalation path is defined
+  - Obligation to support financial entity's own incident reporting is present
+  gap_indicators:
+  - No incident notification clause
+  - Notification timeframe is vague ('promptly', 'as soon as possible') without hours/days
+  - No obligation to assist with regulatory incident reporting
+  gdpr_art28_overlap: true
+  gdpr_art28_ref: Art. 28(3)(f) — notify controller of personal data breaches
+  notes: DORA specifies major ICT incidents must be reported to supervisors. The contract must obligate
+    the supplier to inform the financial entity quickly enough to meet those deadlines.
+  match_terms_evidence:
+  - within 24 hours
+  - incident notification
+  - notify.*within
+  - security incident
+  match_terms_gap:
+  - as soon as reasonably practicable
+  - within 72 hours
+  - confirmed personal data breach
+- id: ART30-009
+  article: Art. 30(2)(i)
+  category: Business continuity
+  scope: critical_only
+  obligation_level: mandatory
+  text_en: 'Where applicable, obligations of the ICT third-party service provider to participate and fully
+    cooperate in the TLPT carried out by the financial entity.
+
+    '
+  text_da: 'Hvor det er relevant, forpligtelser for IKT-tredjepartsleverandøren til at deltage i og fuldt
+    ud samarbejde om de TLPT, der udføres af det finansielle institut.
+
+    '
+  evidence_criteria:
+  - TLPT (Threat-Led Penetration Testing) cooperation clause present, OR
+  - Clause noted as N/A with documented rationale (supplier not in scope for financial entity's TLPT)
+  gap_indicators:
+  - No TLPT reference at all in contract covering critical/important function
+  gdpr_art28_overlap: false
+  notes: TLPT applies primarily to significant financial entities. Assess whether the financial entity
+    is subject to TLPT requirements before flagging as gap.
+  match_terms_evidence:
+  - threat-led penetration testing
+  - tlpt
+  match_terms_gap: []
+- id: ART30-010
+  article: Art. 30(4)
+  category: Audit rights
+  scope: all
+  obligation_level: mandatory
+  text_en: 'Full cooperation rights for the financial entity, competent authorities, and resolution authorities,
+    including the right to access, inspect and audit the ICT third-party service provider.
+
+    '
+  text_da: 'Fulde samarbejdsrettigheder for det finansielle institut, kompetente myndigheder og afviklingsmyndigheder,
+    herunder retten til adgang, inspektion og revision af IKT-tredjepartsleverandøren.
+
+    '
+  evidence_criteria:
+  - Audit right clause is present
+  - Financial entity has right to audit (directly or via third party)
+  - Competent authorities' right to audit is addressed
+  - Audit scope is not unreasonably restricted
+  gap_indicators:
+  - No audit right
+  - Audit right limited to 'review of audit reports' only without on-site option
+  - Excessive notice requirements (>30 days for standard audit)
+  gdpr_art28_overlap: true
+  gdpr_art28_ref: Art. 28(3)(h) — make available all information necessary for demonstration of compliance;
+    allow for and contribute to audits
+  notes: Many large cloud providers offer pooled audits or certifications (ISO 27001, SOC 2) in lieu of
+    direct audit. This may be acceptable if the contract grants the right to request information and the
+    certification scope covers the services.
+  match_terms_evidence:
+  - right to audit
+  - third-party auditor
+  - on-site audit
+  - conduct.*audit
+  match_terms_gap:
+  - not operationally feasible
+  - not available for direct customer audit
+  - 45 days
+- id: ART30-011
+  article: Art. 30(3)(a)
+  category: 'Critical function: full service description'
+  scope: critical_only
+  obligation_level: mandatory
+  text_en: 'For ICT services supporting critical or important functions, in addition to Art. 30(2): full
+    service level descriptions, including updates and revisions, with precise quantitative and qualitative
+    performance targets within the agreed service levels, to allow effective monitoring by the financial
+    entity.
+
+    '
+  text_da: 'For IKT-tjenester, der understøtter kritiske eller vigtige funktioner: fuldstændige serviceniveaubeskrivelser,
+    herunder opdateringer og revisioner, med præcise kvantitative og kvalitative resultatmål inden for
+    de aftalte serviceniveauer, der giver mulighed for effektiv overvågning.
+
+    '
+  evidence_criteria:
+  - SLA contains both quantitative metrics (e.g. 99.9% uptime, RTO < 4 hours)
+  - AND qualitative performance standards
+  - Monitoring rights for financial entity are explicit
+  gap_indicators:
+  - Only qualitative targets without quantitative metrics
+  - No monitoring right beyond receiving reports
+  gdpr_art28_overlap: false
+  notes: Critical/important function classification must be established by financial entity. If classification
+    is undocumented, that is itself a gap.
+  match_terms_evidence:
+  - recovery time objective
+  - recovery point objective
+  - quantitative performance targets
+  - monthly availability
+  match_terms_gap:
+  - commercially reasonable efforts
+  - best efforts
+  - bcp technical annex
+- id: ART30-012
+  article: Art. 30(3)(b)
+  category: 'Critical function: notice periods'
+  scope: critical_only
+  obligation_level: mandatory
+  text_en: 'Notice periods and reporting obligations of the ICT third-party service provider towards the
+    financial entity that enable the financial entity to monitor effectively the ICT services.
+
+    '
+  text_da: 'Opsigelsesfrister og rapporteringsforpligtelser for IKT-tredjepartsleverandøren over for det
+    finansielle institut, som giver det finansielle institut mulighed for effektivt at overvåge IKT-tjenesterne.
+
+    '
+  evidence_criteria:
+  - Notice periods are explicitly stated for planned changes affecting service
+  - Supplier has proactive reporting obligations (e.g. monthly service reports)
+  gap_indicators:
+  - No proactive reporting obligation
+  - Change notifications only on request
+  gdpr_art28_overlap: false
+  notes: More stringent than Art. 30(2)(d). Applies when function is classified critical/important.
+  match_terms_evidence:
+  - 60 days
+  - advance notice
+  - prior written notice
+  - written notice
+  match_terms_gap: []
+- id: ART30-013
+  article: Art. 30(3)(c)
+  category: Business continuity and security
+  scope: critical_only
+  obligation_level: mandatory
+  text_en: 'Requirement for the ICT third-party service provider to implement and test business continuity
+    plans and to have in place ICT security measures, tools and policies that provide an appropriate level
+    of security for the provision of services by the financial entity, in line with the financial entity''s
+    own framework.
+
+    '
+  text_da: 'Krav om, at IKT-tredjepartsleverandøren implementerer og afprøver forretningskontinuitetsplaner
+    og har IKT-sikkerhedsforanstaltninger, -værktøjer og -politikker på plads, der sikrer et passende
+    sikkerhedsniveau for leveringen af tjenester.
+
+    '
+  evidence_criteria:
+  - Business continuity/DR plan obligation present
+  - Testing obligation for BCP/DR present
+  - ICT security standard referenced (ISO 27001, NIST, or equivalent)
+  - Alignment with financial entity's own security framework addressed
+  gap_indicators:
+  - No BCP/DR obligation
+  - BCP present but no testing requirement
+  - Security standard vague or absent
+  gdpr_art28_overlap: true
+  gdpr_art28_ref: Art. 32 — appropriate technical and organisational measures
+  notes: BCP testing is frequently missing. 'Having a BCP' and 'testing a BCP' are different obligations.
+  match_terms_evidence:
+  - test the bcp and drp
+  - test the bcp
+  - test the drp
+  - live failover
+  match_terms_gap:
+  - reviews but does not test
+  - testing would be disruptive
+  - annual review of the bcp
+register_fields:
+- name: supplier_name
+  description: Legal name of ICT third-party service provider
+- name: supplier_lei
+  description: Legal Entity Identifier (if available)
+- name: contract_reference
+  description: Internal contract ID or reference number
+- name: contract_date
+  description: Date of contract / last amendment
+- name: service_category
+  description: ESAs function classification (data storage, cloud, payment, etc.)
+- name: critical_important
+  description: Whether function is classified critical or important (boolean)
+- name: third_country_provider
+  description: Whether provider is established outside EEA
+- name: sub_contractors
+  description: List of identified sub-contractors
+- name: dora_assessment_date
+  description: Date of last DORA Art. 30 assessment
+- name: overall_status
+  description: compliant / gaps_identified / remediation_in_progress / not_assessed
