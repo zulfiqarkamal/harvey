@@ -1,0 +1,458 @@
+{
+  "analysis_id": "GA-20261109-132232",
+  "framework": "DORA_ART30+GDPR_ART28",
+  "contract": {
+    "contract_id": "contract_03_legacy",
+    "supplier_name": "DataCenter DK ApS",
+    "customer_name": "Kapital Forsikring A/S",
+    "classification": "non_critical",
+    "contract_date": null,
+    "file_name": "contract_03_legacy.md"
+  },
+  "assessments": [
+    {
+      "requirement_id": "ART30-001",
+      "requirement_article": "Art. 30(2)(a)",
+      "requirement_summary": "A clear and complete description of all functions and ICT services to be provided by the ICT third-party service provide",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART30-001 (Service description). Obligation level: mandatory. Evidence criteria: Contract contains a service description schedule or exhibit; Services are enumerated with sufficient specificity; Sub-contracting permission is explicitly stated (permitted / not permitted).",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.539944+00:00"
+    },
+    {
+      "requirement_id": "ART30-002",
+      "requirement_article": "Art. 30(2)(b)",
+      "requirement_summary": "The locations, namely the regions or countries, where the contracted or sub-contracted functions and ICT services are to",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART30-002 (Data and processing locations). Obligation level: mandatory. Evidence criteria: Contract specifies country/region where services are delivered; Data processing location is explicitly stated; Data storage location is specified.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.539994+00:00"
+    },
+    {
+      "requirement_id": "ART30-003",
+      "requirement_article": "Art. 30(2)(c)",
+      "requirement_summary": "Provisions on availability, authenticity, integrity and confidentiality in relation to the protection of data, including",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART30-003 (Availability, integrity, security). Obligation level: mandatory. Evidence criteria: Contract references confidentiality obligations; Integrity protections are addressed (checksums, audit logs, or equivalent); Availability targets or SLA metrics are present.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540021+00:00"
+    },
+    {
+      "requirement_id": "ART30-004",
+      "requirement_article": "Art. 30(2)(d)",
+      "requirement_summary": "Arrangements regarding service levels, including updates and revisions thereof.\n",
+      "status": "ambiguous",
+      "risk_level": "medium",
+      "evidence": [
+        {
+          "section": "7. Governing Law",
+          "text": "is Agreement is governed by Danish law.\n\n---\n\n*[No data processing agreement, no security annex, no SLA metrics, no incident reporting provisions, no audit rights clause. Contract has not been reviewed since 202",
+          "relevance_note": "Contains keyword: 'sla metrics'",
+          "page": null
+        }
+      ],
+      "gap_description": "Partial evidence found (sla metrics) but gap indicators also detected (best efforts to maintain continuous availability). Clause may be insufficient \u2014 manual review required.",
+      "remediation_suggestion": "Strengthen a contractual clause addressing ART30-004 (Service levels). Obligation level: mandatory. Evidence criteria: Service level agreement (SLA) is present or referenced; SLA includes at least one measurable metric (uptime, RTO, RPO); Process for SLA review or revision is described.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540069+00:00"
+    },
+    {
+      "requirement_id": "ART30-005",
+      "requirement_article": "Art. 30(2)(e)",
+      "requirement_summary": "Provisions on the accessibility, recovery and return in an easily accessible format of personal and other data processed",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "Gap indicators found: remove its hardware. No satisfying evidence detected.",
+      "remediation_suggestion": "Add a contractual clause addressing ART30-005 (Data access and portability). Obligation level: mandatory. Evidence criteria: Data return/portability clause present; Format for data return is specified or defined as machine-readable/accessible; Trigger events are addressed: termination, insolvency, resolution.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540100+00:00"
+    },
+    {
+      "requirement_id": "ART30-006",
+      "requirement_article": "Art. 30(2)(f)",
+      "requirement_summary": "A description of the ICT third-party service provider's cooperation with the competent authorities and resolution author",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART30-006 (Cooperation and audit rights). Obligation level: mandatory. Evidence criteria: Clause addressing cooperation with regulatory/supervisory authorities; Obligation to assist with regulatory inspections or audits; Cooperation with resolution authorities addressed.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540126+00:00"
+    },
+    {
+      "requirement_id": "ART30-007",
+      "requirement_article": "Art. 30(2)(g)",
+      "requirement_summary": "Termination rights and related minimum notice periods for the termination of the contractual arrangements, in accordance",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART30-007 (Termination rights). Obligation level: mandatory. Evidence criteria: Termination clause is present; Minimum notice period is specified; Termination for cause provisions are present.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540138+00:00"
+    },
+    {
+      "requirement_id": "ART30-008",
+      "requirement_article": "Art. 30(2)(h)",
+      "requirement_summary": "ICT incident management provisions, including escalation and reporting, and obligations of the ICT third-party service p",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART30-008 (Incident reporting). Obligation level: mandatory. Evidence criteria: Incident notification obligation present; Notification timeframe specified; Escalation path is defined.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540162+00:00"
+    },
+    {
+      "requirement_id": "ART30-009",
+      "requirement_article": "Art. 30(2)(i)",
+      "requirement_summary": "Where applicable, obligations of the ICT third-party service provider to participate and fully cooperate in the TLPT car",
+      "status": "na",
+      "risk_level": null,
+      "evidence": [],
+      "gap_description": null,
+      "remediation_suggestion": "",
+      "na_rationale": "Requirement scope 'critical_only' does not apply to 'non_critical' contracts.",
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540166+00:00"
+    },
+    {
+      "requirement_id": "ART30-010",
+      "requirement_article": "Art. 30(4)",
+      "requirement_summary": "Full cooperation rights for the financial entity, competent authorities, and resolution authorities, including the right",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART30-010 (Audit rights). Obligation level: mandatory. Evidence criteria: Audit right clause is present; Financial entity has right to audit (directly or via third party); Competent authorities' right to audit is addressed.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540191+00:00"
+    },
+    {
+      "requirement_id": "ART30-011",
+      "requirement_article": "Art. 30(3)(a)",
+      "requirement_summary": "For ICT services supporting critical or important functions, in addition to Art. 30(2): full service level descriptions,",
+      "status": "na",
+      "risk_level": null,
+      "evidence": [],
+      "gap_description": null,
+      "remediation_suggestion": "",
+      "na_rationale": "Requirement scope 'critical_only' does not apply to 'non_critical' contracts.",
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540195+00:00"
+    },
+    {
+      "requirement_id": "ART30-012",
+      "requirement_article": "Art. 30(3)(b)",
+      "requirement_summary": "Notice periods and reporting obligations of the ICT third-party service provider towards the financial entity that enabl",
+      "status": "na",
+      "risk_level": null,
+      "evidence": [],
+      "gap_description": null,
+      "remediation_suggestion": "",
+      "na_rationale": "Requirement scope 'critical_only' does not apply to 'non_critical' contracts.",
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540197+00:00"
+    },
+    {
+      "requirement_id": "ART30-013",
+      "requirement_article": "Art. 30(3)(c)",
+      "requirement_summary": "Requirement for the ICT third-party service provider to implement and test business continuity plans and to have in plac",
+      "status": "na",
+      "risk_level": null,
+      "evidence": [],
+      "gap_description": null,
+      "remediation_suggestion": "",
+      "na_rationale": "Requirement scope 'critical_only' does not apply to 'non_critical' contracts.",
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540199+00:00"
+    },
+    {
+      "requirement_id": "ART28-001",
+      "requirement_article": "Art. 28(1)",
+      "requirement_summary": "Where processing is to be carried out on behalf of a controller, the controller shall use only processors providing suff",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART28-001 (Processor selection). Obligation level: mandatory. Evidence criteria: Processor has demonstrated compliance via certification (ISO 27001, SOC 2 Type II) OR; Controller has conducted a due diligence assessment of processor's security measures OR; Processor provides transparency reports or audit rights enabling assessment.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540216+00:00"
+    },
+    {
+      "requirement_id": "ART28-002",
+      "requirement_article": "Art. 28(3)(a)",
+      "requirement_summary": "The processor shall process the personal data only on documented instructions from the controller, including with regard",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART28-002 (Processing on instructions). Obligation level: mandatory. Evidence criteria: DPA contains explicit statement that processor acts only on controller's instructions; Legal obligation exception is addressed (notification to controller unless prohibited).",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540236+00:00"
+    },
+    {
+      "requirement_id": "ART28-003",
+      "requirement_article": "Art. 28(3)(b)",
+      "requirement_summary": "Persons authorised to process the personal data have committed themselves to confidentiality or are under an appropriate",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART28-003 (Confidentiality). Obligation level: mandatory. Evidence criteria: DPA states that authorized personnel are bound by confidentiality; Mechanism stated: employment contracts, NDAs, or statutory obligation.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540253+00:00"
+    },
+    {
+      "requirement_id": "ART28-004",
+      "requirement_article": "Art. 28(3)(c)",
+      "requirement_summary": "The processor shall take all measures required pursuant to Article 32.\n",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART28-004 (Security measures). Obligation level: mandatory. Evidence criteria: DPA references Art. 32 or equivalent obligation to implement technical/organisational measures; Security measures are described or referenced (Annex, security policy, certification).",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540278+00:00"
+    },
+    {
+      "requirement_id": "ART28-005",
+      "requirement_article": "Art. 28(3)(d)",
+      "requirement_summary": "The processor shall not engage another processor without prior specific or general written authorisation of the controll",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART28-005 (Sub-processor restrictions). Obligation level: mandatory. Evidence criteria: Sub-processor clause present; Authorisation model stated: specific (named sub-processors) OR general (with change notification); Change notification obligation with right to object is present.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540297+00:00"
+    },
+    {
+      "requirement_id": "ART28-006",
+      "requirement_article": "Art. 28(3)(e)",
+      "requirement_summary": "The processor shall assist the controller insofar as this is possible, taking into account the nature of the processing,",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART28-006 (Data subject rights assistance). Obligation level: mandatory. Evidence criteria: DPA contains obligation to assist with data subject rights requests; Mechanism described: access to data, deletion capability, restriction flagging.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540321+00:00"
+    },
+    {
+      "requirement_id": "ART28-007",
+      "requirement_article": "Art. 28(3)(f)",
+      "requirement_summary": "The processor shall assist the controller in ensuring compliance with the obligations pursuant to Articles 32 to 36, tak",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART28-007 (Security and breach notification assistance). Obligation level: mandatory. Evidence criteria: Obligation to notify controller of personal data breaches \u2014 with timeframe; Obligation to assist with DPIA (Art. 35) where relevant; Cooperation on security measures (Art. 32).",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540340+00:00"
+    },
+    {
+      "requirement_id": "ART28-008",
+      "requirement_article": "Art. 28(3)(g)",
+      "requirement_summary": "At the choice of the controller, the processor shall delete or return all personal data to the controller after the end ",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART28-008 (Data return and deletion). Obligation level: mandatory. Evidence criteria: Delete or return clause present on termination; Controller has choice between deletion and return; Deletion of copies addressed.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540362+00:00"
+    },
+    {
+      "requirement_id": "ART28-009",
+      "requirement_article": "Art. 28(3)(h)",
+      "requirement_summary": "The processor shall make available to the controller all information necessary to demonstrate compliance with the obliga",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART28-009 (Audit and information rights). Obligation level: mandatory. Evidence criteria: Obligation to provide compliance information on request; Audit right present (direct or via mandated auditor); Third-party certification acceptable as alternative is explicitly stated, OR.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540393+00:00"
+    },
+    {
+      "requirement_id": "ART28-010",
+      "requirement_article": "Art. 28(2) + (4)",
+      "requirement_summary": "Where the processor engages another processor, the same data protection obligations as set out in the contract between c",
+      "status": "missing",
+      "risk_level": "medium",
+      "evidence": [],
+      "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
+      "remediation_suggestion": "Add a contractual clause addressing ART28-010 (Sub-processor obligations (flow-down)). Obligation level: mandatory. Evidence criteria: Flow-down obligation: same GDPR obligations imposed on sub-processors; Processor remains liable to controller for sub-processor compliance.",
+      "na_rationale": null,
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540408+00:00"
+    },
+    {
+      "requirement_id": "ART28-011",
+      "requirement_article": "Art. 28(3)(a) + Chapter V",
+      "requirement_summary": "Transfers to third countries must be based on an adequacy decision, appropriate safeguards (SCCs, BCRs), or a derogation",
+      "status": "not_assessed",
+      "risk_level": null,
+      "evidence": [],
+      "gap_description": null,
+      "remediation_suggestion": "",
+      "na_rationale": "Trigger condition not detected in contract \u2014 applicability uncertain. Human review required.",
+      "assessed_by": "gamma7-engine-v1",
+      "assessed_at": "2026-11-09T13:22:32.540464+00:00"
+    }
+  ],
+  "overall_status": "missing",
+  "summary_stats": {
+    "satisfied": 0,
+    "evidence_found": 0,
+    "missing": 18,
+    "ambiguous": 1,
+    "na": 4,
+    "not_assessed": 1
+  },
+  "remediation_tasks": [
+    {
+      "requirement_id": "ART30-001",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART30-001 (Service description). Obligation level: mandatory. Evidence criteria: Contract contains a service description schedule or exhibit; Services are enumerated with sufficient specificity; Sub-contracting permission is explicitly stated (permitted / not permitted).",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART30-002",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART30-002 (Data and processing locations). Obligation level: mandatory. Evidence criteria: Contract specifies country/region where services are delivered; Data processing location is explicitly stated; Data storage location is specified.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART30-003",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART30-003 (Availability, integrity, security). Obligation level: mandatory. Evidence criteria: Contract references confidentiality obligations; Integrity protections are addressed (checksums, audit logs, or equivalent); Availability targets or SLA metrics are present.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART30-004",
+      "priority": "short_term",
+      "action": "Strengthen a contractual clause addressing ART30-004 (Service levels). Obligation level: mandatory. Evidence criteria: Service level agreement (SLA) is present or referenced; SLA includes at least one measurable metric (uptime, RTO, RPO); Process for SLA review or revision is described.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART30-005",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART30-005 (Data access and portability). Obligation level: mandatory. Evidence criteria: Data return/portability clause present; Format for data return is specified or defined as machine-readable/accessible; Trigger events are addressed: termination, insolvency, resolution.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART30-006",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART30-006 (Cooperation and audit rights). Obligation level: mandatory. Evidence criteria: Clause addressing cooperation with regulatory/supervisory authorities; Obligation to assist with regulatory inspections or audits; Cooperation with resolution authorities addressed.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART30-007",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART30-007 (Termination rights). Obligation level: mandatory. Evidence criteria: Termination clause is present; Minimum notice period is specified; Termination for cause provisions are present.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART30-008",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART30-008 (Incident reporting). Obligation level: mandatory. Evidence criteria: Incident notification obligation present; Notification timeframe specified; Escalation path is defined.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART30-010",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART30-010 (Audit rights). Obligation level: mandatory. Evidence criteria: Audit right clause is present; Financial entity has right to audit (directly or via third party); Competent authorities' right to audit is addressed.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART28-001",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART28-001 (Processor selection). Obligation level: mandatory. Evidence criteria: Processor has demonstrated compliance via certification (ISO 27001, SOC 2 Type II) OR; Controller has conducted a due diligence assessment of processor's security measures OR; Processor provides transparency reports or audit rights enabling assessment.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART28-002",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART28-002 (Processing on instructions). Obligation level: mandatory. Evidence criteria: DPA contains explicit statement that processor acts only on controller's instructions; Legal obligation exception is addressed (notification to controller unless prohibited).",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART28-003",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART28-003 (Confidentiality). Obligation level: mandatory. Evidence criteria: DPA states that authorized personnel are bound by confidentiality; Mechanism stated: employment contracts, NDAs, or statutory obligation.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART28-004",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART28-004 (Security measures). Obligation level: mandatory. Evidence criteria: DPA references Art. 32 or equivalent obligation to implement technical/organisational measures; Security measures are described or referenced (Annex, security policy, certification).",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART28-005",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART28-005 (Sub-processor restrictions). Obligation level: mandatory. Evidence criteria: Sub-processor clause present; Authorisation model stated: specific (named sub-processors) OR general (with change notification); Change notification obligation with right to object is present.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART28-006",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART28-006 (Data subject rights assistance). Obligation level: mandatory. Evidence criteria: DPA contains obligation to assist with data subject rights requests; Mechanism described: access to data, deletion capability, restriction flagging.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART28-007",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART28-007 (Security and breach notification assistance). Obligation level: mandatory. Evidence criteria: Obligation to notify controller of personal data breaches \u2014 with timeframe; Obligation to assist with DPIA (Art. 35) where relevant; Cooperation on security measures (Art. 32).",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART28-008",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART28-008 (Data return and deletion). Obligation level: mandatory. Evidence criteria: Delete or return clause present on termination; Controller has choice between deletion and return; Deletion of copies addressed.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART28-009",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART28-009 (Audit and information rights). Obligation level: mandatory. Evidence criteria: Obligation to provide compliance information on request; Audit right present (direct or via mandated auditor); Third-party certification acceptable as alternative is explicitly stated, OR.",
+      "suggested_clause": null
+    },
+    {
+      "requirement_id": "ART28-010",
+      "priority": "short_term",
+      "action": "Add a contractual clause addressing ART28-010 (Sub-processor obligations (flow-down)). Obligation level: mandatory. Evidence criteria: Flow-down obligation: same GDPR obligations imposed on sub-processors; Processor remains liable to controller for sub-processor compliance.",
+      "suggested_clause": null
+    }
+  ]
+}
