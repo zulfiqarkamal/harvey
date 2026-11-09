@@ -1,13 +1,15 @@
 """
-Gamma7 Supplier Assurance — Web Dashboard
+Gamma7 — Unified Dashboard
 
 FastAPI app serving a minimal HTML dashboard showing:
-  - Analysis results for assessed contracts
-  - ICT register reconciliation status
-  - Per-requirement compliance breakdown
+  - Supplier Assurance: analysis results for assessed contracts, ICT register,
+    reconciliation (Agent 2)
+  - Audit Intelligence: working papers per control, findings, remediation
+    tracker, downloadable audit report (Agent 4)
 
 Usage:
     python -m gamma7.dashboard_app --results-dir output/ [--register register.yaml]
+    python -m gamma7.dashboard_app --workpapers output/workpapers.json
     python -m gamma7.dashboard_app --demo   # loads synthetic contracts
 
 IMPORTANT: This dashboard is for internal review only.
@@ -35,6 +37,7 @@ from .engine.register_reconciler import (
     reconcile,
 )
 from .supplier_assurance.pipeline import PipelineResult, SupplierAssurancePipeline
+from .audit_intelligence.workpaper import WorkPaperSet
 
 
 # ---------------------------------------------------------------------------
@@ -42,14 +45,15 @@ from .supplier_assurance.pipeline import PipelineResult, SupplierAssurancePipeli
 # ---------------------------------------------------------------------------
 
 app = FastAPI(
-    title="Gamma7 Supplier Assurance Dashboard",
-    description="DORA Art. 30 / GDPR Art. 28 contract analysis — advisory only",
-    version="0.1.0",
+    title="Gamma7 Dashboard",
+    description="Supplier Assurance + Audit Intelligence — advisory only",
+    version="0.2.0",
 )
 
 _pipeline_results: list[PipelineResult] = []
 _register: list[RegisterEntry] = []
 _reconciliation: Optional[ReconciliationReport] = None
+_work_paper_set: Optional[WorkPaperSet] = None
 
 
 # ---------------------------------------------------------------------------
@@ -128,6 +132,90 @@ def get_reconciliation_markdown():
     if _reconciliation is None:
         raise HTTPException(status_code=404, detail="No reconciliation available")
     return {"markdown": _reconciliation.to_markdown()}
+
+
+# ---------------------------------------------------------------------------
+# Working papers endpoints (Agent 4 — Audit Intelligence)
+# ---------------------------------------------------------------------------
+
+@app.get("/api/workpapers")
+def list_workpapers():
+    """Return WorkPaperSet summary and per-control status list."""
+    if _work_paper_set is None:
+        return {"message": "No working papers loaded."}
+    wps = _work_paper_set
+    papers = []
+    for wp in sorted(wps.work_papers, key=lambda w: w.control_id):
+        papers.append({
+            "control_id": wp.control_id,
+            "control_title": wp.control_title,
+            "control_domain": wp.control_domain,
+            "inherent_risk": wp.inherent_risk,
+            "test_result": wp.test_result.value,
+            "finding_count": len(wp.findings),
+            "open_finding_count": len(wp.open_findings),
+        })
+    return {
+        "engagement_id": wps.engagement_id,
+        "organisation": wps.organisation,
+        "scope": wps.scope,
+        "total_controls": len(wps.work_papers),
+        "tested_count": wps.tested_count,
+        "passed_count": wps.passed_count,
+        "exception_count": wps.exception_count,
+        "total_findings": len(wps.all_findings),
+        "open_findings": len([f for f in wps.all_findings if f.status.value == "open"]),
+        "work_papers": papers,
+    }
+
+
+@app.get("/api/workpapers/report")
+def get_workpapers_report():
+    """Return formal audit report as Markdown text."""
+    if _work_paper_set is None:
+        raise HTTPException(status_code=404, detail="No working papers loaded")
+    from .audit_intelligence.audit_report import generate_audit_report
+    return {"markdown": generate_audit_report(_work_paper_set)}
+
+
+@app.get("/api/workpapers/{control_id}")
+def get_workpaper(control_id: str):
+    """Return single work paper detail including findings."""
+    if _work_paper_set is None:
+        raise HTTPException(status_code=404, detail="No working papers loaded")
+    wp = _work_paper_set.get_workpaper(control_id)
+    if wp is None:
+        raise HTTPException(status_code=404, detail=f"Work paper '{control_id}' not found")
+    findings = []
+    for f in wp.findings:
+        findings.append({
+            "finding_id": f.finding_id,
+            "title": f.title,
+            "severity": f.severity.value,
+            "status": f.status.value,
+            "condition": f.condition,
+            "criteria": f.criteria,
+            "cause": f.cause,
+            "effect": f.effect,
+            "recommendation": f.recommendation,
+            "owner": f.owner,
+            "target_remediation_date": f.target_remediation_date,
+        })
+    return {
+        "control_id": wp.control_id,
+        "control_title": wp.control_title,
+        "control_domain": wp.control_domain,
+        "inherent_risk": wp.inherent_risk,
+        "audit_objective": wp.audit_objective,
+        "expected_evidence_artifacts": wp.expected_evidence_artifacts,
+        "risk_indicators": wp.risk_indicators,
+        "test_result": wp.test_result.value,
+        "test_steps_performed": wp.test_steps_performed,
+        "evidence_gathered": wp.evidence_gathered,
+        "auditor_notes": wp.auditor_notes,
+        "findings": findings,
+        "workpaper_id": wp.workpaper_id,
+    }
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -244,12 +332,26 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   .empty { color: var(--muted); padding: 24px; text-align: center; }
   .recon-section { margin-bottom: 24px; }
   .loading { color: var(--muted); padding: 40px; text-align: center; }
+  .risk-critical { color: var(--red); font-weight: 600; }
+  .risk-high { color: var(--orange); font-weight: 600; }
+  .risk-medium { color: var(--yellow); }
+  .risk-low { color: var(--green); }
+  .result-exception { color: var(--orange); }
+  .result-passed { color: var(--green); }
+  .result-not_tested { color: var(--muted); }
+  .finding-row { margin-bottom: 16px; padding: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; }
+  .finding-row h4 { margin-bottom: 8px; font-size: 13px; }
+  .finding-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .five-c { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .five-c strong { color: var(--text); }
+  .btn { background: var(--accent); color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-block; }
+  .btn:hover { opacity: 0.85; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">GAMMA7 <span>Supplier Assurance</span></div>
+  <div class="logo">GAMMA7 <span>Audit &amp; Compliance</span></div>
   <div class="advisory">⚠ Advisory — Human review required before regulatory use</div>
 </header>
 
@@ -258,6 +360,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <button onclick="showTab('contracts')">Contracts</button>
   <button onclick="showTab('register')">ICT Register</button>
   <button onclick="showTab('reconciliation')">Reconciliation</button>
+  <button onclick="showTab('workpapers')">Working Papers</button>
 </nav>
 
 <main>
@@ -309,6 +412,11 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <!-- Reconciliation tab -->
   <div id="tab-reconciliation" class="tab-pane">
     <div id="recon-content"><div class="loading">Loading reconciliation…</div></div>
+  </div>
+
+  <!-- Working Papers tab (Agent 4) -->
+  <div id="tab-workpapers" class="tab-pane">
+    <div id="wp-content"><div class="loading">Loading working papers…</div></div>
   </div>
 </main>
 
@@ -483,10 +591,104 @@ async function loadReconciliation() {
   `;
 }
 
+async function loadWorkPapers() {
+  const container = document.getElementById('wp-content');
+  let data;
+  try {
+    const res = await fetch('/api/workpapers');
+    data = await res.json();
+  } catch(e) {
+    container.innerHTML = '<div class="empty">Could not load working papers.</div>';
+    return;
+  }
+  if (data.message) {
+    container.innerHTML = `<div class="empty">${data.message}</div>`;
+    return;
+  }
+
+  const riskClass = r => ({CRITICAL:'risk-critical',HIGH:'risk-high',MEDIUM:'risk-medium',LOW:'risk-low'}[r]||'');
+  const resultIcon = r => ({PASSED:'✅',EXCEPTION:'⚠️',NOT_TESTED:'⬜',NOT_APPLICABLE:'➖'}[r]||r);
+  const resultClass = r => r==='EXCEPTION'?'result-exception':r==='PASSED'?'result-passed':'result-not_tested';
+
+  container.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div>
+        <span style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em">Engagement</span>
+        <span style="margin-left:8px;font-size:13px"><code>${data.engagement_id}</code> — ${data.organisation}</span>
+      </div>
+      <a class="btn" href="/api/workpapers/report" target="_blank">⬇ Download Audit Report</a>
+    </div>
+    <div class="summary-cards" style="margin-bottom:20px">
+      <div class="card"><div class="label">Controls in scope</div><div class="value">${data.total_controls}</div></div>
+      <div class="card"><div class="label">Tested</div><div class="value">${data.tested_count}</div></div>
+      <div class="card"><div class="label">Passed</div><div class="value green">${data.passed_count}</div></div>
+      <div class="card"><div class="label">Exceptions</div><div class="value ${data.exception_count>0?'yellow':''}">${data.exception_count}</div></div>
+      <div class="card"><div class="label">Open findings</div><div class="value ${data.open_findings>0?'red':''}">${data.open_findings}</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Control ID</th><th>Title</th><th>Domain</th><th>Inherent Risk</th><th>Result</th><th>Findings</th>
+        </tr></thead>
+        <tbody>${data.work_papers.map(wp => `<tr onclick="showWPDetail('${wp.control_id}')" style="cursor:pointer">
+          <td><code>${wp.control_id}</code></td>
+          <td>${wp.control_title}</td>
+          <td style="color:var(--muted);font-size:12px">${wp.control_domain}</td>
+          <td class="${riskClass(wp.inherent_risk)}">${wp.inherent_risk}</td>
+          <td class="${resultClass(wp.test_result)}">${resultIcon(wp.test_result)} ${wp.test_result.replace(/_/g,' ')}</td>
+          <td>${wp.open_finding_count>0?`<span style="color:var(--orange)">${wp.finding_count} (${wp.open_finding_count} open)</span>`:wp.finding_count>0?wp.finding_count:''}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <div id="wp-detail" class="detail-panel"></div>
+  `;
+}
+
+async function showWPDetail(controlId) {
+  const panel = document.getElementById('wp-detail');
+  panel.className = 'detail-panel open';
+  panel.innerHTML = '<div class="loading" style="padding:20px">Loading…</div>';
+  const res = await fetch('/api/workpapers/' + encodeURIComponent(controlId));
+  if (!res.ok) { panel.innerHTML = '<div class="empty">Not found.</div>'; return; }
+  const wp = await res.json();
+  const severityColor = s => ({CRITICAL:'var(--red)',HIGH:'var(--orange)',MEDIUM:'var(--yellow)',LOW:'var(--green)',INFO:'var(--muted)'}[s]||'var(--muted)');
+  const statusColor = s => s==='open'?'var(--orange)':s==='closed'?'var(--green)':'var(--muted)';
+  panel.innerHTML = `
+    <h3><code>${wp.control_id}</code> — ${wp.control_title}</h3>
+    <p style="color:var(--muted);font-size:12px;margin:6px 0 12px">${wp.control_domain} · Risk: <strong>${wp.inherent_risk}</strong> · Result: <strong>${wp.test_result.replace(/_/g,' ')}</strong></p>
+    ${wp.audit_objective ? `<p style="font-size:13px;margin-bottom:12px;color:var(--muted)"><strong style="color:var(--text)">Audit objective:</strong> ${wp.audit_objective}</p>` : ''}
+    ${wp.expected_evidence_artifacts && wp.expected_evidence_artifacts.length ? `
+      <p style="font-size:12px;margin-bottom:12px"><strong>Expected evidence:</strong>
+      <span style="color:var(--muted)">${wp.expected_evidence_artifacts.join(', ')}</span></p>` : ''}
+    ${wp.testing_notes ? `<p style="font-size:12px;margin-bottom:12px"><strong>Testing notes:</strong> <span style="color:var(--muted)">${wp.testing_notes}</span></p>` : ''}
+    ${wp.findings.length ? `
+      <div style="margin-top:16px">
+        <div class="section-title">Findings (${wp.findings.length})</div>
+        ${wp.findings.map(f => `
+          <div class="finding-row">
+            <h4>${f.finding_id}: ${f.title}</h4>
+            <div class="finding-meta">
+              <span class="badge" style="background:var(--surface2);color:${severityColor(f.severity)}">${f.severity}</span>
+              <span class="badge" style="background:var(--surface2);color:${statusColor(f.status)}">${f.status}</span>
+              ${f.owner ? `<span style="font-size:12px;color:var(--muted)">Owner: ${f.owner}</span>` : ''}
+              ${f.target_remediation_date ? `<span style="font-size:12px;color:var(--muted)">Due: ${f.target_remediation_date}</span>` : ''}
+            </div>
+            <div class="five-c">
+              <div><strong>Condition:</strong> ${f.condition}</div>
+              <div><strong>Criteria:</strong> ${f.criteria}</div>
+              <div><strong>Cause:</strong> ${f.cause}</div>
+              <div><strong>Effect:</strong> ${f.effect}</div>
+              <div><strong>Recommendation:</strong> ${f.recommendation}</div>
+            </div>
+          </div>`).join('')}
+      </div>` : '<p style="color:var(--muted);font-size:13px;margin-top:12px">No findings recorded for this control.</p>'}
+  `;
+}
+
 // Load data on page load
 (async () => {
   await loadOverview();
-  await Promise.all([loadContracts(), loadRegister(), loadReconciliation()]);
+  await Promise.all([loadContracts(), loadRegister(), loadReconciliation(), loadWorkPapers()]);
 })();
 </script>
 </body>
@@ -564,13 +766,15 @@ def create_app(
     results: list[PipelineResult],
     register: list[RegisterEntry],
     customer_name: str = "Unknown Customer",
+    work_paper_set: Optional[WorkPaperSet] = None,
 ) -> FastAPI:
     """Create and configure the app with pre-loaded data."""
-    global _pipeline_results, _register, _reconciliation
+    global _pipeline_results, _register, _reconciliation, _work_paper_set
 
     _pipeline_results = results
     _register = register
     _reconciliation = None
+    _work_paper_set = work_paper_set
 
     if register and results:
         from .engine.register_reconciler import reconcile_from_pipeline_results
@@ -602,6 +806,12 @@ def main():
                         help="Customer name shown in reports")
     parser.add_argument("--demo", action="store_true",
                         help="Load all synthetic contracts + sample register")
+    parser.add_argument("--workpapers", type=pathlib.Path, default=None,
+                        help="JSON file of saved WorkPaperSet (from 'harvey audit workpapers --output')")
+    parser.add_argument("--wp-org", default="Unknown Organisation",
+                        help="Organisation name when generating workpapers on-the-fly")
+    parser.add_argument("--wp-scope", default="iso27001",
+                        help="Comma-separated audit scope keys (default: iso27001)")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
@@ -620,7 +830,20 @@ def main():
             register = load_register(args.register)
             print(f"Loaded {len(register)} register entries from {args.register}")
 
-    create_app(results, register, customer_name=args.customer)
+    wps = None
+    if args.workpapers and args.workpapers.exists():
+        from .audit_intelligence.workpaper import WorkPaperSet
+        wps = WorkPaperSet.from_json(args.workpapers.read_text())
+        print(f"Loaded {len(wps.work_papers)} working papers from {args.workpapers}")
+    elif getattr(args, "wp_org", None) and args.wp_org != "Unknown Organisation":
+        from .audit_intelligence.audit_universe import build_universe
+        from .audit_intelligence.workpaper import build_workpapers
+        scope = [s.strip() for s in args.wp_scope.split(",") if s.strip()]
+        universe = build_universe(organisation=args.wp_org, scope=scope)
+        wps = build_workpapers(universe)
+        print(f"Generated {len(wps.work_papers)} working papers for '{args.wp_org}'")
+
+    create_app(results, register, customer_name=args.customer, work_paper_set=wps)
     print(f"\nDashboard: http://{args.host}:{args.port}/\n")
     uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
 

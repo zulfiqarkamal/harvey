@@ -269,3 +269,161 @@ def test_reconciliation_analysis_only():
     data = r.json()
     assert data["summary"]["register_only"] == 1
     assert data["summary"]["analysis_only"] == 1
+
+
+# ---------------------------------------------------------------------------
+# /api/workpapers — no data loaded
+# ---------------------------------------------------------------------------
+
+@pytest.fixture()
+def client_no_wp():
+    """TestClient with no working papers loaded."""
+    create_app([], [], customer_name="Test", work_paper_set=None)
+    return TestClient(app)
+
+
+@pytest.fixture()
+def client_with_wp():
+    """TestClient with a real WorkPaperSet (iso27001 scope, Test Bank A/S)."""
+    from gamma7.audit_intelligence.audit_universe import build_universe
+    from gamma7.audit_intelligence.workpaper import build_workpapers, TestResult, FindingSeverity
+    universe = build_universe(organisation="Test Bank A/S", scope=["iso27001"])
+    wps = build_workpapers(universe)
+    # Add a finding to one work paper so we can test finding-related paths
+    wp = wps.get_workpaper("A.8.2")
+    wp.test_result = TestResult.EXCEPTION
+    wp.add_finding(
+        title="No MFA for privileged accounts",
+        condition="No MFA enforced.",
+        criteria="A.8.2 requires MFA.",
+        cause="Policy gap.",
+        effect="Elevated risk.",
+        recommendation="Enforce MFA within 30 days.",
+        severity=FindingSeverity.HIGH,
+        owner="CISO",
+        target_remediation_date="2027-03-31",
+    )
+    create_app([], [], customer_name="Test", work_paper_set=wps)
+    return TestClient(app)
+
+
+def test_workpapers_no_data(client_no_wp):
+    r = client_no_wp.get("/api/workpapers")
+    assert r.status_code == 200
+    assert "message" in r.json()
+
+
+def test_workpapers_report_no_data(client_no_wp):
+    r = client_no_wp.get("/api/workpapers/report")
+    assert r.status_code == 404
+
+
+def test_workpaper_detail_no_data(client_no_wp):
+    r = client_no_wp.get("/api/workpapers/A.8.2")
+    assert r.status_code == 404
+
+
+# ---------------------------------------------------------------------------
+# /api/workpapers — with data
+# ---------------------------------------------------------------------------
+
+def test_workpapers_returns_summary(client_with_wp):
+    r = client_with_wp.get("/api/workpapers")
+    assert r.status_code == 200
+    data = r.json()
+    assert "engagement_id" in data
+    assert "organisation" in data
+    assert data["organisation"] == "Test Bank A/S"
+
+
+def test_workpapers_returns_work_papers_list(client_with_wp):
+    r = client_with_wp.get("/api/workpapers")
+    data = r.json()
+    assert "work_papers" in data
+    assert len(data["work_papers"]) > 0
+
+
+def test_workpapers_work_paper_has_required_fields(client_with_wp):
+    r = client_with_wp.get("/api/workpapers")
+    wp = r.json()["work_papers"][0]
+    for field in ["control_id", "control_title", "inherent_risk", "test_result", "finding_count"]:
+        assert field in wp, f"Missing field: {field}"
+
+
+def test_workpapers_total_controls_matches_list(client_with_wp):
+    r = client_with_wp.get("/api/workpapers")
+    data = r.json()
+    assert data["total_controls"] == len(data["work_papers"])
+
+
+def test_workpapers_exception_count_reflects_finding(client_with_wp):
+    r = client_with_wp.get("/api/workpapers")
+    data = r.json()
+    assert data["exception_count"] >= 1
+    assert data["total_findings"] >= 1
+
+
+# ---------------------------------------------------------------------------
+# /api/workpapers/report
+# ---------------------------------------------------------------------------
+
+def test_workpapers_report_returns_markdown(client_with_wp):
+    r = client_with_wp.get("/api/workpapers/report")
+    assert r.status_code == 200
+    data = r.json()
+    assert "markdown" in data
+    assert "Test Bank A/S" in data["markdown"]
+
+
+def test_workpapers_report_contains_finding_title(client_with_wp):
+    r = client_with_wp.get("/api/workpapers/report")
+    assert "No MFA for privileged accounts" in r.json()["markdown"]
+
+
+def test_workpapers_report_contains_section_headers(client_with_wp):
+    r = client_with_wp.get("/api/workpapers/report")
+    md = r.json()["markdown"]
+    for section in ["Executive Summary", "Findings Detail", "Remediation Action Plan"]:
+        assert section in md, f"Missing section: {section}"
+
+
+# ---------------------------------------------------------------------------
+# /api/workpapers/{control_id}
+# ---------------------------------------------------------------------------
+
+def test_get_workpaper_detail_found(client_with_wp):
+    r = client_with_wp.get("/api/workpapers/A.8.2")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["control_id"] == "A.8.2"
+
+
+def test_get_workpaper_detail_not_found(client_with_wp):
+    r = client_with_wp.get("/api/workpapers/Z.99.99")
+    assert r.status_code == 404
+
+
+def test_get_workpaper_detail_has_findings(client_with_wp):
+    r = client_with_wp.get("/api/workpapers/A.8.2")
+    data = r.json()
+    assert "findings" in data
+    assert len(data["findings"]) == 1
+    f = data["findings"][0]
+    assert f["title"] == "No MFA for privileged accounts"
+    assert f["severity"].upper() == "HIGH"
+    assert f["owner"] == "CISO"
+
+
+def test_get_workpaper_detail_has_audit_fields(client_with_wp):
+    r = client_with_wp.get("/api/workpapers/A.8.2")
+    data = r.json()
+    for field in ["audit_objective", "expected_evidence_artifacts", "risk_indicators",
+                  "test_result", "workpaper_id", "test_steps_performed", "evidence_gathered"]:
+        assert field in data, f"Missing field: {field}"
+
+
+def test_get_workpaper_no_findings_has_empty_list(client_with_wp):
+    # A.8.5 has no findings in this fixture
+    r = client_with_wp.get("/api/workpapers/A.8.5")
+    assert r.status_code == 200
+    assert r.json()["findings"] == []
