@@ -4,18 +4,20 @@ Gamma7 Supplier Assurance Pipeline
 Orchestrates the full Agent 2 workflow:
   1. Load contract document (Markdown, text, or PDF)
   2. Run heuristic gap analysis (DORA Art. 30 + GDPR Art. 28)
-  3. Generate structured report (JSON + Markdown)
-  4. Return result for human review
+  3. Optional LLM overlay pass (reduces false positives, requires ANTHROPIC_API_KEY)
+  4. Generate structured report (JSON + Markdown)
+  5. Return result for human review
 
-No LLM calls — pure deterministic heuristic analysis.
 Human review is required before any compliance determination.
+LLM overlay suggestions are advisory — never automatically final.
 """
 
 from __future__ import annotations
 
 import datetime
+import os
 import pathlib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 from ..engine.analyser import ContractAnalyser, ContractMetadata
@@ -34,6 +36,8 @@ class PipelineResult:
     output_paths: dict
     markdown_report: str
     warnings: list[str]
+    overlay_decisions: list = field(default_factory=list)
+    overlay_summary: dict = field(default_factory=dict)
 
 
 class SupplierAssurancePipeline:
@@ -64,6 +68,8 @@ class SupplierAssurancePipeline:
         classification: str = "non_critical",
         output_dir: Optional[str | pathlib.Path] = None,
         contract_id: Optional[str] = None,
+        enable_overlay: bool = False,
+        overlay_budget_dkk: float = 50.0,
     ) -> PipelineResult:
         """
         Run the full analysis pipeline on one contract.
@@ -75,6 +81,9 @@ class SupplierAssurancePipeline:
             classification: "critical_important" or "non_critical" per DORA Art. 30(1).
             output_dir: Directory to save JSON + Markdown output. Skip if None.
             contract_id: Optional contract reference identifier.
+            enable_overlay: Run LLM overlay pass to reduce false positives.
+                            Requires ANTHROPIC_API_KEY env var. Default: False.
+            overlay_budget_dkk: DKK budget cap for this run's overlay calls.
 
         Returns:
             PipelineResult with analysis summary and report content.
@@ -97,6 +106,40 @@ class SupplierAssurancePipeline:
 
         analysis = self._analyser.analyse(doc.text, classification=classification, contract_metadata=metadata)
 
+        overlay_decisions: list = []
+        overlay_summary: dict = {}
+
+        if enable_overlay:
+            if not os.environ.get("ANTHROPIC_API_KEY"):
+                warnings.append(
+                    "LLM overlay skipped: ANTHROPIC_API_KEY not set. "
+                    "Set it in .env to enable the overlay pass."
+                )
+            else:
+                try:
+                    from ..engine.llm_overlay import run_overlay
+                    from ..engine.budget_guard import BudgetGuard, BudgetExceededError
+
+                    budget = BudgetGuard(limit_dkk=overlay_budget_dkk)
+                    analysis, overlay_decisions = run_overlay(analysis, doc.text, budget)
+                    upgraded = sum(
+                        1 for d in overlay_decisions
+                        if d.revised_status != d.original_status
+                    )
+                    overlay_summary = {
+                        "decisions": len(overlay_decisions),
+                        "upgraded": upgraded,
+                        "budget_spent_dkk": round(budget.total_spent_dkk(), 4),
+                        "budget_remaining_dkk": round(budget.remaining_dkk(), 4),
+                    }
+                except BudgetExceededError as exc:
+                    warnings.append(
+                        f"LLM overlay stopped: {exc}. "
+                        f"Heuristic findings kept for remaining requirements."
+                    )
+                except Exception as exc:
+                    warnings.append(f"LLM overlay failed: {exc}. Heuristic findings kept.")
+
         md_report = generate_markdown(analysis)
         output_paths: dict = {}
         if output_dir:
@@ -112,6 +155,8 @@ class SupplierAssurancePipeline:
             output_paths=output_paths,
             markdown_report=md_report,
             warnings=warnings,
+            overlay_decisions=overlay_decisions,
+            overlay_summary=overlay_summary,
         )
 
     def run_batch(
