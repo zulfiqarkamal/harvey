@@ -29,9 +29,12 @@ import sys
 import yaml
 
 REPO_ROOT = pathlib.Path(__file__).parent.parent
-sys.path.insert(0, str(pathlib.Path(__file__).parent))
+sys.path.insert(0, str(REPO_ROOT))          # gamma7 package
+sys.path.insert(0, str(REPO_ROOT.parent))   # repo root (for gamma7.*)
 
-from analyser import ContractAnalyser, ContractMetadata, validate_against_expected
+from gamma7.engine.analyser import ContractAnalyser, ContractMetadata, validate_against_expected
+from gamma7.engine.budget_guard import BudgetGuard, BudgetExceededError
+from gamma7.engine.llm_overlay import run_overlay
 
 CONTRACTS_DIR = REPO_ROOT / "synthetic_contracts"
 OUTPUT_DIR = REPO_ROOT / "engine" / "output"
@@ -145,19 +148,112 @@ def _run_set(contracts: list[dict], expected: dict, analyser: ContractAnalyser, 
     return {"aggregate": aggregate, "results": validation_results}
 
 
-def _llm_overlay_placeholder() -> None:
-    print("\n" + "═" * 60)
-    print("LLM OVERLAY COMPARISON (not yet implemented)")
-    print("═" * 60)
-    print("Requires: ANTHROPIC_API_KEY environment variable")
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        print("Status: ANTHROPIC_API_KEY not set — heuristic-only run")
-        return
-    print(
-        "Status: ANTHROPIC_API_KEY is set but LLM overlay scaffold is not yet wired up.\n"
-        "To implement: add an LLM-enhanced analyser path in analyser.py that calls\n"
-        "ContractAnalyser with use_llm=True, then compare gap sets here."
-    )
+def _run_llm_comparison(
+    contracts: list[dict],
+    expected: dict,
+    analyser: ContractAnalyser,
+    budget: BudgetGuard,
+    label: str,
+    heuristic_aggregate: dict,
+) -> dict:
+    """
+    Re-run contracts through heuristic, apply LLM overlay, validate, and
+    print a side-by-side heuristic vs LLM-enhanced comparison.
+
+    Returns the LLM-enhanced aggregate dict.
+    """
+    print(f"\n{'═'*60}")
+    print(f"{label} — LLM OVERLAY")
+    print(f"{'═'*60}")
+    print(f"Budget: {budget.remaining_dkk():.2f} DKK remaining of {budget.limit_dkk:.0f} DKK limit")
+
+    llm_aggregate = {
+        "total_gaps": 0,
+        "total_na": 0,
+        "total_matched": 0,
+        "total_na_matched": 0,
+        "total_false_positives": 0,
+    }
+    total_decisions = 0
+    total_upgrades = 0
+
+    for spec in contracts:
+        contract_path = CONTRACTS_DIR / spec["file"]
+        contract_text = contract_path.read_text(encoding="utf-8")
+        metadata = ContractMetadata(
+            contract_id=spec["key"],
+            supplier_name=spec["supplier"],
+            customer_name=spec["customer"],
+            classification=spec["classification"],
+            file_name=spec["file"],
+        )
+        result = analyser.analyse_file(
+            contract_path,
+            classification=spec["classification"],
+            contract_metadata=metadata,
+        )
+        try:
+            result, decisions = run_overlay(result, contract_text, budget)
+        except BudgetExceededError as e:
+            print(f"  ⚠ Budget exceeded during overlay — {spec['key']} kept heuristic status")
+            print(f"    {e}")
+            decisions = []
+        except EnvironmentError as e:
+            print(f"  ✗ {e}")
+            return {}
+
+        upgrades = [d for d in decisions if d.revised_status != d.original_status]
+        total_decisions += len(decisions)
+        total_upgrades += len(upgrades)
+
+        val = validate_against_expected(result, expected, spec["key"])
+        llm_aggregate["total_gaps"] += val["expected_genuine_gaps"]
+        llm_aggregate["total_na"] += val["na_expectations"]
+        llm_aggregate["total_matched"] += val["matched"]
+        llm_aggregate["total_na_matched"] += val["na_matched"]
+        llm_aggregate["total_false_positives"] += len(val["false_positives"])
+
+        icon = "✓" if val["accuracy_pct"] >= 80 else ("⚠" if val["accuracy_pct"] >= 50 else "✗")
+        print(
+            f"{icon} {spec['key']:38s}  recall={val['accuracy_pct']:5.1f}%"
+            f"  matched={val['matched']}/{val['expected_genuine_gaps']}"
+            f"  fp={len(val['false_positives'])}"
+            f"  upgrades={len(upgrades)}/{len(decisions)}"
+        )
+        for d in upgrades:
+            print(f"    UPGRADE {d.requirement_id:12s}  {d.original_status.value} → {d.revised_status.value}"
+                  f"  conf={d.confidence:.2f}")
+
+    tp = llm_aggregate["total_matched"]
+    fp = llm_aggregate["total_false_positives"]
+    fn = llm_aggregate["total_gaps"] - tp
+    precision = round(tp / (tp + fp) * 100, 1) if (tp + fp) > 0 else 0.0
+    recall = round(tp / (tp + fn) * 100, 1) if (tp + fn) > 0 else 100.0
+    f1 = round(2 * precision * recall / (precision + recall), 1) if (precision + recall) > 0 else 0.0
+
+    llm_aggregate["tp"] = tp
+    llm_aggregate["fp"] = fp
+    llm_aggregate["fn"] = fn
+    llm_aggregate["precision_pct"] = precision
+    llm_aggregate["recall_pct"] = recall
+    llm_aggregate["f1_pct"] = f1
+    llm_aggregate["total_decisions"] = total_decisions
+    llm_aggregate["total_upgrades"] = total_upgrades
+
+    h = heuristic_aggregate
+    print(f"\n{'─'*60}")
+    print(f"LLM overlay decisions: {total_decisions} reviewed, {total_upgrades} upgraded")
+    print(f"Budget used: {budget.total_spent_dkk():.4f} DKK")
+    print(f"\n{'─'*60}")
+    print(f"{'':35s}  {'Heuristic':>12s}  {'LLM-enhanced':>12s}")
+    print(f"{'─'*60}")
+    print(f"{'Precision':35s}  {h.get('precision_pct', 0):>11.1f}%  {precision:>11.1f}%")
+    print(f"{'Recall':35s}  {h.get('recall_pct', 0):>11.1f}%  {recall:>11.1f}%")
+    print(f"{'F1':35s}  {h.get('f1_pct', 0):>11.1f}%  {f1:>11.1f}%")
+    print(f"{'False positives':35s}  {h.get('fp', 0):>12d}  {fp:>12d}")
+    print(f"{'True positives':35s}  {h.get('tp', 0):>12d}  {tp:>12d}")
+
+    return llm_aggregate
 
 
 def run_benchmark(holdout_only: bool = False, llm: bool = False) -> dict:
@@ -167,7 +263,7 @@ def run_benchmark(holdout_only: bool = False, llm: bool = False) -> dict:
     report: dict = {
         "run_date": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "engine_version": "gamma7-engine-v2",
-        "mode": "heuristic",
+        "mode": "heuristic+llm" if llm else "heuristic",
     }
 
     if not holdout_only:
@@ -192,7 +288,28 @@ def run_benchmark(holdout_only: bool = False, llm: bool = False) -> dict:
     report["holdout"] = holdout
 
     if llm:
-        _llm_overlay_placeholder()
+        if not os.environ.get("ANTHROPIC_API_KEY"):
+            print("\n" + "═" * 60)
+            print("LLM OVERLAY — ANTHROPIC_API_KEY not set")
+            print("═" * 60)
+            print("Add to harvey/.env:  ANTHROPIC_API_KEY=sk-ant-...")
+            print("Then rerun:          python gamma7/engine/run_benchmark.py --llm")
+        else:
+            budget = BudgetGuard()
+            if not holdout_only:
+                in_sample_llm = _run_llm_comparison(
+                    IN_SAMPLE_CONTRACTS, insample_expected, analyser, budget,
+                    "IN-SAMPLE (5 contracts)", in_sample["aggregate"],
+                )
+                if in_sample_llm:
+                    report["in_sample_llm"] = in_sample_llm
+            holdout_llm = _run_llm_comparison(
+                HOLDOUT_CONTRACTS, holdout_expected, analyser, budget,
+                "HOLDOUT (2 contracts)", holdout["aggregate"],
+            )
+            if holdout_llm:
+                report["holdout_llm"] = holdout_llm
+            print(f"\n💰 Total API spend this run: {budget.total_spent_dkk():.4f} DKK")
 
     report_path = OUTPUT_DIR / "benchmark_report.json"
     report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
