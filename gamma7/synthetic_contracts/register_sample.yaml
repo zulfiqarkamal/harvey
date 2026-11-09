@@ -1,0 +1,134 @@
+# DORA ICT Register of Information — Sample Data
+# Synthetic data only. All entities are fictional.
+# Per DORA Article 28 RTS on ICT register requirements.
+#
+# 5 entries match the 5 synthetic contracts.
+# 1 entry (REG-006) has NO matching contract — demonstrates a "register only" gap.
+
+entries:
+  - entry_id: REG-001
+    supplier_name: NordCloud Hosting A/S
+    supplier_country: DK
+    service_type: cloud_hosting
+    service_description: >
+      Cloud infrastructure services including dedicated compute, managed database
+      hosting, automated backup, and 24/7 monitoring.
+    contract_reference: NBS-ICT-2023-0047
+    classification: critical_important
+    functions_supported:
+      - core_banking_infrastructure
+      - data_storage
+    contract_start_date: "2023-03-15"
+    contract_end_date: "2026-03-14"
+    supplier_lei: "529900T8BM49AURSDO55"
+    sub_contractors:
+      - Hetzner Online GmbH
+    exit_strategy_documented: true
+    notes: Annual review scheduled Q1 2024.
+
+  - entry_id: REG-002
+    supplier_name: PayLink Technologies Ltd
+    supplier_country: IE
+    service_type: payment_processing
+    service_description: >
+      Payment processing infrastructure including card authorisation, clearing,
+      fraud detection, payment scheme connectivity and settlement reconciliation.
+    contract_reference: FIN-PP-2022-091
+    classification: critical_important
+    functions_supported:
+      - payment_authorisation
+      - fraud_prevention
+      - settlement
+    contract_start_date: "2022-07-01"
+    contract_end_date: "2025-06-30"
+    supplier_lei: ""
+    sub_contractors:
+      - Visa Europe Ltd
+      - Mastercard Europe SA
+    exit_strategy_documented: false
+    notes: Exit strategy gap — escalated to legal team 2023-11-01.
+
+  - entry_id: REG-003
+    supplier_name: DataCenter DK ApS
+    supplier_country: DK
+    service_type: colocation
+    service_description: >
+      Co-location and managed mainframe services at the Ballerup facility.
+      Includes physical hosting, power, cooling, and connectivity.
+    contract_reference: KAP-IT-2018-003
+    classification: critical_important
+    functions_supported:
+      - mainframe_operations
+      - batch_processing
+    contract_start_date: "2018-09-15"
+    contract_end_date: "2024-09-14"
+    supplier_lei: ""
+    sub_contractors: []
+    exit_strategy_documented: false
+    notes: >
+      Legacy contract from 2018. DORA gap assessment required.
+      Contract renewal or replacement under review.
+
+  - entry_id: REG-004
+    supplier_name: ComplianceTools International BV
+    supplier_country: NL
+    service_type: saas_grc_platform
+    service_description: >
+      Cloud-based GRC platform (ComplianceTrack) providing policy management,
+      document repository, control frameworks, risk registers, and audit trails.
+    contract_reference: CT-SAAS-2024-0012
+    classification: non_critical
+    functions_supported:
+      - compliance_management
+      - policy_management
+    contract_start_date: "2024-02-03"
+    contract_end_date: "2025-02-02"
+    supplier_lei: ""
+    sub_contractors:
+      - AWS Europe (Dublin)
+    exit_strategy_documented: true
+    notes: Annual SaaS subscription. Data residency in EU confirmed.
+
+  - entry_id: REG-005
+    supplier_name: SecureVault Nordic A/S
+    supplier_country: DK
+    service_type: document_management
+    service_description: >
+      Secure digital document storage and retrieval, digital archiving with
+      long-term preservation, e-signing integration, and regulatory reporting support.
+    contract_reference: NBI-ICT-2024-DOR-001
+    classification: critical_important
+    functions_supported:
+      - document_archiving
+      - regulatory_reporting
+      - digital_signing
+    contract_start_date: "2024-06-20"
+    contract_end_date: "2027-06-19"
+    supplier_lei: "529900HNOAA1KXQJUQ27"
+    sub_contractors:
+      - DocuSign International
+    exit_strategy_documented: true
+    notes: >
+      Contract drafted post-DORA. Used as reference contract for pilot.
+
+  - entry_id: REG-006
+    supplier_name: Nordic Network Services A/S
+    supplier_country: DK
+    service_type: network_connectivity
+    service_description: >
+      Managed WAN connectivity, SD-WAN overlay, and internet breakout services
+      for all branch offices and data centres.
+    contract_reference: NNS-NET-2021-007
+    classification: critical_important
+    functions_supported:
+      - network_operations
+      - branch_connectivity
+    contract_start_date: "2021-01-01"
+    contract_end_date: "2024-12-31"
+    supplier_lei: ""
+    sub_contractors:
+      - TDC Erhverv A/S
+    exit_strategy_documented: false
+    notes: >
+      No contract assessment yet. Renewal due 2024-12-31 — DORA assessment required
+      before renewal.
