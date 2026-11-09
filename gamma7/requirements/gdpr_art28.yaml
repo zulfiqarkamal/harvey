@@ -124,6 +124,7 @@ requirements:
   - gdpr art. 32
   - art. 32
   - technical and organisational security measures
+  - iso 27001
   match_terms_gap: []
 - id: ART28-005
   article: Art. 28(3)(d)
@@ -250,6 +251,8 @@ requirements:
   match_terms_evidence:
   - return or securely delete
   - certified confirmation of deletion
+  - written certification of deletion
+  - certif.*deletion
   - delete.*personal data
   - securely delete all personal data
   match_terms_gap: []
@@ -287,6 +290,10 @@ requirements:
   - demonstrate compliance with.*art. 28
   - iso 27001 certificate
   - audit reports available
+  - right to.*audit
+  - conduct.*audit
+  - on-site.*audit
+  - third-party auditor
   match_terms_gap: []
 - id: ART28-010
   article: Art. 28(2) + (4)

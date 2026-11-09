@@ -87,6 +87,37 @@ contract_06_modern_fintech:
         DORA requires the ICT third-party provider to implement AND TEST business continuity plans.
       expected_risk: high
 
+  gdpr_findings:
+    - requirement_id: ART28-002
+      expected_status: missing
+      reason: >
+        No explicit "process only on documented instructions from the controller" clause
+        in the contract. Article 2.3 covers data categories and subprocessors but does
+        not establish the fundamental instruction-based processing obligation required by
+        Art. 28(3)(a). The contract focuses on DORA obligations; a GDPR DPA is implied
+        but the instructions clause is not present in the contract text.
+      expected_risk: high
+
+    - requirement_id: ART28-005
+      expected_status: ambiguous
+      reason: >
+        Article 2.2 / Article 9 permits approved subcontractors from Schedule C without
+        prior approval, requiring only 30 days' notice for new subcontractors. While a
+        change notification obligation is present, there is no explicit "right to object"
+        clause. GDPR Art. 28(3)(d) requires the controller to have the opportunity to
+        object — not merely be notified. This gap creates ambiguity.
+      expected_risk: medium
+
+    - requirement_id: ART28-010
+      expected_status: ambiguous
+      reason: >
+        Article 9.2 states that "security, audit, and incident notification obligations
+        shall be flowed down to material subcontractors" — but this is a DORA-oriented
+        clause, not a GDPR flow-down. There is no obligation to impose the same GDPR
+        Art. 28 data protection obligations on sub-processors as required by Art. 28(2)
+        and Art. 28(4). A generic security flow-down does not satisfy the GDPR requirement.
+      expected_risk: medium
+
 contract_07_nonfinancial:
   supplier: "DataBridge Solutions Ltd."
   classification: "non_critical"
@@ -157,3 +188,73 @@ contract_07_nonfinancial:
         requires full cooperation with the financial entity, competent authorities and
         resolution authorities. Entirely absent.
       expected_risk: critical
+
+  gdpr_findings:
+    - requirement_id: ART28-001
+      expected_status: ambiguous
+      reason: >
+        Provider implements "industry-standard security measures" (Article 4.1) but
+        provides no ISO 27001 certification, SOC 2 Type II report, or other formal
+        guarantee of "sufficient guarantees" as required by Art. 28(1). Without a
+        certification or documented due-diligence assessment, the controller cannot
+        demonstrate it verified the processor's suitability.
+      expected_risk: medium
+
+    - requirement_id: ART28-003
+      expected_status: missing
+      reason: >
+        No clause binding Provider's staff to confidentiality obligations. Article 4
+        addresses security measures but does not state that authorized personnel are
+        under confidentiality commitments. Art. 28(3)(b) requires that persons
+        authorized to process personal data have committed to confidentiality.
+        Entirely absent from the contract.
+      expected_risk: medium
+
+    - requirement_id: ART28-004
+      expected_status: ambiguous
+      reason: >
+        Article 4.1 describes "industry-standard security measures" (encryption, access
+        controls, security assessments, backups) without referencing Article 32 of the
+        GDPR or specifying the standard of measures as "appropriate to the risk".
+        No ISO 27001 certification. The vague "industry-standard" language does not
+        satisfy the specific obligation to implement measures pursuant to Art. 32.
+      expected_risk: medium
+
+    - requirement_id: ART28-005
+      expected_status: ambiguous
+      reason: >
+        Article 2.4 permits AWS Ireland as a subprocessor and requires 30 days' notice
+        for additional subprocessors — but contains no explicit right to object.
+        GDPR Art. 28(3)(d) requires the controller's opportunity to object, not merely
+        to be informed. The absence of an objection right renders the sub-processor
+        clause incomplete under GDPR.
+      expected_risk: medium
+
+    - requirement_id: ART28-008
+      expected_status: ambiguous
+      reason: >
+        Article 6 requires Provider to export data in CSV format within 30 days of
+        termination and delete data within 90 days. However, there is no written
+        certification of deletion and no explicit statement that the controller has
+        the choice between return and deletion as required by Art. 28(3)(g). The
+        deletion-only path without controller choice creates a gap.
+      expected_risk: low
+
+    - requirement_id: ART28-009
+      expected_status: missing
+      reason: >
+        No audit rights clause in the contract. Provider has no obligation to allow
+        audits, inspections, or to make compliance information available to the
+        controller. GDPR Art. 28(3)(h) requires the processor to allow for and
+        contribute to audits conducted by the controller or a mandated auditor.
+        Entirely absent from the contract.
+      expected_risk: high
+
+    - requirement_id: ART28-010
+      expected_status: missing
+      reason: >
+        No sub-processor flow-down clause imposing GDPR obligations on sub-processors.
+        Article 2.4 merely lists the approved subprocessor and requires notice for
+        additions — it does not impose the same data protection obligations on those
+        sub-processors as required by Art. 28(2) and Art. 28(4). Entirely absent.
+      expected_risk: high

@@ -55,6 +55,12 @@ requirements:
   - sub-contractor register
   - not sub-contract any element
   - pre-approved sub-contractors
+  - written notice.*subprocessor
+  - subprocessor.*written notice
+  - subprocessor.*consent
+  - subprocessor.*prior written
+  - consent.*subprocessor
+  - 30 days.*written notice.*subprocessor
   match_terms_gap:
   - without prior notice to
   - within 30 days of commencement
@@ -91,10 +97,14 @@ requirements:
     SCCs if non-EEA.
   match_terms_evidence:
   - data centres located in
+  - data centers located in
+  - data cent
   - 60 days prior to any change in service location
   - 60 days prior to any change
   - no processing shall occur outside
   - service locations
+  - european economic area
+  - eea
   match_terms_gap:
   - commercially reasonable efforts to store customer data
   - reserves the right to process data outside
@@ -163,6 +173,7 @@ requirements:
   match_terms_gap:
   - best efforts to maintain continuous availability
   - commercially reasonable efforts to maintain
+  - bcp technical annex
 - id: ART30-005
   article: Art. 30(2)(e)
   category: Data access and portability
@@ -194,11 +205,14 @@ requirements:
   match_terms_evidence:
   - machine-readable format
   - certified confirmation of deletion
+  - written certification of deletion
   - export all data
   - return or securely delete
   - data export
+  - csv format
   match_terms_gap:
   - remove its hardware
+  - agreed format
 - id: ART30-006
   article: Art. 30(2)(f)
   category: Cooperation and audit rights
@@ -299,6 +313,7 @@ requirements:
   match_terms_gap:
   - as soon as reasonably practicable
   - within 72 hours
+  - confirmed personal data breach
 - id: ART30-009
   article: Art. 30(2)(i)
   category: Business continuity
@@ -395,6 +410,7 @@ requirements:
   match_terms_gap:
   - commercially reasonable efforts
   - best efforts
+  - bcp technical annex
 - id: ART30-012
   article: Art. 30(3)(b)
   category: 'Critical function: notice periods'
