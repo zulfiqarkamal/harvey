@@ -901,6 +901,34 @@ def main():
         print("Loading demo data (5 synthetic contracts + sample register)…")
         results, register = _load_demo_results()
         print(f"  Loaded {len(results)} analyses, {len(register)} register entries")
+        if not args.workpapers:
+            from .audit_intelligence.audit_universe import build_universe
+            from .audit_intelligence.workpaper import build_workpapers, TestResult, FindingSeverity, FindingStatus
+            universe = build_universe(organisation="Demo Customer A/S", scope=["iso27001"])
+            wps = build_workpapers(universe)
+            # Stamp a realistic mix of test results so the heatmap is non-trivial
+            _DEMO_RESULTS = [
+                TestResult.PASSED, TestResult.PASSED, TestResult.PASSED,
+                TestResult.EXCEPTION, TestResult.PASSED, TestResult.EXCEPTION,
+                TestResult.NOT_TESTED, TestResult.PASSED, TestResult.PASSED,
+                TestResult.EXCEPTION, TestResult.NOT_APPLICABLE, TestResult.PASSED,
+            ]
+            for i, wp in enumerate(wps.work_papers):
+                wp.test_result = _DEMO_RESULTS[i % len(_DEMO_RESULTS)]
+                if wp.test_result == TestResult.EXCEPTION and not wp.findings:
+                    wp.add_finding(
+                        title="Demo finding — control not fully implemented",
+                        condition="Control activity is partially configured.",
+                        criteria="ISO 27001 requires full implementation of this control.",
+                        cause="Resource constraints delayed implementation.",
+                        effect="Residual risk remains above accepted threshold.",
+                        recommendation="Complete implementation by Q1 and re-test.",
+                        severity=FindingSeverity.MEDIUM,
+                        status=FindingStatus.OPEN,
+                        owner="IT Security",
+                        target_remediation_date="2027-03-31",
+                    )
+            args = argparse.Namespace(**{**vars(args), "_demo_wps": wps})
     else:
         results = []
         if args.results_dir:
@@ -911,7 +939,9 @@ def main():
             register = load_register(args.register)
             print(f"Loaded {len(register)} register entries from {args.register}")
 
-    wps = None
+    wps = getattr(args, "_demo_wps", None)
+    if wps is not None and not (args.workpapers and args.workpapers.exists()):
+        print(f"  Auto-generated {len(wps.work_papers)} demo working papers (ISO 27001)")
     if args.workpapers and args.workpapers.exists():
         from .audit_intelligence.workpaper import WorkPaperSet
         wps = WorkPaperSet.from_json(args.workpapers.read_text())
