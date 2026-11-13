@@ -1,5 +1,5 @@
 {
-  "analysis_id": "GA-20261109-132232",
+  "analysis_id": "GA-20261113-190856",
   "framework": "DORA_ART30+GDPR_ART28",
   "contract": {
     "contract_id": "contract_06_modern_fintech",
@@ -20,8 +20,9 @@
       "gap_description": "Evidence candidates found (written notice.*subprocessor, subprocessor.*written notice, subprocessor.*consent). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": null,
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.555944+00:00"
+      "assessed_at": "2026-11-13T19:08:56.471525+00:00"
     },
     {
       "requirement_id": "ART30-002",
@@ -34,14 +35,16 @@
           "section": "7.2 Disaster Recovery",
           "text": "ery configuration with geographic separation between primary (Copenhagen) and secondary (Frankfurt) data centers.\n\nRecovery objectives:  \n- RTO: 2 hours (payment processing), 4 hours (non-critical components)",
           "relevance_note": "Contains keyword: 'data cent'",
-          "page": null
+          "page": null,
+          "paragraph_num": 67
         }
       ],
       "gap_description": "Evidence candidates found (data cent). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f7.2 Disaster Recovery, \u00b667",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.556161+00:00"
+      "assessed_at": "2026-11-13T19:08:56.471525+00:00"
     },
     {
       "requirement_id": "ART30-003",
@@ -54,20 +57,23 @@
           "section": "6.1 Audit Rights",
           "text": "propriate safeguards  \nd) Access audit reports from Provider's third-party auditors (SOC 2 Type II, ISO 27001)\n\n### 6.2 Notice and Coordination\n\nClient shall provide minimum 15 business days' notice for planne",
           "relevance_note": "Contains keyword: 'iso 27001'",
-          "page": null
+          "page": null,
+          "paragraph_num": 56
         },
         {
           "section": "4.1 Information Security Controls",
           "text": "tication for all administrative access\n- End-to-end encryption (TLS 1.3+) for all data in transit\n- AES-256 encryption for data at rest\n- Network segmentation separating Client environment from other custome",
           "relevance_note": "Contains keyword: 'aes-256'",
-          "page": null
+          "page": null,
+          "paragraph_num": 36
         }
       ],
       "gap_description": "Evidence candidates found (iso 27001, aes-256). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f6.1 Audit Rights, \u00b656",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.556359+00:00"
+      "assessed_at": "2026-11-13T19:08:56.471525+00:00"
     },
     {
       "requirement_id": "ART30-004",
@@ -80,20 +86,23 @@
           "section": "3.2 Recovery Objectives",
           "text": "| 99.9% | Calendar month |\n\n### 3.2 Recovery Objectives\n\nIn the event of a service disruption:\n\n- **Recovery Time Objective (RTO):** Core payment processing shall be restored within **2 hours** of incident declaration for P",
           "relevance_note": "Contains keyword: 'recovery time objective'",
-          "page": null
+          "page": null,
+          "paragraph_num": 28
         },
         {
           "section": "3.2 Recovery Objectives",
           "text": "s\n\nProvider shall document and maintain recovery procedures aligned with the RTO commitments above. Recovery Point Objectives will be defined in the Business Continuity Plan referenced in Article 7.\n\n### 3.3 Performance Moni",
           "relevance_note": "Contains keyword: 'recovery point objective'",
-          "page": null
+          "page": null,
+          "paragraph_num": 29
         }
       ],
       "gap_description": "Partial evidence found (recovery time objective, recovery point objective) but gap indicators also detected (bcp technical annex). Clause may be insufficient \u2014 manual review required.",
       "remediation_suggestion": "Strengthen a contractual clause addressing ART30-004 (Service levels). Obligation level: mandatory. Evidence criteria: Service level agreement (SLA) is present or referenced; SLA includes at least one measurable metric (uptime, RTO, RPO); Process for SLA review or revision is described.",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f3.2 Recovery Objectives, \u00b628",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.556497+00:00"
+      "assessed_at": "2026-11-13T19:08:56.472524+00:00"
     },
     {
       "requirement_id": "ART30-005",
@@ -106,20 +115,23 @@
           "section": "8.2 Data Deletion",
           "text": "t confirmation by Client, Provider shall securely delete all Client data within 60 days and provide written certification of deletion.\n\n---\n\n## ARTICLE 9 \u2014 SUBCONTRACTING\n\n### 9.1 Approved Subcontractors\n\nProvider may engage subcontr",
           "relevance_note": "Contains keyword: 'written certification of deletion'",
-          "page": null
+          "page": null,
+          "paragraph_num": 76
         },
         {
           "section": "8.1 Exit Assistance",
           "text": "this Agreement for any reason, Provider shall provide:\n- 90-day transition assistance period\n- Full data export in agreed formats within 30 days of termination notice\n- Technical documentation sufficient for mig",
           "relevance_note": "Contains keyword: 'data export'",
-          "page": null
+          "page": null,
+          "paragraph_num": 74
         }
       ],
       "gap_description": "Partial evidence found (written certification of deletion, data export) but gap indicators also detected (agreed format). Clause may be insufficient \u2014 manual review required.",
       "remediation_suggestion": "Strengthen a contractual clause addressing ART30-005 (Data access and portability). Obligation level: mandatory. Evidence criteria: Data return/portability clause present; Format for data return is specified or defined as machine-readable/accessible; Trigger events are addressed: termination, insolvency, resolution.",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f8.2 Data Deletion, \u00b676",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.556757+00:00"
+      "assessed_at": "2026-11-13T19:08:56.472524+00:00"
     },
     {
       "requirement_id": "ART30-006",
@@ -132,20 +144,23 @@
           "section": "PARTIES",
           "text": "ovider\")\n\nClient is a payment institution supervised by the Danish Financial Supervisory Authority (Finanstilsynet) and is subject to DORA (Regulation (EU) 2022/2554).\n\n---\n\n## ARTICLE 1 \u2014 SCOPE AND SERVICES\n\n### 1",
           "relevance_note": "Contains keyword: 'finanstilsynet'",
-          "page": null
+          "page": null,
+          "paragraph_num": 7
         },
         {
           "section": "6.1 Audit Rights",
           "text": "ights\n\nClient, its designated auditors, and competent authorities (including Finanstilsynet and the European Banking Authority) shall have the right to:\n\na) Conduct on-site and remote audits of Provider's facilities and system",
           "relevance_note": "Contains keyword: 'european banking authority'",
-          "page": null
+          "page": null,
+          "paragraph_num": 55
         }
       ],
       "gap_description": "Evidence candidates found (finanstilsynet, european banking authority, cooperate with.*regulator). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202fPARTIES, \u00b67",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.556944+00:00"
+      "assessed_at": "2026-11-13T19:08:56.472524+00:00"
     },
     {
       "requirement_id": "ART30-007",
@@ -158,40 +173,45 @@
           "section": "8.1",
           "text": "vider's internal risk management processes.\n\n---\n\n## ARTICLE 8 \u2014 DATA PORTABILITY AND EXIT\n\n### 8.1 Exit Assistance\n\nUpon termination or expiry of this Agreement for any reason, Provider shall provide:\n- 90-day tran",
           "relevance_note": "Contains keyword: 'exit assistance'",
-          "page": null
+          "page": null,
+          "paragraph_num": 73
         }
       ],
       "gap_description": "Evidence candidates found (exit assistance). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f8.1, \u00b673",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.557058+00:00"
+      "assessed_at": "2026-11-13T19:08:56.472524+00:00"
     },
     {
       "requirement_id": "ART30-008",
       "requirement_article": "Art. 30(2)(h)",
       "requirement_summary": "ICT incident management provisions, including escalation and reporting, and obligations of the ICT third-party service p",
-      "status": "evidence_found",
+      "status": "ambiguous",
       "risk_level": null,
       "evidence": [
         {
           "section": "4.2 Access Management",
           "text": "f least privilege to all service accounts\n- Conduct quarterly access reviews\n- Remove Client access within 24 hours of termination of any Provider employee\n- Maintain immutable audit logs of all administrative actio",
           "relevance_note": "Contains keyword: 'within 24 hours'",
-          "page": null
+          "page": null,
+          "paragraph_num": 38
         },
         {
           "section": "5.2 Notification Timelines",
           "text": "1 incidents, Provider shall provide:\n- Initial alert via automated monitoring integration\n- Written incident notification to Client's incident response team\n- Hourly status updates until resolution\n- Post-incident report",
           "relevance_note": "Contains keyword: 'incident notification'",
-          "page": null
+          "page": null,
+          "paragraph_num": 48
         }
       ],
-      "gap_description": "Evidence candidates found (within 24 hours, incident notification, notify.*within). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
+      "gap_description": "Evidence found but passages do not clearly cover ICT incident notification AND the obligation to support the financial entity's regulatory incident reporting \u2014 human legal review required. DORA Art. 30(2)(h) requires both.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f4.2 Access Management, \u00b638",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.557270+00:00"
+      "assessed_at": "2026-11-13T19:08:56.473524+00:00"
     },
     {
       "requirement_id": "ART30-009",
@@ -203,8 +223,9 @@
       "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
       "remediation_suggestion": "Add a contractual clause addressing ART30-009 (Business continuity). Obligation level: mandatory. Evidence criteria: TLPT (Threat-Led Penetration Testing) cooperation clause present, OR; Clause noted as N/A with documented rationale (supplier not in scope for financial entity's TLPT).",
       "na_rationale": null,
+      "source_location": "Searched: \u00a7\u202f'7.3 Business Continuity Testing' (closest section) \u00b7 full contract (94\u202f\u00b6)",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.557304+00:00"
+      "assessed_at": "2026-11-13T19:08:56.473524+00:00"
     },
     {
       "requirement_id": "ART30-010",
@@ -217,14 +238,16 @@
           "section": "6.1 Audit Rights",
           "text": "Interview Provider personnel with appropriate safeguards  \nd) Access audit reports from Provider's third-party auditors (SOC 2 Type II, ISO 27001)\n\n### 6.2 Notice and Coordination\n\nClient shall provide minimum 15 busin",
           "relevance_note": "Contains keyword: 'third-party auditor'",
-          "page": null
+          "page": null,
+          "paragraph_num": 56
         }
       ],
       "gap_description": "Evidence candidates found (third-party auditor, conduct.*audit). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f6.1 Audit Rights, \u00b656",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.557469+00:00"
+      "assessed_at": "2026-11-13T19:08:56.473524+00:00"
     },
     {
       "requirement_id": "ART30-011",
@@ -237,52 +260,59 @@
           "section": "3.2 Recovery Objectives",
           "text": "| 99.9% | Calendar month |\n\n### 3.2 Recovery Objectives\n\nIn the event of a service disruption:\n\n- **Recovery Time Objective (RTO):** Core payment processing shall be restored within **2 hours** of incident declaration for P",
           "relevance_note": "Contains keyword: 'recovery time objective'",
-          "page": null
+          "page": null,
+          "paragraph_num": 28
         },
         {
           "section": "3.2 Recovery Objectives",
           "text": "s\n\nProvider shall document and maintain recovery procedures aligned with the RTO commitments above. Recovery Point Objectives will be defined in the Business Continuity Plan referenced in Article 7.\n\n### 3.3 Performance Moni",
           "relevance_note": "Contains keyword: 'recovery point objective'",
-          "page": null
+          "page": null,
+          "paragraph_num": 29
         }
       ],
       "gap_description": "Partial evidence found (recovery time objective, recovery point objective) but gap indicators also detected (bcp technical annex). Clause may be insufficient \u2014 manual review required.",
       "remediation_suggestion": "Strengthen a contractual clause addressing ART30-011 (Critical function: full service description). Obligation level: mandatory. Evidence criteria: SLA contains both quantitative metrics (e.g. 99.9% uptime, RTO < 4 hours); AND qualitative performance standards; Monitoring rights for financial entity are explicit.",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f3.2 Recovery Objectives, \u00b628",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.557596+00:00"
+      "assessed_at": "2026-11-13T19:08:56.473524+00:00"
     },
     {
       "requirement_id": "ART30-012",
       "requirement_article": "Art. 30(3)(b)",
       "requirement_summary": "Notice periods and reporting obligations of the ICT third-party service provider towards the financial entity that enabl",
-      "status": "evidence_found",
+      "status": "ambiguous",
       "risk_level": null,
       "evidence": [
         {
           "section": "8.2 Data Deletion",
           "text": "uccessful data export confirmation by Client, Provider shall securely delete all Client data within 60 days and provide written certification of deletion.\n\n---\n\n## ARTICLE 9 \u2014 SUBCONTRACTING\n\n### 9.1 Approve",
           "relevance_note": "Contains keyword: '60 days'",
-          "page": null
+          "page": null,
+          "paragraph_num": 76
         },
         {
           "section": "9.1 Approved Subcontractors",
           "text": "edule C without prior approval from Client. Engagement of unlisted subcontractors requires 30 days' prior written notice and Client's approval, not to be unreasonably withheld.\n\n### 9.2 Flow-Down Requirements\n\nAll securi",
           "relevance_note": "Contains keyword: 'prior written notice'",
-          "page": null
+          "page": null,
+          "paragraph_num": 80
         },
         {
           "section": "2.2 Subprocessors",
           "text": "rdware maintenance)\n\nClient consent is required for new subprocessors. Provider shall give 30 days' written notice before engaging new subprocessors.\n\n---\n\n## ARTICLE 3 \u2014 PERFORMANCE AND SERVICE LEVELS\n\n### 3.1 Ava",
           "relevance_note": "Contains keyword: 'written notice'",
-          "page": null
+          "page": null,
+          "paragraph_num": 21
         }
       ],
-      "gap_description": "Evidence candidates found (60 days, prior written notice, written notice). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
+      "gap_description": "Evidence found but all matching passages appear to be DPA/subprocessor clauses rather than general proactive reporting or service-change notice obligations. DORA Art. 30(3)(b) requires notice periods and reporting obligations that enable the financial entity to effectively monitor ICT services \u2014 event-specific DPA notices do not satisfy this.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f8.2 Data Deletion, \u00b676",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.557826+00:00"
+      "assessed_at": "2026-11-13T19:08:56.473524+00:00"
     },
     {
       "requirement_id": "ART30-013",
@@ -294,8 +324,9 @@
       "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
       "remediation_suggestion": "Add a contractual clause addressing ART30-013 (Business continuity and security). Obligation level: mandatory. Evidence criteria: Business continuity/DR plan obligation present; Testing obligation for BCP/DR present; ICT security standard referenced (ISO 27001, NIST, or equivalent).",
       "na_rationale": null,
+      "source_location": "Searched: full contract (94\u202f\u00b6) \u2014 no matching section found",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.557915+00:00"
+      "assessed_at": "2026-11-13T19:08:56.474523+00:00"
     },
     {
       "requirement_id": "ART28-001",
@@ -308,20 +339,23 @@
           "section": "6.1 Audit Rights",
           "text": "propriate safeguards  \nd) Access audit reports from Provider's third-party auditors (SOC 2 Type II, ISO 27001)\n\n### 6.2 Notice and Coordination\n\nClient shall provide minimum 15 business days' notice for planne",
           "relevance_note": "Contains keyword: 'iso 27001'",
-          "page": null
+          "page": null,
+          "paragraph_num": 56
         },
         {
           "section": "6.1 Audit Rights",
           "text": "rsonnel with appropriate safeguards  \nd) Access audit reports from Provider's third-party auditors (SOC 2 Type II, ISO 27001)\n\n### 6.2 Notice and Coordination\n\nClient shall provide minimum 15 business days' notice",
           "relevance_note": "Contains keyword: 'soc 2 type ii'",
-          "page": null
+          "page": null,
+          "paragraph_num": 56
         }
       ],
       "gap_description": "Evidence candidates found (iso 27001, soc 2 type ii). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f6.1 Audit Rights, \u00b656",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.558089+00:00"
+      "assessed_at": "2026-11-13T19:08:56.474523+00:00"
     },
     {
       "requirement_id": "ART28-002",
@@ -333,8 +367,9 @@
       "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
       "remediation_suggestion": "Add a contractual clause addressing ART28-002 (Processing on instructions). Obligation level: mandatory. Evidence criteria: DPA contains explicit statement that processor acts only on controller's instructions; Legal obligation exception is addressed (notification to controller unless prohibited).",
       "na_rationale": null,
+      "source_location": "Searched: \u00a7\u202f'ARTICLE 2 \u2014 DATA PROCESSING AND PROTECTION' (closest section) \u00b7 full contract (94\u202f\u00b6)",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.558142+00:00"
+      "assessed_at": "2026-11-13T19:08:56.474523+00:00"
     },
     {
       "requirement_id": "ART28-003",
@@ -347,14 +382,16 @@
           "section": "7.1 Business Continuity Plan",
           "text": "ummary with Client upon request. Full BCP access is available to Client's designated auditors under confidentiality obligations.\n\n### 7.2 Disaster Recovery\n\nProvider maintains an active-passive disaster recovery configuration w",
           "relevance_note": "Contains keyword: 'confidentiality obligations'",
-          "page": null
+          "page": null,
+          "paragraph_num": 65
         }
       ],
       "gap_description": "Evidence candidates found (confidentiality obligations). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f7.1 Business Continuity Plan, \u00b665",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.558255+00:00"
+      "assessed_at": "2026-11-13T19:08:56.474523+00:00"
     },
     {
       "requirement_id": "ART28-004",
@@ -367,14 +404,16 @@
           "section": "6.1 Audit Rights",
           "text": "propriate safeguards  \nd) Access audit reports from Provider's third-party auditors (SOC 2 Type II, ISO 27001)\n\n### 6.2 Notice and Coordination\n\nClient shall provide minimum 15 business days' notice for planne",
           "relevance_note": "Contains keyword: 'iso 27001'",
-          "page": null
+          "page": null,
+          "paragraph_num": 56
         }
       ],
       "gap_description": "Evidence candidates found (iso 27001). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f6.1 Audit Rights, \u00b656",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.558379+00:00"
+      "assessed_at": "2026-11-13T19:08:56.474523+00:00"
     },
     {
       "requirement_id": "ART28-005",
@@ -386,8 +425,9 @@
       "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
       "remediation_suggestion": "Add a contractual clause addressing ART28-005 (Sub-processor restrictions). Obligation level: mandatory. Evidence criteria: Sub-processor clause present; Authorisation model stated: specific (named sub-processors) OR general (with change notification); Change notification obligation with right to object is present.",
       "na_rationale": null,
+      "source_location": "Searched: full contract (94\u202f\u00b6) \u2014 no matching section found",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.558427+00:00"
+      "assessed_at": "2026-11-13T19:08:56.474523+00:00"
     },
     {
       "requirement_id": "ART28-006",
@@ -400,14 +440,16 @@
           "section": "5.2 Notification Timelines",
           "text": "ent's incident response team\n- Hourly status updates until resolution\n- Post-incident report within 5 business days\n\n### 5.3 Regulatory Notifications\n\nProvider shall cooperate with Client to support Client's obligat",
           "relevance_note": "Contains keyword: '5 business days'",
-          "page": null
+          "page": null,
+          "paragraph_num": 48
         }
       ],
       "gap_description": "Evidence candidates found (5 business days). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f5.2 Notification Timelines, \u00b648",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.558525+00:00"
+      "assessed_at": "2026-11-13T19:08:56.475523+00:00"
     },
     {
       "requirement_id": "ART28-007",
@@ -420,20 +462,23 @@
           "section": "4.2 Access Management",
           "text": "f least privilege to all service accounts\n- Conduct quarterly access reviews\n- Remove Client access within 24 hours of termination of any Provider employee\n- Maintain immutable audit logs of all administrative actions",
           "relevance_note": "Contains keyword: 'within 24 hours of'",
-          "page": null
+          "page": null,
+          "paragraph_num": 38
         },
         {
           "section": "4.3 Vulnerability Management",
           "text": "ctions\n\n### 4.3 Vulnerability Management\n\nProvider shall patch critical vulnerabilities (CVSS 9.0+) within 48 hours and high vulnerabilities (CVSS 7.0\u20138.9) within 14 days of public disclosure.\n\n---\n\n## ARTICLE 5 \u2014 I",
           "relevance_note": "Contains keyword: 'within 48 hours'",
-          "page": null
+          "page": null,
+          "paragraph_num": 40
         }
       ],
       "gap_description": "Evidence candidates found (within 24 hours of, within 48 hours). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f4.2 Access Management, \u00b638",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.558686+00:00"
+      "assessed_at": "2026-11-13T19:08:56.475523+00:00"
     },
     {
       "requirement_id": "ART28-008",
@@ -446,14 +491,16 @@
           "section": "8.2 Data Deletion",
           "text": "t confirmation by Client, Provider shall securely delete all Client data within 60 days and provide written certification of deletion.\n\n---\n\n## ARTICLE 9 \u2014 SUBCONTRACTING\n\n### 9.1 Approved Subcontractors\n\nProvider may engage subcontr",
           "relevance_note": "Contains keyword: 'written certification of deletion'",
-          "page": null
+          "page": null,
+          "paragraph_num": 76
         }
       ],
       "gap_description": "Evidence candidates found (written certification of deletion, certif.*deletion). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f8.2 Data Deletion, \u00b676",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.558847+00:00"
+      "assessed_at": "2026-11-13T19:08:56.475523+00:00"
     },
     {
       "requirement_id": "ART28-009",
@@ -465,8 +512,9 @@
       "gap_description": "Evidence candidates found (right to.*audit, conduct.*audit, on-site.*audit). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": null,
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.559030+00:00"
+      "assessed_at": "2026-11-13T19:08:56.475523+00:00"
     },
     {
       "requirement_id": "ART28-010",
@@ -478,8 +526,9 @@
       "gap_description": "No relevant clauses detected in contract. Requirement appears absent.",
       "remediation_suggestion": "Add a contractual clause addressing ART28-010 (Sub-processor obligations (flow-down)). Obligation level: mandatory. Evidence criteria: Flow-down obligation: same GDPR obligations imposed on sub-processors; Processor remains liable to controller for sub-processor compliance.",
       "na_rationale": null,
+      "source_location": "Searched: \u00a7\u202f'ARTICLE 2 \u2014 DATA PROCESSING AND PROTECTION' (closest section) \u00b7 full contract (94\u202f\u00b6)",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.559077+00:00"
+      "assessed_at": "2026-11-13T19:08:56.475523+00:00"
     },
     {
       "requirement_id": "ART28-011",
@@ -491,16 +540,17 @@
       "gap_description": null,
       "remediation_suggestion": "",
       "na_rationale": "Trigger condition not detected in contract \u2014 applicability uncertain. Human review required.",
+      "source_location": null,
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.559177+00:00"
+      "assessed_at": "2026-11-13T19:08:56.475523+00:00"
     }
   ],
   "overall_status": "missing",
   "summary_stats": {
     "satisfied": 0,
-    "evidence_found": 15,
+    "evidence_found": 13,
     "missing": 5,
-    "ambiguous": 3,
+    "ambiguous": 5,
     "na": 0,
     "not_assessed": 1
   },

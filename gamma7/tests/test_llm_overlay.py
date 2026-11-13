@@ -18,10 +18,12 @@ from gamma7.engine.analyser import ComplianceStatus, ContractAnalysisResult, Req
 from gamma7.engine.budget_guard import BudgetGuard, BudgetExceededError
 from gamma7.engine.llm_overlay import (
     OverlayDecision,
+    ValidationDecision,
     _build_user_message,
     _extract_excerpt,
     _parse_llm_response,
     run_overlay,
+    run_evidence_validation_overlay,
 )
 
 
@@ -299,4 +301,106 @@ def test_overlay_decision_dataclass():
         reasoning="Found relevant language.",
     )
     assert d.requirement_id == "R1"
+    assert d.tokens_used == {}
+
+
+# --- run_evidence_validation_overlay ---
+
+def _make_ev_result(req_id, evidence):
+    """Helper: create a ContractAnalysisResult mock with one EVIDENCE_FOUND assessment."""
+    a = _make_assessment(req_id=req_id, status=ComplianceStatus.EVIDENCE_FOUND, evidence=evidence)
+    result = _make_result([a])
+    return result, a
+
+
+def test_art30_008_generic_incident_notification_downgraded():
+    """Evidence from an access-management section should be downgraded for ART30-008."""
+    evidence = [
+        {"section": "4.2 Access Management", "text": "Remove access within 24 hours of termination"},
+        {"section": "5.2 Notification Timelines", "text": "Written incident notification to Client's incident response team within 4 hours"},
+    ]
+    result, assessment = _make_ev_result("ART30-008", evidence)
+    with patch.dict("os.environ", {}, clear=True):
+        import os; os.environ.pop("ANTHROPIC_API_KEY", None)
+        updated, decisions = run_evidence_validation_overlay(result, "contract text", use_llm=False)
+    assert len(decisions) == 1
+    assert decisions[0].revised_status == ComplianceStatus.AMBIGUOUS
+    assert assessment.status == ComplianceStatus.AMBIGUOUS
+
+
+def test_art30_008_ict_incident_reference_kept():
+    """Evidence explicitly referencing ICT incidents should NOT be downgraded."""
+    evidence = [
+        {"section": "5.3 ICT Incident Management", "text": "Provider shall notify Client of major ICT incidents within 4 hours and support regulatory reporting to supervisors"},
+    ]
+    result, assessment = _make_ev_result("ART30-008", evidence)
+    with patch.dict("os.environ", {}, clear=True):
+        import os; os.environ.pop("ANTHROPIC_API_KEY", None)
+        updated, decisions = run_evidence_validation_overlay(result, "contract text", use_llm=False)
+    assert len(decisions) == 1
+    assert decisions[0].revised_status == ComplianceStatus.EVIDENCE_FOUND
+    assert assessment.status == ComplianceStatus.EVIDENCE_FOUND
+
+
+def test_art30_012_subprocessor_notice_downgraded():
+    """Evidence from DPA/subprocessor sections should be downgraded for ART30-012."""
+    evidence = [
+        {"section": "Data Processing Agreement - Subprocessors", "text": "30 days written notice before engaging a new subprocessor"},
+    ]
+    result, assessment = _make_ev_result("ART30-012", evidence)
+    with patch.dict("os.environ", {}, clear=True):
+        import os; os.environ.pop("ANTHROPIC_API_KEY", None)
+        updated, decisions = run_evidence_validation_overlay(result, "contract text", use_llm=False)
+    assert len(decisions) == 1
+    assert decisions[0].revised_status == ComplianceStatus.AMBIGUOUS
+    assert assessment.status == ComplianceStatus.AMBIGUOUS
+
+
+def test_art30_012_service_change_notice_kept():
+    """Evidence about proactive service-change reporting should NOT be downgraded."""
+    evidence = [
+        {"section": "7. Service Change Management", "text": "Provider shall provide 30 days prior notice of any planned changes to service performance"},
+    ]
+    result, assessment = _make_ev_result("ART30-012", evidence)
+    with patch.dict("os.environ", {}, clear=True):
+        import os; os.environ.pop("ANTHROPIC_API_KEY", None)
+        updated, decisions = run_evidence_validation_overlay(result, "contract text", use_llm=False)
+    assert len(decisions) == 1
+    assert decisions[0].revised_status == ComplianceStatus.EVIDENCE_FOUND
+
+
+def test_evidence_validation_skips_non_evidence_found():
+    """Assessments that are MISSING or SATISFIED are not touched by Pass 2."""
+    for status in (ComplianceStatus.MISSING, ComplianceStatus.SATISFIED):
+        a = _make_assessment(req_id="ART30-008", status=status, evidence=[
+            {"section": "5.2 Notification", "text": "incident notification within 4 hours"},
+        ])
+        result = _make_result([a])
+        with patch.dict("os.environ", {}, clear=True):
+            import os; os.environ.pop("ANTHROPIC_API_KEY", None)
+            _, decisions = run_evidence_validation_overlay(result, "contract text", use_llm=False)
+        assert decisions == [], f"Expected no decisions for {status}"
+
+
+def test_evidence_validation_skips_unknown_requirement():
+    """Requirements not in the spec dict are ignored."""
+    evidence = [{"section": "Payment Terms", "text": "Invoice due within 30 days"}]
+    result, assessment = _make_ev_result("ART30-001", evidence)
+    with patch.dict("os.environ", {}, clear=True):
+        import os; os.environ.pop("ANTHROPIC_API_KEY", None)
+        _, decisions = run_evidence_validation_overlay(result, "contract text", use_llm=False)
+    assert decisions == []
+    assert assessment.status == ComplianceStatus.EVIDENCE_FOUND
+
+
+def test_validation_decision_dataclass():
+    d = ValidationDecision(
+        requirement_id="ART30-008",
+        original_status=ComplianceStatus.EVIDENCE_FOUND,
+        revised_status=ComplianceStatus.AMBIGUOUS,
+        rule_applied="all_bad_context=2",
+        reasoning="Passages are from wrong context.",
+    )
+    assert d.requirement_id == "ART30-008"
+    assert d.llm_used is False
     assert d.tokens_used == {}

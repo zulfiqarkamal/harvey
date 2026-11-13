@@ -1,5 +1,5 @@
 {
-  "run_date": "2026-11-13T14:10:55.654638+00:00",
+  "run_date": "2026-11-13T19:08:56.434435+00:00",
   "engine_version": "gamma7-engine-v2",
   "mode": "heuristic",
   "in_sample": {
@@ -8,13 +8,13 @@
       "total_na": 4,
       "total_matched": 54,
       "total_na_matched": 4,
-      "total_false_positives": 0,
+      "total_false_positives": 1,
       "tp": 54,
-      "fp": 0,
+      "fp": 1,
       "fn": 0,
-      "precision_pct": 100.0,
+      "precision_pct": 98.2,
       "recall_pct": 100.0,
-      "f1_pct": 100.0
+      "f1_pct": 99.1
     },
     "results": [
       {
@@ -113,19 +113,30 @@
         "na_matched": 0,
         "missed": [],
         "na_missed": [],
-        "false_positives": [],
+        "false_positives": [
+          {
+            "id": "ART30-008",
+            "actual_status": "ambiguous"
+          }
+        ],
         "accuracy_pct": 100.0,
         "supplier": "SecureVault Nordic A/S",
         "classification": "critical_important",
         "summary_stats": {
           "satisfied": 0,
-          "evidence_found": 23,
+          "evidence_found": 22,
           "missing": 0,
-          "ambiguous": 1,
+          "ambiguous": 2,
           "na": 0,
           "not_assessed": 0
         },
-        "validation_decisions": []
+        "validation_decisions": [
+          {
+            "req": "ART30-008",
+            "rule": "context_invalid:all_bad_context=1",
+            "revised": "ambiguous"
+          }
+        ]
       }
     ],
     "caveat": "These 5 contracts were used to tune match_terms. Precision/recall reflects in-sample fit only \u2014 not generalisation."
@@ -134,44 +145,43 @@
     "aggregate": {
       "total_gaps": 23,
       "total_na": 4,
-      "total_matched": 22,
+      "total_matched": 23,
       "total_na_matched": 4,
       "total_false_positives": 0,
-      "tp": 22,
+      "tp": 23,
       "fp": 0,
-      "fn": 1,
+      "fn": 0,
       "precision_pct": 100.0,
-      "recall_pct": 95.7,
-      "f1_pct": 97.8
+      "recall_pct": 100.0,
+      "f1_pct": 100.0
     },
     "results": [
       {
         "contract_key": "contract_06_modern_fintech",
         "expected_genuine_gaps": 10,
         "na_expectations": 0,
-        "matched": 9,
+        "matched": 10,
         "na_matched": 0,
-        "missed": [
-          {
-            "id": "ART30-008",
-            "expected": "ambiguous",
-            "actual": "evidence_found"
-          }
-        ],
+        "missed": [],
         "na_missed": [],
         "false_positives": [],
-        "accuracy_pct": 90.0,
+        "accuracy_pct": 100.0,
         "supplier": "CloudCore Infrastructure ApS",
         "classification": "critical_important",
         "summary_stats": {
           "satisfied": 0,
-          "evidence_found": 14,
+          "evidence_found": 13,
           "missing": 5,
-          "ambiguous": 4,
+          "ambiguous": 5,
           "na": 0,
           "not_assessed": 1
         },
         "validation_decisions": [
+          {
+            "req": "ART30-008",
+            "rule": "context_invalid:all_bad_context=2",
+            "revised": "ambiguous"
+          },
           {
             "req": "ART30-012",
             "rule": "context_invalid:all_bad_context=3",

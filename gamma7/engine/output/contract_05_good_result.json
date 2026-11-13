@@ -1,5 +1,5 @@
 {
-  "analysis_id": "GA-20261109-132232",
+  "analysis_id": "GA-20261113-190856",
   "framework": "DORA_ART30+GDPR_ART28",
   "contract": {
     "contract_id": "contract_05_good",
@@ -21,26 +21,30 @@
           "section": "1. Services and Sub-contracting",
           "text": "contract any element of the Services supporting NBI's critical or important functions without NBI's prior written approval. For other functions, SecureVault may engage pre-approved sub-contractors listed in Annex C (Sub-co",
           "relevance_note": "Contains keyword: 'prior written approval'",
-          "page": null
+          "page": null,
+          "paragraph_num": 7
         },
         {
           "section": "2. Service Locations",
           "text": "located in Denmark (Copenhagen and Aarhus). No processing shall occur outside Denmark without NBI's prior written consent.\n\n**2.2** SecureVault shall notify NBI at least 60 days prior to any change in service locations.",
           "relevance_note": "Contains keyword: 'prior written consent'",
-          "page": null
+          "page": null,
+          "paragraph_num": 9
         },
         {
           "section": "1. Services and Sub-contracting",
           "text": "proval. For other functions, SecureVault may engage pre-approved sub-contractors listed in Annex C (Sub-contractor Register). SecureVault shall notify NBI of any intended changes to sub-contractors at least 60 days in advan",
           "relevance_note": "Contains keyword: 'sub-contractor register'",
-          "page": null
+          "page": null,
+          "paragraph_num": 7
         }
       ],
       "gap_description": "Evidence candidates found (prior written approval, prior written consent, sub-contractor register). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f1. Services and Sub-contracting, \u00b67",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.543852+00:00"
+      "assessed_at": "2026-11-13T19:08:56.459524+00:00"
     },
     {
       "requirement_id": "ART30-002",
@@ -53,26 +57,30 @@
           "section": "2. Service Locations",
           "text": "l sub-contractors.\n\n## 2. Service Locations\n\n**2.1** Services shall be delivered from SecureVault's data centres located in Denmark (Copenhagen and Aarhus). No processing shall occur outside Denmark without NBI's prior writ",
           "relevance_note": "Contains keyword: 'data centres located in'",
-          "page": null
+          "page": null,
+          "paragraph_num": 9
         },
         {
           "section": "2. Service Locations",
           "text": "l sub-contractors.\n\n## 2. Service Locations\n\n**2.1** Services shall be delivered from SecureVault's data centres located in Denmark (Copenhagen and Aarhus). No processing shall occur outside Denmark without NB",
           "relevance_note": "Contains keyword: 'data cent'",
-          "page": null
+          "page": null,
+          "paragraph_num": 9
         },
         {
           "section": "2. Service Locations",
           "text": "outside Denmark without NBI's prior written consent.\n\n**2.2** SecureVault shall notify NBI at least 60 days prior to any change in service locations.\n\n## 3. Data and Security\n\n**3.1 Availability:** SecureVault shall maintain 99.95% monthly availab",
           "relevance_note": "Contains keyword: '60 days prior to any change in service location'",
-          "page": null
+          "page": null,
+          "paragraph_num": 10
         }
       ],
       "gap_description": "Evidence candidates found (data centres located in, data cent, 60 days prior to any change in service location). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f2. Service Locations, \u00b69",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.544027+00:00"
+      "assessed_at": "2026-11-13T19:08:56.459524+00:00"
     },
     {
       "requirement_id": "ART30-003",
@@ -85,26 +93,30 @@
           "section": "3. Data and Security",
           "text": "g authenticity and integrity of stored documents.\n\n**3.5 Security standard:** SecureVault maintains ISO 27001:2022 certification (certificate number: SV-DK-ISO-2024-001, renewal due June 2027) and complies wit",
           "relevance_note": "Contains keyword: 'iso 27001'",
-          "page": null
+          "page": null,
+          "paragraph_num": 16
         },
         {
           "section": "3. Data and Security",
           "text": "personnel with access upon request.\n\n**3.4 Authenticity and integrity:** SecureVault shall maintain cryptographic audit logs for all document access events, ensuring authenticity and integrity of stored documents.\n\n**3.5 Sec",
           "relevance_note": "Contains keyword: 'cryptographic audit logs'",
-          "page": null
+          "page": null,
+          "paragraph_num": 15
         },
         {
           "section": "3. Data and Security",
           "text": "agreements. SecureVault shall provide NBI with a list of personnel with access upon request.\n\n**3.4 Authenticity and integrity:** SecureVault shall maintain cryptographic audit logs for all document access events, ensuring aut",
           "relevance_note": "Contains keyword: 'authenticity and integrity'",
-          "page": null
+          "page": null,
+          "paragraph_num": 15
         }
       ],
       "gap_description": "Evidence candidates found (iso 27001, cryptographic audit logs, authenticity and integrity). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f3. Data and Security, \u00b616",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.544180+00:00"
+      "assessed_at": "2026-11-13T19:08:56.459524+00:00"
     },
     {
       "requirement_id": "ART30-004",
@@ -117,26 +129,30 @@
           "section": "3. Data and Security",
           "text": "lability is measured as defined in Service Schedule 2 (SLA Metrics).\n\n**3.2 Quantitative targets:** Recovery Time Objective: 2 hours. Recovery Point Objective: 1 hour. These are measured and reported monthly.\n\n**3.3 Confide",
           "relevance_note": "Contains keyword: 'recovery time objective'",
-          "page": null
+          "page": null,
+          "paragraph_num": 13
         },
         {
           "section": "3. Data and Security",
           "text": "Service Schedule 2 (SLA Metrics).\n\n**3.2 Quantitative targets:** Recovery Time Objective: 2 hours. Recovery Point Objective: 1 hour. These are measured and reported monthly.\n\n**3.3 Confidentiality:** SecureVault shall ensur",
           "relevance_note": "Contains keyword: 'recovery point objective'",
-          "page": null
+          "page": null,
+          "paragraph_num": 13
         },
         {
           "section": "3. Data and Security",
           "text": "rvices and 99.9% for ancillary services. Availability is measured as defined in Service Schedule 2 (SLA Metrics).\n\n**3.2 Quantitative targets:** Recovery Time Objective: 2 hours. Recovery Point Objective: 1 hour",
           "relevance_note": "Contains keyword: 'sla metrics'",
-          "page": null
+          "page": null,
+          "paragraph_num": 12
         }
       ],
       "gap_description": "Evidence candidates found (recovery time objective, recovery point objective, sla metrics). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f3. Data and Security, \u00b613",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.544327+00:00"
+      "assessed_at": "2026-11-13T19:08:56.459524+00:00"
     },
     {
       "requirement_id": "ART30-005",
@@ -149,26 +165,30 @@
           "section": "9. Termination",
           "text": "**9.4** Upon final termination of exit period, SecureVault shall return all NBI data in a standard, machine-readable format (JSON/XML or as agreed) and provide certified confirmation of deletion of all copies.\n\n## 10. Data",
           "relevance_note": "Contains keyword: 'machine-readable format'",
-          "page": null
+          "page": null,
+          "paragraph_num": 40
         },
         {
           "section": "9. Termination",
           "text": "hall return all NBI data in a standard, machine-readable format (JSON/XML or as agreed) and provide certified confirmation of deletion of all copies.\n\n## 10. Data Processing Agreement\n\n**10.1 Roles:** NBI is the data controller. Secur",
           "relevance_note": "Contains keyword: 'certified confirmation of deletion'",
-          "page": null
+          "page": null,
+          "paragraph_num": 40
         },
         {
           "section": "10. Data Processing Agreement",
           "text": "s likely to result in high risk.\n\n**10.9 Return and deletion:** Upon termination, SecureVault shall return or securely delete all personal data as directed by NBI, and provide written confirmation of deletion.\n\n**10.10 Intern",
           "relevance_note": "Contains keyword: 'return or securely delete'",
-          "page": null
+          "page": null,
+          "paragraph_num": 50
         }
       ],
       "gap_description": "Evidence candidates found (machine-readable format, certified confirmation of deletion, return or securely delete). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f9. Termination, \u00b640",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.544592+00:00"
+      "assessed_at": "2026-11-13T19:08:56.459524+00:00"
     },
     {
       "requirement_id": "ART30-006",
@@ -181,26 +201,30 @@
           "section": "4. Incidents",
           "text": "ll cooperate fully with NBI in connection with any ICT incident report NBI is required to submit to Finanstilsynet or other competent authorities.\n\n## 5. Audit Rights\n\n**5.1** NBI shall have the right to audit Secu",
           "relevance_note": "Contains keyword: 'finanstilsynet'",
-          "page": null
+          "page": null,
+          "paragraph_num": 21
         },
         {
           "section": "8.",
           "text": "functions hosted by SecureVault are in scope, subject to reasonable operational safeguards.\n\n## 8. Regulatory Cooperation\n\n**8.1** SecureVault shall cooperate with Finanstilsynet, the Danish Resolution Authority, the Euro",
           "relevance_note": "Contains keyword: 'regulatory cooperation'",
-          "page": null
+          "page": null,
+          "paragraph_num": 33
         },
         {
           "section": "8. Regulatory Cooperation",
           "text": "nd any other competent authority with jurisdiction over NBI or SecureVault in connection with their supervisory activities.\n\n**8.2** SecureVault shall promptly notify NBI if SecureVault receives a regulatory inquiry or ins",
           "relevance_note": "Contains keyword: 'supervisory activities'",
-          "page": null
+          "page": null,
+          "paragraph_num": 34
         }
       ],
       "gap_description": "Evidence candidates found (finanstilsynet, regulatory cooperation, supervisory activities). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f4. Incidents, \u00b621",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.544840+00:00"
+      "assessed_at": "2026-11-13T19:08:56.460526+00:00"
     },
     {
       "requirement_id": "ART30-007",
@@ -213,46 +237,52 @@
           "section": "9. Termination",
           "text": "ored within 30 days; (c) insolvency event affecting SecureVault.\n\n**9.3** SecureVault shall provide exit assistance for a period of 12 months following termination, including data export, knowledge transfer and reas",
           "relevance_note": "Contains keyword: 'exit assistance'",
-          "page": null
+          "page": null,
+          "paragraph_num": 39
         },
         {
           "section": "9. Termination",
           "text": "ta export, knowledge transfer and reasonable transition support.\n\n**9.4** Upon final termination of exit period, SecureVault shall return all NBI data in a standard, machine-readable format (JSON/XML or as agree",
           "relevance_note": "Contains keyword: 'exit period'",
-          "page": null
+          "page": null,
+          "paragraph_num": 40
         },
         {
           "section": "9. Termination",
           "text": "period of 12 months following termination, including data export, knowledge transfer and reasonable transition support.\n\n**9.4** Upon final termination of exit period, SecureVault shall return all NBI data in a standar",
           "relevance_note": "Contains keyword: 'transition support'",
-          "page": null
+          "page": null,
+          "paragraph_num": 39
         }
       ],
       "gap_description": "Evidence candidates found (exit assistance, exit period, transition support). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f9. Termination, \u00b639",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.545043+00:00"
+      "assessed_at": "2026-11-13T19:08:56.460526+00:00"
     },
     {
       "requirement_id": "ART30-008",
       "requirement_article": "Art. 30(2)(h)",
       "requirement_summary": "ICT incident management provisions, including escalation and reporting, and obligations of the ICT third-party service p",
-      "status": "evidence_found",
+      "status": "ambiguous",
       "risk_level": null,
       "evidence": [
         {
           "section": "4. Incidents",
           "text": "ts\n\n**4.1** SecureVault shall notify NBI within **24 hours** of detecting any service disruption or security incident affecting NBI's data or service availability.\n\n**4.2** Notification shall include: incident descrip",
           "relevance_note": "Contains keyword: 'security incident'",
-          "page": null
+          "page": null,
+          "paragraph_num": 18
         }
       ],
-      "gap_description": "Evidence candidates found (within 24 hours, notify.*within, security incident). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
+      "gap_description": "Evidence found but passages do not clearly cover ICT incident notification AND the obligation to support the financial entity's regulatory incident reporting \u2014 human legal review required. DORA Art. 30(2)(h) requires both.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f4. Incidents, \u00b618",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.545177+00:00"
+      "assessed_at": "2026-11-13T19:08:56.460526+00:00"
     },
     {
       "requirement_id": "ART30-009",
@@ -265,20 +295,23 @@
           "section": "7. TLPT Cooperation",
           "text": "exercises and drills.\n\n## 7. TLPT Cooperation\n\nSecureVault acknowledges that NBI may be subject to Threat-Led Penetration Testing (TLPT) requirements under DORA Art. 26. SecureVault shall cooperate fully with TLPT exercises where",
           "relevance_note": "Contains keyword: 'threat-led penetration testing'",
-          "page": null
+          "page": null,
+          "paragraph_num": 32
         },
         {
           "section": "7.",
           "text": "**6.3** SecureVault shall cooperate with NBI's own business continuity exercises and drills.\n\n## 7. TLPT Cooperation\n\nSecureVault acknowledges that NBI may be subject to Threat-Led Penetration Testing (TL",
           "relevance_note": "Contains keyword: 'tlpt'",
-          "page": null
+          "page": null,
+          "paragraph_num": 31
         }
       ],
       "gap_description": "Evidence candidates found (threat-led penetration testing, tlpt). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f7. TLPT Cooperation, \u00b632",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.545291+00:00"
+      "assessed_at": "2026-11-13T19:08:56.460526+00:00"
     },
     {
       "requirement_id": "ART30-010",
@@ -291,20 +324,23 @@
           "section": "5. Audit Rights",
           "text": "t to Finanstilsynet or other competent authorities.\n\n## 5. Audit Rights\n\n**5.1** NBI shall have the right to audit SecureVault's compliance with this Agreement and applicable regulatory requirements, either directl",
           "relevance_note": "Contains keyword: 'right to audit'",
-          "page": null
+          "page": null,
+          "paragraph_num": 23
         },
         {
           "section": "5. Audit Rights",
           "text": "with this Agreement and applicable regulatory requirements, either directly or through a qualified third-party auditor appointed by NBI.\n\n**5.2** NBI shall provide at least **45 days** prior written notice for planned",
           "relevance_note": "Contains keyword: 'third-party auditor'",
-          "page": null
+          "page": null,
+          "paragraph_num": 23
         }
       ],
       "gap_description": "Partial evidence found (right to audit, third-party auditor) but gap indicators also detected (45 days). Clause may be insufficient \u2014 manual review required.",
       "remediation_suggestion": "Strengthen a contractual clause addressing ART30-010 (Audit rights). Obligation level: mandatory. Evidence criteria: Audit right clause is present; Financial entity has right to audit (directly or via third party); Competent authorities' right to audit is addressed.",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f5. Audit Rights, \u00b623",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.545455+00:00"
+      "assessed_at": "2026-11-13T19:08:56.460526+00:00"
     },
     {
       "requirement_id": "ART30-011",
@@ -317,26 +353,30 @@
           "section": "3. Data and Security",
           "text": "lability is measured as defined in Service Schedule 2 (SLA Metrics).\n\n**3.2 Quantitative targets:** Recovery Time Objective: 2 hours. Recovery Point Objective: 1 hour. These are measured and reported monthly.\n\n**3.3 Confide",
           "relevance_note": "Contains keyword: 'recovery time objective'",
-          "page": null
+          "page": null,
+          "paragraph_num": 13
         },
         {
           "section": "3. Data and Security",
           "text": "Service Schedule 2 (SLA Metrics).\n\n**3.2 Quantitative targets:** Recovery Time Objective: 2 hours. Recovery Point Objective: 1 hour. These are measured and reported monthly.\n\n**3.3 Confidentiality:** SecureVault shall ensur",
           "relevance_note": "Contains keyword: 'recovery point objective'",
-          "page": null
+          "page": null,
+          "paragraph_num": 13
         },
         {
           "section": "3. Data and Security",
           "text": "ervice locations.\n\n## 3. Data and Security\n\n**3.1 Availability:** SecureVault shall maintain 99.95% monthly availability for document retrieval services and 99.9% for ancillary services. Availability is measured as defin",
           "relevance_note": "Contains keyword: 'monthly availability'",
-          "page": null
+          "page": null,
+          "paragraph_num": 12
         }
       ],
       "gap_description": "Evidence candidates found (recovery time objective, recovery point objective, monthly availability). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f3. Data and Security, \u00b613",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.545585+00:00"
+      "assessed_at": "2026-11-13T19:08:56.461524+00:00"
     },
     {
       "requirement_id": "ART30-012",
@@ -349,26 +389,30 @@
           "section": "1. Services and Sub-contracting",
           "text": "tractor Register). SecureVault shall notify NBI of any intended changes to sub-contractors at least 60 days in advance. SecureVault remains fully responsible for the performance of all sub-contractors.\n\n## 2",
           "relevance_note": "Contains keyword: '60 days'",
-          "page": null
+          "page": null,
+          "paragraph_num": 7
         },
         {
           "section": "5. Audit Rights",
           "text": "h a qualified third-party auditor appointed by NBI.\n\n**5.2** NBI shall provide at least **45 days** prior written notice for planned audits, except in the case of incidents or regulatory requirements, where shorter notic",
           "relevance_note": "Contains keyword: 'prior written notice'",
-          "page": null
+          "page": null,
+          "paragraph_num": 24
         },
         {
           "section": "5. Audit Rights",
           "text": "alified third-party auditor appointed by NBI.\n\n**5.2** NBI shall provide at least **45 days** prior written notice for planned audits, except in the case of incidents or regulatory requirements, where shorter notic",
           "relevance_note": "Contains keyword: 'written notice'",
-          "page": null
+          "page": null,
+          "paragraph_num": 24
         }
       ],
       "gap_description": "Evidence candidates found (60 days, prior written notice, written notice). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f1. Services and Sub-contracting, \u00b67",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.545717+00:00"
+      "assessed_at": "2026-11-13T19:08:56.461524+00:00"
     },
     {
       "requirement_id": "ART30-013",
@@ -381,26 +425,30 @@
           "section": "6. Business Continuity",
           "text": "nuity Plan (BCP) and Disaster Recovery Plan (DRP) covering all Services.\n\n**6.2** SecureVault shall test the BCP and DRP at least **annually**, with live failover tests for critical systems. Test results and any identifi",
           "relevance_note": "Contains keyword: 'test the bcp and drp'",
-          "page": null
+          "page": null,
+          "paragraph_num": 29
         },
         {
           "section": "6. Business Continuity",
           "text": "nuity Plan (BCP) and Disaster Recovery Plan (DRP) covering all Services.\n\n**6.2** SecureVault shall test the BCP and DRP at least **annually**, with live failover tests for critical systems. Test results and any",
           "relevance_note": "Contains keyword: 'test the bcp'",
-          "page": null
+          "page": null,
+          "paragraph_num": 29
         },
         {
           "section": "6. Business Continuity",
           "text": "covering all Services.\n\n**6.2** SecureVault shall test the BCP and DRP at least **annually**, with live failover tests for critical systems. Test results and any identified remediation actions shall be provided t",
           "relevance_note": "Contains keyword: 'live failover'",
-          "page": null
+          "page": null,
+          "paragraph_num": 29
         }
       ],
       "gap_description": "Evidence candidates found (test the bcp and drp, test the bcp, live failover). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f6. Business Continuity, \u00b629",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.545927+00:00"
+      "assessed_at": "2026-11-13T19:08:56.461524+00:00"
     },
     {
       "requirement_id": "ART28-001",
@@ -413,20 +461,23 @@
           "section": "3. Data and Security",
           "text": "g authenticity and integrity of stored documents.\n\n**3.5 Security standard:** SecureVault maintains ISO 27001:2022 certification (certificate number: SV-DK-ISO-2024-001, renewal due June 2027) and complies wit",
           "relevance_note": "Contains keyword: 'iso 27001'",
-          "page": null
+          "page": null,
+          "paragraph_num": 16
         },
         {
           "section": "10. Data Processing Agreement",
           "text": "thorised persons is maintained and available on request.\n\n**10.4 Security:** SecureVault implements technical and organisational measures pursuant to GDPR Art. 32, including those described in Section 3 of this Agreement.\n\n**10.5 Sub-pro",
           "relevance_note": "Contains keyword: 'technical and organisational measures'",
-          "page": null
+          "page": null,
+          "paragraph_num": 45
         }
       ],
       "gap_description": "Evidence candidates found (iso 27001, technical and organisational measures). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f3. Data and Security, \u00b616",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.546062+00:00"
+      "assessed_at": "2026-11-13T19:08:56.461524+00:00"
     },
     {
       "requirement_id": "ART28-002",
@@ -439,20 +490,23 @@
           "section": "10. Data Processing Agreement",
           "text": "s the data controller. SecureVault is the data processor.\n\n**10.2 Instructions:** SecureVault shall process personal data only on documented instructions from NBI, except as required by EU or Danish law, in which case SecureVault shall notify NBI unless",
           "relevance_note": "Contains keyword: 'process personal data only on documented instructions'",
-          "page": null
+          "page": null,
+          "paragraph_num": 43
         },
         {
           "section": "10. Data Processing Agreement",
           "text": "SecureVault is the data processor.\n\n**10.2 Instructions:** SecureVault shall process personal data only on documented instructions from NBI, except as required by EU or Danish law, in which case SecureVault shall notify NBI unless proh",
           "relevance_note": "Contains keyword: 'only on documented instructions from'",
-          "page": null
+          "page": null,
+          "paragraph_num": 43
         }
       ],
       "gap_description": "Evidence candidates found (process personal data only on documented instructions, only on documented instructions from). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f10. Data Processing Agreement, \u00b643",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.546218+00:00"
+      "assessed_at": "2026-11-13T19:08:56.461524+00:00"
     },
     {
       "requirement_id": "ART28-003",
@@ -465,26 +519,30 @@
           "section": "3. Data and Security",
           "text": "**3.3 Confidentiality:** SecureVault shall ensure that all personnel with access to NBI data sign individual confidentiality agreements. SecureVault shall provide NBI with a list of personnel with access upon request.\n\n**3.4 Authentici",
           "relevance_note": "Contains keyword: 'individual confidentiality agreements'",
-          "page": null
+          "page": null,
+          "paragraph_num": 14
         },
         {
           "section": "10. Data Processing Agreement",
           "text": "t shall notify NBI unless prohibited.\n\n**10.3 Confidentiality:** SecureVault personnel are bound by written confidentiality agreements. A register of authorised persons is maintained and available on request.\n\n**10.4 Securi",
           "relevance_note": "Contains keyword: 'written confidentiality'",
-          "page": null
+          "page": null,
+          "paragraph_num": 44
         },
         {
           "section": "10. Data Processing Agreement",
           "text": "n which case SecureVault shall notify NBI unless prohibited.\n\n**10.3 Confidentiality:** SecureVault personnel are bound by written confidentiality agreements. A register of authorised persons is maintained and available on",
           "relevance_note": "Contains keyword: 'personnel are bound by'",
-          "page": null
+          "page": null,
+          "paragraph_num": 44
         }
       ],
       "gap_description": "Evidence candidates found (individual confidentiality agreements, written confidentiality, personnel are bound by). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f3. Data and Security, \u00b614",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.546401+00:00"
+      "assessed_at": "2026-11-13T19:08:56.462523+00:00"
     },
     {
       "requirement_id": "ART28-004",
@@ -497,26 +555,30 @@
           "section": "10. Data Processing Agreement",
           "text": "quest.\n\n**10.4 Security:** SecureVault implements technical and organisational measures pursuant to GDPR Art. 32, including those described in Section 3 of this Agreement.\n\n**10.5 Sub-processors:** SecureVault sh",
           "relevance_note": "Contains keyword: 'gdpr art. 32'",
-          "page": null
+          "page": null,
+          "paragraph_num": 45
         },
         {
           "section": "10. Data Processing Agreement",
           "text": ".\n\n**10.4 Security:** SecureVault implements technical and organisational measures pursuant to GDPR Art. 32, including those described in Section 3 of this Agreement.\n\n**10.5 Sub-processors:** SecureVault sh",
           "relevance_note": "Contains keyword: 'art. 32'",
-          "page": null
+          "page": null,
+          "paragraph_num": 45
         },
         {
           "section": "3. Data and Security",
           "text": "g authenticity and integrity of stored documents.\n\n**3.5 Security standard:** SecureVault maintains ISO 27001:2022 certification (certificate number: SV-DK-ISO-2024-001, renewal due June 2027) and complies wit",
           "relevance_note": "Contains keyword: 'iso 27001'",
-          "page": null
+          "page": null,
+          "paragraph_num": 16
         }
       ],
       "gap_description": "Evidence candidates found (gdpr art. 32, art. 32, iso 27001). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f10. Data Processing Agreement, \u00b645",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.546635+00:00"
+      "assessed_at": "2026-11-13T19:08:56.462523+00:00"
     },
     {
       "requirement_id": "ART28-005",
@@ -529,20 +591,23 @@
           "section": "10. Data Processing Agreement",
           "text": "rocessors:** SecureVault shall not engage sub-processors to process NBI personal data without NBI's prior specific or general written authorisation. Where general authorisation applies, SecureVault shall notify NBI of any intended sub-processor ch",
           "relevance_note": "Contains keyword: 'prior specific or general written authorisation'",
-          "page": null
+          "page": null,
+          "paragraph_num": 46
         },
         {
           "section": "10. Data Processing Agreement",
           "text": "shall notify NBI of any intended sub-processor changes at least 60 days in advance, giving NBI the right to object. Any approved sub-processor is subject to the same GDPR obligations as SecureVault under Art. 28(4)",
           "relevance_note": "Contains keyword: 'right to object'",
-          "page": null
+          "page": null,
+          "paragraph_num": 46
         }
       ],
       "gap_description": "Evidence candidates found (prior specific or general written authorisation, right to object). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f10. Data Processing Agreement, \u00b646",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.546806+00:00"
+      "assessed_at": "2026-11-13T19:08:56.462523+00:00"
     },
     {
       "requirement_id": "ART28-006",
@@ -555,26 +620,30 @@
           "section": "10. Data Processing Agreement",
           "text": "oved sub-processor is subject to the same GDPR obligations as SecureVault under Art. 28(4).\n\n**10.6 Data subject rights:** SecureVault shall assist NBI within 5 business days in responding to data subject rights request",
           "relevance_note": "Contains keyword: 'data subject rights'",
-          "page": null
+          "page": null,
+          "paragraph_num": 47
         },
         {
           "section": "10. Data Processing Agreement",
           "text": "as SecureVault under Art. 28(4).\n\n**10.6 Data subject rights:** SecureVault shall assist NBI within 5 business days in responding to data subject rights requests (access, erasure, rectification, restriction, portabi",
           "relevance_note": "Contains keyword: '5 business days'",
-          "page": null
+          "page": null,
+          "paragraph_num": 47
         },
         {
           "section": "10. Data Processing Agreement",
           "text": "ault shall assist NBI within 5 business days in responding to data subject rights requests (access, erasure, rectification, restriction, portability).\n\n**10.7 Breach notification:** SecureVault shall notify NBI of any pers",
           "relevance_note": "Contains keyword: 'erasure, rectification'",
-          "page": null
+          "page": null,
+          "paragraph_num": 47
         }
       ],
       "gap_description": "Evidence candidates found (data subject rights, 5 business days, erasure, rectification). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f10. Data Processing Agreement, \u00b647",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.547038+00:00"
+      "assessed_at": "2026-11-13T19:08:56.462523+00:00"
     },
     {
       "requirement_id": "ART28-007",
@@ -586,8 +655,9 @@
       "gap_description": "Evidence candidates found (within 24 hours of detection, within 24 hours of). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": null,
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.547109+00:00"
+      "assessed_at": "2026-11-13T19:08:56.463524+00:00"
     },
     {
       "requirement_id": "ART28-008",
@@ -600,20 +670,23 @@
           "section": "10. Data Processing Agreement",
           "text": "s likely to result in high risk.\n\n**10.9 Return and deletion:** Upon termination, SecureVault shall return or securely delete all personal data as directed by NBI, and provide written confirmation of deletion.\n\n**10.10 Intern",
           "relevance_note": "Contains keyword: 'return or securely delete'",
-          "page": null
+          "page": null,
+          "paragraph_num": 50
         },
         {
           "section": "9. Termination",
           "text": "hall return all NBI data in a standard, machine-readable format (JSON/XML or as agreed) and provide certified confirmation of deletion of all copies.\n\n## 10. Data Processing Agreement\n\n**10.1 Roles:** NBI is the data controller. Secur",
           "relevance_note": "Contains keyword: 'certified confirmation of deletion'",
-          "page": null
+          "page": null,
+          "paragraph_num": 40
         }
       ],
       "gap_description": "Evidence candidates found (return or securely delete, certified confirmation of deletion, certif.*deletion). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f10. Data Processing Agreement, \u00b650",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.547306+00:00"
+      "assessed_at": "2026-11-13T19:08:56.463524+00:00"
     },
     {
       "requirement_id": "ART28-009",
@@ -626,20 +699,23 @@
           "section": "10. Data Processing Agreement",
           "text": "hall make available all information necessary to demonstrate compliance with GDPR Art. 28 and shall allow and contribute to audits under Clause 5.\n\n## 11. Governing Law\n\nThis Agreement is governed by Danish law. The Copenhagen Cit",
           "relevance_note": "Contains keyword: 'allow and contribute to audits'",
-          "page": null
+          "page": null,
+          "paragraph_num": 52
         },
         {
           "section": "10. Data Processing Agreement",
           "text": "decision or SCCs).\n\n**10.11 Audit:** SecureVault shall make available all information necessary to demonstrate compliance with GDPR Art. 28 and shall allow and contribute to audits under Clause 5.\n\n## 11. Governing Law\n\nThis Agreem",
           "relevance_note": "Contains keyword: 'demonstrate compliance with gdpr'",
-          "page": null
+          "page": null,
+          "paragraph_num": 52
         }
       ],
       "gap_description": "Evidence candidates found (allow and contribute to audits, demonstrate compliance with gdpr, demonstrate compliance with.*art. 28). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f10. Data Processing Agreement, \u00b652",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.547559+00:00"
+      "assessed_at": "2026-11-13T19:08:56.463524+00:00"
     },
     {
       "requirement_id": "ART28-010",
@@ -652,20 +728,23 @@
           "section": "10. Data Processing Agreement",
           "text": "st 60 days in advance, giving NBI the right to object. Any approved sub-processor is subject to the same GDPR obligations as SecureVault under Art. 28(4).\n\n**10.6 Data subject rights:** SecureVault shall assist NBI within",
           "relevance_note": "Contains keyword: 'same gdpr obligations'",
-          "page": null
+          "page": null,
+          "paragraph_num": 46
         },
         {
           "section": "10. Data Processing Agreement",
           "text": "to object. Any approved sub-processor is subject to the same GDPR obligations as SecureVault under Art. 28(4).\n\n**10.6 Data subject rights:** SecureVault shall assist NBI within 5 business days in responding t",
           "relevance_note": "Contains keyword: 'art. 28(4)'",
-          "page": null
+          "page": null,
+          "paragraph_num": 46
         }
       ],
       "gap_description": "Evidence candidates found (same gdpr obligations, art. 28(4)). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f10. Data Processing Agreement, \u00b646",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.547729+00:00"
+      "assessed_at": "2026-11-13T19:08:56.463524+00:00"
     },
     {
       "requirement_id": "ART28-011",
@@ -678,34 +757,38 @@
           "section": "10. Data Processing Agreement",
           "text": "transferred outside the EEA without NBI's prior written consent and appropriate transfer mechanism (adequacy decision or SCCs).\n\n**10.11 Audit:** SecureVault shall make available all information necessary to demonstrate compl",
           "relevance_note": "Contains keyword: 'adequacy decision or sccs'",
-          "page": null
+          "page": null,
+          "paragraph_num": 51
         },
         {
           "section": "10. Data Processing Agreement",
           "text": "directed by NBI, and provide written confirmation of deletion.\n\n**10.10 International transfers:** No personal data shall be transferred outside the EEA without NBI's prior written consent and appropriate transfer mechanism (adequacy decision or SCCs).",
           "relevance_note": "Contains keyword: 'no personal data shall be transferred outside the eea'",
-          "page": null
+          "page": null,
+          "paragraph_num": 51
         },
         {
           "section": "10. Data Processing Agreement",
           "text": "directed by NBI, and provide written confirmation of deletion.\n\n**10.10 International transfers:** No personal data shall be transferred outside the EEA without NBI's prior written consent and appropriate transfer mechanism (adequacy decision o",
           "relevance_note": "Contains keyword: 'no personal data shall be transferred outside'",
-          "page": null
+          "page": null,
+          "paragraph_num": 51
         }
       ],
       "gap_description": "Evidence candidates found (adequacy decision or sccs, no personal data shall be transferred outside the eea, no personal data shall be transferred outside). Keyword matching cannot confirm compliance \u2014 human review of clause text required.",
       "remediation_suggestion": "",
       "na_rationale": null,
+      "source_location": "\u00a7\u202f10. Data Processing Agreement, \u00b651",
       "assessed_by": "gamma7-engine-v1",
-      "assessed_at": "2026-11-09T13:22:32.548028+00:00"
+      "assessed_at": "2026-11-13T19:08:56.464523+00:00"
     }
   ],
   "overall_status": "ambiguous",
   "summary_stats": {
     "satisfied": 0,
-    "evidence_found": 23,
+    "evidence_found": 22,
     "missing": 0,
-    "ambiguous": 1,
+    "ambiguous": 2,
     "na": 0,
     "not_assessed": 0
   },

@@ -294,13 +294,17 @@ _EVIDENCE_VALIDATION_SPECS: dict[str, dict] = {
             re.IGNORECASE,
         ),
         "passage_good": re.compile(
-            r"ict.{0,30}incident|major.{0,20}incident|incident.{0,30}notif|"
-            r"notif.{0,60}incident|regulatory.{0,30}report|supervis|dora|"
-            r"incident.{0,30}manag",
+            r"ict.{0,30}incident|major.{0,20}incident|regulatory.{0,30}report|"
+            r"supervis|dora|incident.{0,30}manag",
             re.IGNORECASE,
         ),
         # For this requirement a good section is NOT enough on its own — the
         # passage body must also confirm ICT/regulatory scope.
+        # NOTE: "incident.{0,30}notif" and "notif.{0,60}incident" were removed:
+        # generic "Written incident notification to Client's incident response team"
+        # (provider-side severity-scheme notifications) does NOT satisfy DORA
+        # Art. 30(2)(h), which requires ICT-specific incidents AND support for
+        # the financial entity's regulatory reporting to supervisors.
         "require_passage_in_good_section": True,
         "downgrade_reason": (
             "Evidence found but passages do not clearly cover ICT incident notification "

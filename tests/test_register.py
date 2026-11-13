@@ -44,6 +44,27 @@ def test_risky_is_ready_when_you_send_to_risky():
     assert company_status(CO, [p("risky")], [], [], [])[0] == "Not contacted"
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("blocked", [False, True])
+async def test_reviewed_research_fit_never_overrides_exclusion(blocked):
+    import json
+    config = SimpleNamespace(research_only=True,
+        icp=SimpleNamespace(industries=[], titles=[], hiring_signals=[]),
+        compliance=SimpleNamespace(do_not_contact=['acme.example'] if blocked else []))
+    async def query(sql, params=()):
+        if 'FROM companies' in sql:
+            return [CO]
+        if 'FROM settings' in sql:
+            return [{'key': 'supervised_fit:c1', 'value': json.dumps({
+                'score': 91, 'reviewed_by': 'supervised test', 'reviewed_at': '2026-11-05',
+                'reasons': ['Source-backed service fit']})}]
+        return []
+    row, = await build_register(query, config)
+    assert row['fit'] == (0 if blocked else 91)
+    if not blocked:
+        assert 'not a compliance-risk rating' in row['fit_reasons'][0]
+
+
 def test_an_opt_out_is_not_shown_as_emailed():
     status, why = company_status(CO, [p(status="opted_out")], [{"status": "sent"}], [], [])
     assert status == "Opted out" and "asked not to be emailed" in why
