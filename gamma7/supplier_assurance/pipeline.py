@@ -38,6 +38,7 @@ class PipelineResult:
     warnings: list[str]
     overlay_decisions: list = field(default_factory=list)
     overlay_summary: dict = field(default_factory=dict)
+    assessments: list = field(default_factory=list)
 
 
 class SupplierAssurancePipeline:
@@ -145,6 +146,19 @@ class SupplierAssurancePipeline:
         if output_dir:
             output_paths = {k: str(v) for k, v in save_report(analysis, output_dir, stem=c_id).items()}
 
+        raw_assessments = [
+            {
+                "requirement_id": a.requirement_id,
+                "requirement_article": a.requirement_article,
+                "requirement_summary": a.requirement_summary,
+                "status": a.status.value,
+                "risk_level": a.risk_level.value if a.risk_level else None,
+                "gap_description": a.gap_description,
+                "remediation_suggestion": a.remediation_suggestion,
+            }
+            for a in (analysis.assessments or [])
+        ]
+
         return PipelineResult(
             analysis_id=analysis.analysis_id,
             contract_path=str(path),
@@ -157,6 +171,7 @@ class SupplierAssurancePipeline:
             warnings=warnings,
             overlay_decisions=overlay_decisions,
             overlay_summary=overlay_summary,
+            assessments=raw_assessments,
         )
 
     def run_batch(

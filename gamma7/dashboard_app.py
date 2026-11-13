@@ -143,6 +143,15 @@ def get_analysis(key: str):
     raise HTTPException(status_code=404, detail=f"Analysis '{key}' not found")
 
 
+@app.get("/api/analyses/{key}/assessments")
+def get_analysis_assessments(key: str):
+    """Return structured per-requirement assessments for a contract analysis."""
+    for r in _pipeline_results:
+        if r.analysis_id == key or pathlib.Path(r.contract_path).stem == key:
+            return {"assessments": getattr(r, "assessments", [])}
+    raise HTTPException(status_code=404, detail=f"Analysis '{key}' not found")
+
+
 @app.post("/api/analyse")
 async def analyse_upload(file: UploadFile = File(...)):
     """Accept a contract file upload, run the pipeline, return result JSON, and add to in-memory state."""
@@ -445,6 +454,43 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   .five-c strong { color: var(--text); }
   .btn { background: var(--accent); color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-block; }
   .btn:hover { opacity: 0.85; }
+
+  /* Tooltip */
+  .tooltip-wrap { position: relative; display: inline-flex; align-items: center; gap: 4px; cursor: default; }
+  .tooltip-icon { color: var(--muted); font-size: 11px; cursor: help; }
+  .tooltip-box {
+    display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    background: #2a2d45; border: 1px solid var(--border); border-radius: 6px;
+    padding: 8px 12px; font-size: 12px; color: var(--text); white-space: normal;
+    width: 220px; z-index: 100; line-height: 1.5; margin-top: 4px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4); font-weight: 400; text-transform: none; letter-spacing: 0;
+  }
+  .tooltip-wrap:hover .tooltip-box { display: block; }
+
+  /* Control strength badges */
+  .ctrl-effective { background: #0d2a0d; color: var(--green); }
+  .ctrl-partial   { background: #2d2200; color: var(--yellow); }
+  .ctrl-weak      { background: #2d1515; color: var(--red); }
+
+  /* Residual risk badges */
+  .res-high   { background: #3b1515; color: var(--red); font-weight: 700; }
+  .res-medium { background: #2d1b00; color: var(--orange); }
+  .res-low    { background: #0d2a0d; color: var(--green); }
+
+  /* Tab content header */
+  .tab-header { margin-bottom: 16px; }
+  .tab-header h2 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .tab-header p  { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* Findings table inside detail panel */
+  .findings-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  .findings-table th { text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--border); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+  .findings-table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .findings-table tr:last-child td { border-bottom: none; }
+  .status-missing   { color: var(--red); }
+  .status-ambiguous { color: var(--yellow); }
+  .status-satisfied { color: var(--green); }
+  .status-na        { color: var(--muted); }
 </style>
 </head>
 <body>
@@ -476,9 +522,15 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>Supplier</th><th>Classification</th><th>Status</th><th>Missing</th><th>Satisfied</th>
+          <th>Supplier</th>
+          <th><span class="tooltip-wrap">Classification<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Critical/Important:</strong> ICT-funktion er kritisk for finansielle kerneprocesser — strengere DORA Art. 30-krav gælder.<br><br><strong>Non-critical:</strong> Understøttende funktion — færre obligatoriske klausuler.</span></span></th>
+          <th>Status</th>
+          <th><span class="tooltip-wrap">Missing<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Antal DORA/GDPR-krav, der ikke er fundet i kontrakten. Klik på rækken under Contracts for at se præcis hvilke krav der mangler og hvad der bør tilføjes.</span></span></th>
+          <th>Satisfied</th>
+          <th><span class="tooltip-wrap">Control Strength<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Effective:</strong> 0 manglende krav.<br><strong>Partially Effective:</strong> 1–5 mangler.<br><strong>Weak Controls:</strong> 6+ mangler.</span></span></th>
+          <th><span class="tooltip-wrap">Residual Risk<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Kombinerer klassifikation og control strength.<br><strong>High:</strong> Kritisk + Weak Controls.<br><strong>Medium:</strong> Kritisk + Partial, eller Non-critical + Weak.<br><strong>Low:</strong> Øvrige.</span></span></th>
         </tr></thead>
-        <tbody id="overview-table"><tr><td colspan="5" class="empty">Loading&#8230;</td></tr></tbody>
+        <tbody id="overview-table"><tr><td colspan="7" class="empty">Loading&#8230;</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -496,9 +548,14 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>Analysis ID</th><th>Supplier</th><th>Contract</th><th>Classification</th><th>Status</th><th>Missing</th>
+          <th>Analysis ID</th><th>Supplier</th><th>Contract</th>
+          <th><span class="tooltip-wrap">Classification<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Critical/Important:</strong> ICT-funktion er kritisk for finansielle kerneprocesser — strengere DORA Art. 30-krav gælder.<br><br><strong>Non-critical:</strong> Understøttende funktion — færre obligatoriske klausuler.</span></span></th>
+          <th>Status</th>
+          <th><span class="tooltip-wrap">Missing<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Antal DORA/GDPR-krav, der ikke er fundet i kontrakten. Klik på rækken for at se præcis hvilke krav der mangler og hvad der bør tilføjes.</span></span></th>
+          <th><span class="tooltip-wrap">Control Strength<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Effective:</strong> 0 manglende krav.<br><strong>Partially Effective:</strong> 1–5 mangler.<br><strong>Weak Controls:</strong> 6+ mangler.</span></span></th>
+          <th><span class="tooltip-wrap">Residual Risk<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Kombinerer klassifikation og control strength.<br><strong>High:</strong> Kritisk + Weak Controls.<br><strong>Medium:</strong> Kritisk + Partial, eller Non-critical + Weak.<br><strong>Low:</strong> Øvrige.</span></span></th>
         </tr></thead>
-        <tbody id="contracts-table"><tr><td colspan="6" class="empty">Loading&#8230;</td></tr></tbody>
+        <tbody id="contracts-table"><tr><td colspan="8" class="empty">Loading&#8230;</td></tr></tbody>
       </table>
     </div>
     <div id="contract-detail" class="detail-panel"></div>
@@ -506,6 +563,10 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
 
   <!-- Register tab -->
   <div id="tab-register" class="tab-pane">
+    <div class="tab-header">
+      <h2>ICT Third-Party Register — DORA Art. 28(3)</h2>
+      <p>DORA forpligter finansielle virksomheder til at føre et register over alle ICT-tredjepartsleverandører. Registret skal indeholde oplysninger om servicetype, klassifikation (kritisk/vigtig vs. ikke-kritisk), kontraktreference og dokumentation for exitstrategi. <strong>Reconciliation-fanen</strong> viser, om registerposterne matcher de kontrakter, der er analyseret.</p>
+    </div>
     <div class="table-wrap">
       <table>
         <thead><tr>
@@ -519,16 +580,28 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
 
   <!-- Reconciliation tab -->
   <div id="tab-reconciliation" class="tab-pane">
+    <div class="tab-header">
+      <h2>Registerafstemning — ICT Register vs. kontraktanalyser</h2>
+      <p>Afstemningen kontrollerer, om alle leverandører i ICT-registret har en tilsvarende DORA-vurdering, og om der omvendt er analyserede kontrakter, der mangler en registerpost. <strong>Register only:</strong> leverandør i registret uden analyse — kræver opfølgning. <strong>Contract only:</strong> analyse uden registerpost — skal tilføjes til registret.</p>
+    </div>
     <div id="recon-content"><div class="loading">Loading reconciliation&#8230;</div></div>
   </div>
 
   <!-- Working Papers tab (Agent 4) -->
   <div id="tab-workpapers" class="tab-pane">
+    <div class="tab-header">
+      <h2>Working Papers — Agent 2: Supplier Assurance</h2>
+      <p>IIA 5-C revisionsdokumentation: <strong>Condition</strong> (hvad er observeret), <strong>Criteria</strong> (krav / standard), <strong>Cause</strong> (årsag til afvigelse), <strong>Effect</strong> (konsekvens), <strong>Recommendation</strong> (anbefalet handling). Klik på et kontrolmål for at se de fulde findings og testresultater. <strong>Control Strength</strong> beregnes ud fra antal manglende krav; <strong>Residual Risk</strong> kombinerer klassifikation og control strength.</p>
+    </div>
     <div id="wp-content"><div class="loading">Loading working papers&#8230;</div></div>
   </div>
 
   <!-- Audit Intelligence tab (Agent 4) -->
   <div id="tab-audit" class="tab-pane">
+    <div class="tab-header">
+      <h2>Audit Intelligence — Agent 4: Intern Revisionsplanlægning</h2>
+      <p>Agent 4 understøtter intern revision efter ISACA/IIA/COSO: audit universe, risikovurdering, revisionsprogrammer, kontroltest og ISAE 3402-rapportering. 3×3 risk matrix: Likelihood × Impact (1–9). Heatmappen viser iboende risiko × testresultat. <em>Agent 2 (Working Papers) dækker leverandørsikring; Agent 4 dækker den bredere interne revisionsproces.</em></p>
+    </div>
     <div id="audit-content"><div class="loading">Loading audit intelligence…</div></div>
   </div>
 </main>
@@ -557,6 +630,50 @@ function classBadge(cls) {
   return `<span class="badge ${c}">${label}</span>`;
 }
 
+// Control Strength helpers (based on missing count from summary)
+function controlStrength(missing) {
+  if (missing === 0) return 'Effective';
+  if (missing <= 5) return 'Partially Effective';
+  return 'Weak Controls';
+}
+function controlStrengthClass(missing) {
+  if (missing === 0) return 'ctrl-effective';
+  if (missing <= 5) return 'ctrl-partial';
+  return 'ctrl-weak';
+}
+
+// Residual Risk helpers (based on classification + missing count)
+function residualRisk(classification, missing) {
+  const isCritical = classification === 'critical_important';
+  const cs = controlStrength(missing);
+  if (isCritical && cs === 'Weak Controls') return 'High';
+  if ((isCritical && cs === 'Partially Effective') || (!isCritical && cs === 'Weak Controls')) return 'Medium';
+  return 'Low';
+}
+function residualRiskClass(classification, missing) {
+  const rr = residualRisk(classification, missing);
+  if (rr === 'High') return 'res-high';
+  if (rr === 'Medium') return 'res-medium';
+  return 'res-low';
+}
+
+// Working Papers variants (based on finding counts from workpaper data)
+function controlStrengthWP(missing) { return controlStrength(missing); }
+function controlStrengthClassWP(missing) { return controlStrengthClass(missing); }
+function residualRiskWP(inherentRisk, missing) {
+  const isHigh = inherentRisk === 'CRITICAL' || inherentRisk === 'HIGH';
+  const cs = controlStrength(missing);
+  if (isHigh && cs === 'Weak Controls') return 'High';
+  if ((isHigh && cs === 'Partially Effective') || (!isHigh && cs === 'Weak Controls')) return 'Medium';
+  return 'Low';
+}
+function residualRiskClassWP(inherentRisk, missing) {
+  const rr = residualRiskWP(inherentRisk, missing);
+  if (rr === 'High') return 'res-high';
+  if (rr === 'Medium') return 'res-medium';
+  return 'res-low';
+}
+
 async function loadOverview() {
   const [analysisRes, registerRes, reconRes] = await Promise.all([
     fetch('/api/analyses'),
@@ -580,43 +697,115 @@ async function loadOverview() {
   // Overview table
   const tbody = document.getElementById('overview-table');
   if (!analyses.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="empty">No analyses loaded</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">No analyses loaded</td></tr>';
   } else {
-    tbody.innerHTML = analyses.map(a => `<tr>
-      <td>${a.supplier_name}</td>
-      <td>${classBadge(a.classification)}</td>
-      <td>${statusBadge(a.overall_status)}</td>
-      <td>${a.summary ? a.summary.missing || 0 : 0}</td>
-      <td>${a.summary ? a.summary.satisfied || 0 : 0}</td>
-    </tr>`).join('');
+    tbody.innerHTML = analyses.map(a => {
+      const miss = a.summary ? (a.summary.missing || 0) : 0;
+      const cs = controlStrength(miss);
+      const csC = controlStrengthClass(miss);
+      const rr = residualRisk(a.classification, miss);
+      const rrC = residualRiskClass(a.classification, miss);
+      return `<tr>
+        <td>${a.supplier_name}</td>
+        <td>${classBadge(a.classification)}</td>
+        <td>${statusBadge(a.overall_status)}</td>
+        <td>${miss}</td>
+        <td>${a.summary ? a.summary.satisfied || 0 : 0}</td>
+        <td><span class="badge ${csC}">${cs}</span></td>
+        <td><span class="badge ${rrC}">${rr}</span></td>
+      </tr>`;
+    }).join('');
   }
 }
 
 async function loadContracts() {
   const tbody = document.getElementById('contracts-table');
   if (!analyses.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty">No analyses loaded</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="empty">No analyses loaded</td></tr>';
     return;
   }
-  tbody.innerHTML = analyses.map(a => `<tr onclick="showContractDetail('${a.contract_key || a.analysis_id}')">
-    <td><code>${a.analysis_id}</code></td>
-    <td>${a.supplier_name}</td>
-    <td style="color:var(--muted);font-size:12px">${(a.contract_path.replace(/\\\\/g,'/').split('/').pop())}</td>
-    <td>${classBadge(a.classification)}</td>
-    <td>${statusBadge(a.overall_status)}</td>
-    <td>${a.summary ? a.summary.missing || 0 : 0}</td>
-  </tr>`).join('');
+  tbody.innerHTML = analyses.map(a => {
+    const miss = a.summary ? (a.summary.missing || 0) : 0;
+    const cs = controlStrength(miss);
+    const csC = controlStrengthClass(miss);
+    const rr = residualRisk(a.classification, miss);
+    const rrC = residualRiskClass(a.classification, miss);
+    return `<tr onclick="showContractDetail('${a.contract_key || a.analysis_id}')">
+      <td><code>${a.analysis_id}</code></td>
+      <td>${a.supplier_name}</td>
+      <td style="color:var(--muted);font-size:12px">${(a.contract_path.replace(/\\\\/g,'/').split('/').pop())}</td>
+      <td>${classBadge(a.classification)}</td>
+      <td>${statusBadge(a.overall_status)}</td>
+      <td>${miss}</td>
+      <td><span class="badge ${csC}">${cs}</span></td>
+      <td><span class="badge ${rrC}">${rr}</span></td>
+    </tr>`;
+  }).join('');
 }
 
 async function showContractDetail(id) {
   const panel = document.getElementById('contract-detail');
-  const res = await fetch('/api/analyses/' + id);
-  const data = await res.json();
   panel.className = 'detail-panel open';
+  panel.innerHTML = '<div class="loading" style="padding:20px">Loading&#8230;</div>';
+
+  const [detailRes, assessRes] = await Promise.all([
+    fetch('/api/analyses/' + encodeURIComponent(id)),
+    fetch('/api/analyses/' + encodeURIComponent(id) + '/assessments'),
+  ]);
+  if (!detailRes.ok) { panel.innerHTML = '<div class="empty">Not found.</div>'; return; }
+  const data = await detailRes.json();
+  const assessData = assessRes.ok ? await assessRes.json() : {assessments: []};
+  const assessments = assessData.assessments || [];
+
+  const miss = data.summary ? (data.summary.missing || 0) : 0;
+  const cs = controlStrength(miss);
+  const csC = controlStrengthClass(miss);
+  const rr = residualRisk(data.classification, miss);
+  const rrC = residualRiskClass(data.classification, miss);
+
+  const statusLabel = s => ({missing:'Mangler',ambiguous:'Tvetydig',satisfied:'Opfyldt',na:'N/A',not_assessed:'Ikke vurderet'}[s]||s);
+  const statusCls   = s => ({missing:'status-missing',ambiguous:'status-ambiguous',satisfied:'status-satisfied',na:'status-na'}[s]||'');
+  const riskLabel   = r => r ? r.replace(/_/g,' ') : '—';
+
+  const findingsRows = assessments.filter(a => a.status !== 'satisfied' && a.status !== 'na').map(a => `
+    <tr>
+      <td style="font-size:12px;white-space:nowrap"><code>${a.requirement_id||''}</code></td>
+      <td style="font-size:12px;color:var(--muted)">${a.requirement_article||''}</td>
+      <td style="font-size:12px">${a.requirement_summary||''}</td>
+      <td class="${statusCls(a.status)}" style="font-size:12px;white-space:nowrap">${statusLabel(a.status)}</td>
+      <td style="font-size:12px">${riskLabel(a.risk_level)}</td>
+      <td style="font-size:12px;color:var(--muted)">${a.gap_description||'—'}</td>
+      <td style="font-size:12px;color:var(--accent)">${a.remediation_suggestion||'—'}</td>
+    </tr>`).join('');
+
+  const hasFindings = findingsRows.length > 0;
+
   panel.innerHTML = `
-    <h3>${data.supplier_name} — ${data.analysis_id}</h3>
-    ${data.warnings && data.warnings.length ? `<p style="color:var(--orange);margin-bottom:8px">&#9888; ${data.warnings.join(' | ')}</p>` : ''}
-    <pre>${data.markdown_report || '(no report)'}</pre>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:12px;flex-wrap:wrap">
+      <div>
+        <h3 style="margin-bottom:4px">${data.supplier_name} — ${data.analysis_id}</h3>
+        <span style="font-size:12px;color:var(--muted)">${data.classification==='critical_important'?'Critical/Important':'Non-critical'} · ${data.overall_status}</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span class="badge ${csC}">${cs}</span>
+        <span class="badge ${rrC}">Residual Risk: ${rr}</span>
+      </div>
+    </div>
+    ${data.warnings && data.warnings.length ? `<p style="color:var(--orange);margin-bottom:12px;font-size:13px">&#9888; ${data.warnings.join(' | ')}</p>` : ''}
+    ${hasFindings ? `
+      <div style="margin-bottom:16px">
+        <div class="section-title" style="margin-bottom:8px">Manglende/tvetydige krav (${findingsRows ? assessments.filter(a=>a.status!=='satisfied'&&a.status!=='na').length : 0})</div>
+        <div style="overflow-x:auto"><table class="findings-table">
+          <thead><tr>
+            <th>Krav-ID</th><th>Artikel</th><th>Beskrivelse</th><th>Status</th><th>Risiko</th><th>Hvad mangler</th><th>Anbefalet remedy</th>
+          </tr></thead>
+          <tbody>${findingsRows}</tbody>
+        </table></div>
+      </div>` : '<p style="color:var(--green);margin-bottom:16px;font-size:13px">&#10003; Alle krav er opfyldt eller N/A.</p>'}
+    <details style="margin-top:8px">
+      <summary style="cursor:pointer;color:var(--muted);font-size:12px;user-select:none">&#9654; Vis fuld analyserapport (Markdown)</summary>
+      <pre style="margin-top:8px">${(data.markdown_report||'(ingen rapport)').replace(/</g,'&lt;')}</pre>
+    </details>
   `;
 }
 
@@ -742,16 +931,24 @@ async function loadWorkPapers() {
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>Control ID</th><th>Title</th><th>Domain</th><th>Inherent Risk</th><th>Result</th><th>Findings</th>
+          <th>Control ID</th><th>Title</th><th>Domain</th><th>Inherent Risk</th><th>Result</th><th>Findings</th><th>Control Strength</th><th>Residual Risk</th>
         </tr></thead>
-        <tbody>${data.work_papers.map(wp => `<tr onclick="showWPDetail('${wp.control_id}')" style="cursor:pointer">
-          <td><code>${wp.control_id}</code></td>
-          <td>${wp.control_title}</td>
-          <td style="color:var(--muted);font-size:12px">${wp.control_domain}</td>
-          <td class="${riskClass(wp.inherent_risk)}">${wp.inherent_risk}</td>
-          <td class="${resultClass(wp.test_result)}">${resultIcon(wp.test_result)} ${wp.test_result.replace(/_/g,' ')}</td>
-          <td>${wp.open_finding_count>0?`<span style="color:var(--orange)">${wp.finding_count} (${wp.open_finding_count} open)</span>`:wp.finding_count>0?wp.finding_count:''}</td>
-        </tr>`).join('')}</tbody>
+        <tbody>${data.work_papers.map(wp => {
+          const cs = controlStrengthWP(wp.open_finding_count);
+          const csC = controlStrengthClassWP(wp.open_finding_count);
+          const rr = residualRiskWP(wp.inherent_risk, wp.open_finding_count);
+          const rrC = residualRiskClassWP(wp.inherent_risk, wp.open_finding_count);
+          return `<tr onclick="showWPDetail('${wp.control_id}')" style="cursor:pointer">
+            <td><code>${wp.control_id}</code></td>
+            <td>${wp.control_title}</td>
+            <td style="color:var(--muted);font-size:12px">${wp.control_domain}</td>
+            <td class="${riskClass(wp.inherent_risk)}">${wp.inherent_risk}</td>
+            <td class="${resultClass(wp.test_result)}">${resultIcon(wp.test_result)} ${wp.test_result.replace(/_/g,' ')}</td>
+            <td>${wp.open_finding_count>0?`<span style="color:var(--orange)">${wp.finding_count} (${wp.open_finding_count} open)</span>`:wp.finding_count>0?wp.finding_count:''}</td>
+            <td><span class="badge ${csC}">${cs}</span></td>
+            <td><span class="badge ${rrC}">${rr}</span></td>
+          </tr>`;
+        }).join('')}</tbody>
       </table>
     </div>
     <div id="wp-detail" class="detail-panel"></div>
@@ -948,15 +1145,23 @@ async function loadAuditIntelligence() {
     + '</div>'
     + (hmHtml ? '<div style="margin-bottom:20px">' + hmHtml + '</div>' : '')
     + '<div class="section-title" style="margin-bottom:12px">Audit Universe (AU01–AU' + String(wpData.total_controls).padStart(2,'0') + ')</div>'
-    + '<div class="table-wrap"><table><thead><tr><th>Control ID</th><th>Title</th><th>Domain</th><th>Risk</th><th>Result</th><th>Open Findings</th></tr></thead><tbody>'
-    + wpData.work_papers.map(wp => '<tr data-id="' + wp.control_id + '" onclick="showWPDetail(this.dataset.id)" style="cursor:pointer">'
-      + '<td><code>' + wp.control_id + '</code></td>'
-      + '<td>' + wp.control_title + '</td>'
-      + '<td style="color:var(--muted);font-size:12px">' + wp.control_domain + '</td>'
-      + '<td class="' + riskClass(wp.inherent_risk) + '">' + wp.inherent_risk + '</td>'
-      + '<td>' + resultIcon(wp.test_result) + ' ' + wp.test_result.replace(/_/g,' ') + '</td>'
-      + '<td>' + (wp.open_finding_count>0?'<span style="color:var(--orange)">' + wp.open_finding_count + '</span>':'—') + '</td>'
-      + '</tr>').join('')
+    + '<div class="table-wrap"><table><thead><tr><th>Control ID</th><th>Title</th><th>Domain</th><th>Risk</th><th>Result</th><th>Open Findings</th><th>Control Strength</th><th>Residual Risk</th></tr></thead><tbody>'
+    + wpData.work_papers.map(wp => {
+        const cs = controlStrengthWP(wp.open_finding_count);
+        const csC = controlStrengthClassWP(wp.open_finding_count);
+        const rr = residualRiskWP(wp.inherent_risk, wp.open_finding_count);
+        const rrC = residualRiskClassWP(wp.inherent_risk, wp.open_finding_count);
+        return '<tr data-id="' + wp.control_id + '" onclick="showWPDetail(this.dataset.id)" style="cursor:pointer">'
+          + '<td><code>' + wp.control_id + '</code></td>'
+          + '<td>' + wp.control_title + '</td>'
+          + '<td style="color:var(--muted);font-size:12px">' + wp.control_domain + '</td>'
+          + '<td class="' + riskClass(wp.inherent_risk) + '">' + wp.inherent_risk + '</td>'
+          + '<td>' + resultIcon(wp.test_result) + ' ' + wp.test_result.replace(/_/g,' ') + '</td>'
+          + '<td>' + (wp.open_finding_count>0?'<span style="color:var(--orange)">' + wp.open_finding_count + '</span>':'—') + '</td>'
+          + '<td><span class="badge ' + csC + '">' + cs + '</span></td>'
+          + '<td><span class="badge ' + rrC + '">' + rr + '</span></td>'
+          + '</tr>';
+      }).join('')
     + '</tbody></table></div>'
     + (openFindings.length ? '<div style="margin-top:20px"><div class="section-title" style="margin-bottom:12px">Open Findings Summary</div>'
       + openFindings.map(wp => '<div class="finding-row"><h4><code>' + wp.control_id + '</code> — ' + wp.control_title + '</h4><div class="finding-meta"><span class="badge" style="background:var(--surface2);color:var(--orange)">' + wp.open_finding_count + ' open finding' + (wp.open_finding_count>1?'s':'') + '</span><span class="badge badge-' + (wp.inherent_risk==='CRITICAL'?'critical':'gaps') + '">' + wp.inherent_risk + '</span></div></div>').join('')
@@ -997,6 +1202,7 @@ def _load_results_from_dir(results_dir: pathlib.Path) -> list[PipelineResult]:
                 output_paths={},
                 markdown_report=data.get("markdown_report", ""),
                 warnings=data.get("warnings", []),
+                assessments=data.get("assessments", []),
             ))
         except Exception:
             pass
