@@ -1,5 +1,5 @@
 {
-  "run_date": "2026-11-09T13:22:32.519693+00:00",
+  "run_date": "2026-11-13T14:10:55.654638+00:00",
   "engine_version": "gamma7-engine-v2",
   "mode": "heuristic",
   "in_sample": {
@@ -36,7 +36,8 @@
           "ambiguous": 4,
           "na": 0,
           "not_assessed": 0
-        }
+        },
+        "validation_decisions": []
       },
       {
         "contract_key": "contract_02_payment",
@@ -57,7 +58,8 @@
           "ambiguous": 2,
           "na": 0,
           "not_assessed": 0
-        }
+        },
+        "validation_decisions": []
       },
       {
         "contract_key": "contract_03_legacy",
@@ -78,7 +80,8 @@
           "ambiguous": 1,
           "na": 4,
           "not_assessed": 1
-        }
+        },
+        "validation_decisions": []
       },
       {
         "contract_key": "contract_04_saas",
@@ -99,7 +102,8 @@
           "ambiguous": 2,
           "na": 4,
           "not_assessed": 0
-        }
+        },
+        "validation_decisions": []
       },
       {
         "contract_key": "contract_05_good",
@@ -120,7 +124,8 @@
           "ambiguous": 1,
           "na": 0,
           "not_assessed": 0
-        }
+        },
+        "validation_decisions": []
       }
     ],
     "caveat": "These 5 contracts were used to tune match_terms. Precision/recall reflects in-sample fit only \u2014 not generalisation."
@@ -129,48 +134,50 @@
     "aggregate": {
       "total_gaps": 23,
       "total_na": 4,
-      "total_matched": 21,
+      "total_matched": 22,
       "total_na_matched": 4,
       "total_false_positives": 0,
-      "tp": 21,
+      "tp": 22,
       "fp": 0,
-      "fn": 2,
+      "fn": 1,
       "precision_pct": 100.0,
-      "recall_pct": 91.3,
-      "f1_pct": 95.5
+      "recall_pct": 95.7,
+      "f1_pct": 97.8
     },
     "results": [
       {
         "contract_key": "contract_06_modern_fintech",
         "expected_genuine_gaps": 10,
         "na_expectations": 0,
-        "matched": 8,
+        "matched": 9,
         "na_matched": 0,
         "missed": [
           {
             "id": "ART30-008",
             "expected": "ambiguous",
             "actual": "evidence_found"
-          },
-          {
-            "id": "ART30-012",
-            "expected": "ambiguous",
-            "actual": "evidence_found"
           }
         ],
         "na_missed": [],
         "false_positives": [],
-        "accuracy_pct": 80.0,
+        "accuracy_pct": 90.0,
         "supplier": "CloudCore Infrastructure ApS",
         "classification": "critical_important",
         "summary_stats": {
           "satisfied": 0,
-          "evidence_found": 15,
+          "evidence_found": 14,
           "missing": 5,
-          "ambiguous": 3,
+          "ambiguous": 4,
           "na": 0,
           "not_assessed": 1
-        }
+        },
+        "validation_decisions": [
+          {
+            "req": "ART30-012",
+            "rule": "context_invalid:all_bad_context=3",
+            "revised": "ambiguous"
+          }
+        ]
       },
       {
         "contract_key": "contract_07_nonfinancial",
@@ -191,7 +198,8 @@
           "ambiguous": 1,
           "na": 4,
           "not_assessed": 1
-        }
+        },
+        "validation_decisions": []
       }
     ],
     "caveat": "These 2 contracts were NOT used to tune match_terms. Figures are an independent estimate of heuristic generalisation performance."

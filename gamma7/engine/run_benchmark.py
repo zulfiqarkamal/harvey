@@ -34,7 +34,7 @@ sys.path.insert(0, str(REPO_ROOT.parent))   # repo root (for gamma7.*)
 
 from gamma7.engine.analyser import ContractAnalyser, ContractMetadata, validate_against_expected
 from gamma7.engine.budget_guard import BudgetGuard, BudgetExceededError
-from gamma7.engine.llm_overlay import run_overlay
+from gamma7.engine.llm_overlay import run_overlay, run_evidence_validation_overlay
 
 CONTRACTS_DIR = REPO_ROOT / "synthetic_contracts"
 OUTPUT_DIR = REPO_ROOT / "engine" / "output"
@@ -92,11 +92,17 @@ def _run_set(contracts: list[dict], expected: dict, analyser: ContractAnalyser, 
             classification=spec["classification"],
             file_name=spec["file"],
         )
+        contract_text = contract_path.read_text(encoding="utf-8")
         result = analyser.analyse_file(
             contract_path,
             classification=spec["classification"],
             contract_metadata=metadata,
         )
+        # Pass 2: deterministic evidence-context validation (no API key required)
+        result, _validation_decisions = run_evidence_validation_overlay(
+            result, contract_text, budget=None, use_llm=False,
+        )
+
         out_path = OUTPUT_DIR / f"{spec['key']}_result.json"
         out_path.write_text(result.to_json(), encoding="utf-8")
 
@@ -104,6 +110,10 @@ def _run_set(contracts: list[dict], expected: dict, analyser: ContractAnalyser, 
         val["supplier"] = spec["supplier"]
         val["classification"] = spec["classification"]
         val["summary_stats"] = result.summary_stats
+        val["validation_decisions"] = [
+            {"req": d.requirement_id, "rule": d.rule_applied, "revised": d.revised_status.value}
+            for d in _validation_decisions if d.revised_status != d.original_status
+        ]
         validation_results.append(val)
 
         aggregate["total_gaps"] += val["expected_genuine_gaps"]
@@ -202,8 +212,15 @@ def _run_llm_comparison(
             print(f"  ✗ {e}")
             return {}
 
-        upgrades = [d for d in decisions if d.revised_status != d.original_status]
-        total_decisions += len(decisions)
+        # Pass 2: validate EVIDENCE_FOUND context (with optional LLM deepening)
+        try:
+            result, val_decisions = run_evidence_validation_overlay(result, contract_text, budget)
+        except BudgetExceededError:
+            val_decisions = []
+
+        all_decisions = decisions + val_decisions
+        upgrades = [d for d in all_decisions if d.revised_status != d.original_status]
+        total_decisions += len(all_decisions)
         total_upgrades += len(upgrades)
 
         val = validate_against_expected(result, expected, spec["key"])
@@ -221,8 +238,8 @@ def _run_llm_comparison(
             f"  upgrades={len(upgrades)}/{len(decisions)}"
         )
         for d in upgrades:
-            print(f"    UPGRADE {d.requirement_id:12s}  {d.original_status.value} → {d.revised_status.value}"
-                  f"  conf={d.confidence:.2f}")
+            conf = f"  conf={d.confidence:.2f}" if hasattr(d, "confidence") else f"  rule={d.rule_applied}"
+            print(f"    CHANGE  {d.requirement_id:12s}  {d.original_status.value} → {d.revised_status.value}{conf}")
 
     tp = llm_aggregate["total_matched"]
     fp = llm_aggregate["total_false_positives"]
