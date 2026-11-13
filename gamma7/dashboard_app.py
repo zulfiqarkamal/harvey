@@ -73,6 +73,7 @@ class _BasicAuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         password = os.environ.get("DEMO_PASSWORD", "")
         if not password:
+            # Auth disabled — allow all (local dev mode)
             return await call_next(request)
         if request.url.path == "/api/health":
             return await call_next(request)
@@ -450,7 +451,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
 
 <header>
   <div class="logo">GAMMA7 <span>Audit &amp; Compliance</span></div>
-  <div class="advisory">⚠ Advisory — Human review required before regulatory use</div>
+  <div class="advisory">&#9888; Advisory — Human review required before regulatory use</div>
 </header>
 
 <nav>
@@ -466,18 +467,18 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <!-- Overview tab -->
   <div id="tab-overview" class="tab-pane active">
     <div class="summary-cards" id="summary-cards">
-      <div class="card"><div class="label">Contracts</div><div class="value" id="stat-total">—</div></div>
-      <div class="card"><div class="label">Gaps Found</div><div class="value yellow" id="stat-gaps">—</div></div>
-      <div class="card"><div class="label">Compliant</div><div class="value green" id="stat-compliant">—</div></div>
-      <div class="card"><div class="label">Register Entries</div><div class="value" id="stat-register">—</div></div>
-      <div class="card"><div class="label">Register Gaps</div><div class="value red" id="stat-recon-gaps">—</div></div>
+      <div class="card"><div class="label">Contracts</div><div class="value" id="stat-total">&#8212;</div></div>
+      <div class="card"><div class="label">Gaps Found</div><div class="value yellow" id="stat-gaps">&#8212;</div></div>
+      <div class="card"><div class="label">Compliant</div><div class="value green" id="stat-compliant">&#8212;</div></div>
+      <div class="card"><div class="label">Register Entries</div><div class="value" id="stat-register">&#8212;</div></div>
+      <div class="card"><div class="label">Register Gaps</div><div class="value red" id="stat-recon-gaps">&#8212;</div></div>
     </div>
     <div class="table-wrap">
       <table>
         <thead><tr>
           <th>Supplier</th><th>Classification</th><th>Status</th><th>Missing</th><th>Satisfied</th>
         </tr></thead>
-        <tbody id="overview-table"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+        <tbody id="overview-table"><tr><td colspan="5" class="empty">Loading&#8230;</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -497,7 +498,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
         <thead><tr>
           <th>Analysis ID</th><th>Supplier</th><th>Contract</th><th>Classification</th><th>Status</th><th>Missing</th>
         </tr></thead>
-        <tbody id="contracts-table"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+        <tbody id="contracts-table"><tr><td colspan="6" class="empty">Loading&#8230;</td></tr></tbody>
       </table>
     </div>
     <div id="contract-detail" class="detail-panel"></div>
@@ -511,19 +512,19 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
           <th>Entry ID</th><th>Supplier</th><th>Country</th><th>Service Type</th>
           <th>Contract Ref</th><th>Classification</th><th>Exit Strategy</th>
         </tr></thead>
-        <tbody id="register-table"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody>
+        <tbody id="register-table"><tr><td colspan="7" class="empty">Loading&#8230;</td></tr></tbody>
       </table>
     </div>
   </div>
 
   <!-- Reconciliation tab -->
   <div id="tab-reconciliation" class="tab-pane">
-    <div id="recon-content"><div class="loading">Loading reconciliation…</div></div>
+    <div id="recon-content"><div class="loading">Loading reconciliation&#8230;</div></div>
   </div>
 
   <!-- Working Papers tab (Agent 4) -->
   <div id="tab-workpapers" class="tab-pane">
-    <div id="wp-content"><div class="loading">Loading working papers…</div></div>
+    <div id="wp-content"><div class="loading">Loading working papers&#8230;</div></div>
   </div>
 
   <!-- Audit Intelligence tab (Agent 4) -->
@@ -614,7 +615,7 @@ async function showContractDetail(id) {
   panel.className = 'detail-panel open';
   panel.innerHTML = `
     <h3>${data.supplier_name} — ${data.analysis_id}</h3>
-    ${data.warnings && data.warnings.length ? `<p style="color:var(--orange);margin-bottom:8px">⚠ ${data.warnings.join(' | ')}</p>` : ''}
+    ${data.warnings && data.warnings.length ? `<p style="color:var(--orange);margin-bottom:8px">&#9888; ${data.warnings.join(' | ')}</p>` : ''}
     <pre>${data.markdown_report || '(no report)'}</pre>
   `;
 }
@@ -633,8 +634,8 @@ async function loadRegister() {
     <td style="color:var(--muted);font-size:12px"><code>${e.contract_reference}</code></td>
     <td>${classBadge(e.classification)}</td>
     <td>${e.exit_strategy_documented
-      ? '<span style="color:var(--green)">✓</span>'
-      : '<span style="color:var(--red)">✗</span>'}</td>
+      ? '<span style="color:var(--green)">&#10003;</span>'
+      : '<span style="color:var(--red)">&#10007;</span>'}</td>
   </tr>`).join('');
 }
 
@@ -660,7 +661,7 @@ async function loadReconciliation() {
 
     ${data.matched && data.matched.length ? `
     <div class="recon-section">
-      <div class="section-title">Matched (register ↔ contract)</div>
+      <div class="section-title">Matched (register &#8596; contract)</div>
       <div class="table-wrap"><table>
         <thead><tr><th>Supplier</th><th>Contract Ref</th><th>Classification</th><th>Status</th><th>Missing</th><th>Match via</th></tr></thead>
         <tbody>${data.matched.map(m => `<tr>
@@ -676,7 +677,7 @@ async function loadReconciliation() {
 
     ${data.register_only && data.register_only.length ? `
     <div class="recon-section">
-      <div class="section-title" style="color:var(--red)">⚠ Register entries without contract assessment</div>
+      <div class="section-title" style="color:var(--red)">&#9888; Register entries without contract assessment</div>
       <div class="table-wrap"><table>
         <thead><tr><th>Supplier</th><th>Contract Ref</th><th>Classification</th><th>Service</th></tr></thead>
         <tbody>${data.register_only.map(e => `<tr>
@@ -690,7 +691,7 @@ async function loadReconciliation() {
 
     ${data.analysis_only && data.analysis_only.length ? `
     <div class="recon-section">
-      <div class="section-title" style="color:var(--yellow)">⚠ Contracts not in register</div>
+      <div class="section-title" style="color:var(--yellow)">&#9888; Contracts not in register</div>
       <div class="table-wrap"><table>
         <thead><tr><th>Contract</th><th>Supplier</th><th>Analysis ID</th></tr></thead>
         <tbody>${data.analysis_only.map(a => `<tr>
@@ -728,7 +729,7 @@ async function loadWorkPapers() {
         <span style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em">Engagement</span>
         <span style="margin-left:8px;font-size:13px"><code>${data.engagement_id}</code> — ${data.organisation}</span>
       </div>
-      <a class="btn" href="/api/workpapers/report" target="_blank">⬇ Download Audit Report</a>
+      <a class="btn" href="/api/workpapers/report" target="_blank">&#11015; Download Audit Report</a>
     </div>
     <div class="summary-cards" style="margin-bottom:20px">
       <div class="card"><div class="label">Controls in scope</div><div class="value">${data.total_controls}</div></div>
@@ -816,7 +817,7 @@ async function loadHeatmap() {
 async function showWPDetail(controlId) {
   const panel = document.getElementById('wp-detail');
   panel.className = 'detail-panel open';
-  panel.innerHTML = '<div class="loading" style="padding:20px">Loading…</div>';
+  panel.innerHTML = '<div class="loading" style="padding:20px">Loading&#8230;</div>';
   const res = await fetch('/api/workpapers/' + encodeURIComponent(controlId));
   if (!res.ok) { panel.innerHTML = '<div class="empty">Not found.</div>'; return; }
   const wp = await res.json();
@@ -1151,6 +1152,8 @@ def main():
         print(f"Generated {len(wps.work_papers)} working papers for '{args.wp_org}'")
 
     create_app(results, register, customer_name=args.customer, work_paper_set=wps)
+
+    # Render.com injects PORT via environment; fall back to --port for local dev.
     actual_port = int(os.environ.get("PORT", args.port))
     print(f"\nDashboard: http://{args.host}:{actual_port}/\n")
     uvicorn.run(app, host=args.host, port=actual_port, log_level="warning")
