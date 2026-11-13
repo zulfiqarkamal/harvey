@@ -51,6 +51,7 @@ class EvidencePassage:
     text: str
     relevance_note: str
     page: Optional[int] = None
+    paragraph_num: Optional[int] = None   # 1-indexed paragraph where match was found
 
 
 @dataclass
@@ -64,6 +65,7 @@ class RequirementAssessment:
     gap_description: Optional[str] = None
     remediation_suggestion: str = ""
     na_rationale: Optional[str] = None
+    source_location: Optional[str] = None  # where in the contract this was found (or searched)
     assessed_by: str = "gamma7-engine-v1"
     assessed_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
 
@@ -164,6 +166,34 @@ def _phrase_hits(contract_norm: str, phrases: list[str]) -> list[str]:
     return found
 
 
+def _paragraph_number(contract_text: str, offset: int) -> int:
+    """Return 1-indexed paragraph number for a character offset in the contract."""
+    before = contract_text[:offset]
+    paragraphs = [p for p in re.split(r'\n{2,}', before) if p.strip()]
+    return len(paragraphs) + 1
+
+
+def _count_paragraphs(contract_text: str) -> int:
+    return len([p for p in re.split(r'\n{2,}', contract_text) if p.strip()])
+
+
+def _scan_for_location(contract_text: str, search_terms: list[str]) -> str:
+    """Return a readable location note for a MISSING finding — nearest heading + total scope."""
+    total_paras = _count_paragraphs(contract_text)
+    headings = re.findall(r"#{1,4}\s+(.+)", contract_text)
+    kw_set = {w.lower() for t in search_terms for w in t.lower().split() if len(w) > 3}
+    best_heading: Optional[str] = None
+    best_score = 0
+    for h in headings:
+        score = len(kw_set & set(h.lower().split()))
+        if score > best_score:
+            best_score = score
+            best_heading = h.strip()
+    if best_heading and best_score > 0:
+        return f"Searched: § '{best_heading}' (closest section) · full contract ({total_paras} ¶)"
+    return f"Searched: full contract ({total_paras} ¶) — no matching section found"
+
+
 def _extract_passage(contract_text: str, keyword: str, context_chars: int = 200) -> Optional[EvidencePassage]:
     idx = contract_text.lower().find(keyword.lower())
     if idx == -1:
@@ -175,7 +205,8 @@ def _extract_passage(contract_text: str, keyword: str, context_chars: int = 200)
     heading_match = re.findall(r"#{1,3}\s+(.+)", contract_text[:idx])
     if heading_match:
         section = heading_match[-1].strip()
-    return EvidencePassage(section=section, text=snippet, relevance_note=f"Contains keyword: '{keyword}'")
+    para_num = _paragraph_number(contract_text, idx)
+    return EvidencePassage(section=section, text=snippet, relevance_note=f"Contains keyword: '{keyword}'", paragraph_num=para_num)
 
 
 def assess_requirement(
@@ -268,6 +299,21 @@ def assess_requirement(
     if status in (ComplianceStatus.MISSING, ComplianceStatus.AMBIGUOUS):
         remediation = _build_remediation(req, status)
 
+    # Build source_location: where evidence was found, or where the search concluded nothing
+    if passages:
+        first = passages[0]
+        loc_parts = []
+        if first.section:
+            loc_parts.append(f"§ {first.section}")
+        if first.paragraph_num:
+            loc_parts.append(f"¶{first.paragraph_num}")
+        source_location: Optional[str] = ", ".join(loc_parts) if loc_parts else None
+    elif status == ComplianceStatus.MISSING:
+        search_terms = match_terms_evidence if match_terms_evidence is not None else evidence_criteria
+        source_location = _scan_for_location(contract_text, search_terms)
+    else:
+        source_location = None
+
     return RequirementAssessment(
         requirement_id=req_id,
         requirement_article=req.get("article", ""),
@@ -277,6 +323,7 @@ def assess_requirement(
         evidence=[asdict(p) for p in passages],
         gap_description=gap_desc,
         remediation_suggestion=remediation,
+        source_location=source_location,
     )
 
 

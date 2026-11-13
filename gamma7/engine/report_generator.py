@@ -112,12 +112,19 @@ def _findings_by_status(
         ])
         if a.gap_description:
             lines.extend([f"**Finding:** {a.gap_description}", f""])
+        if getattr(a, 'source_location', None):
+            lines.extend([f"**Source location:** {a.source_location}", f""])
         if include_evidence and a.evidence:
             lines.append("**Contract passages:**")
             for ev in a.evidence[:2]:
-                section_label = f" *(in: {ev['section']})*" if ev.get('section') else ""
+                loc_parts = []
+                if ev.get('section'):
+                    loc_parts.append(f"§ {ev['section']}")
+                if ev.get('paragraph_num'):
+                    loc_parts.append(f"¶{ev['paragraph_num']}")
+                loc_label = f" *({', '.join(loc_parts)})*" if loc_parts else ""
                 lines.extend([
-                    f"> {ev['text'][:300].strip()}{section_label}",
+                    f"> {ev['text'][:300].strip()}{loc_label}",
                     f"",
                 ])
         if a.remediation_suggestion:

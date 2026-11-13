@@ -16,6 +16,9 @@ from analyser import (
     assess_requirement,
     ComplianceStatus,
     RiskLevel,
+    _paragraph_number,
+    _count_paragraphs,
+    _scan_for_location,
 )
 
 # ── _phrase_hits ─────────────────────────────────────────────────────────────
@@ -234,3 +237,76 @@ def test_held_out_audit_no_rights_missing():
     contract = "Provider shall maintain ISO 27001 certification and provide quarterly security reports."
     result = assess_requirement(req, contract, _normalise(contract), "critical_important")
     assert result.status == ComplianceStatus.MISSING
+
+
+# ── Source citation helpers ───────────────────────────────────────────────────
+
+def test_paragraph_number_first_paragraph():
+    contract = "First paragraph here.\n\nSecond paragraph.\n\nThird paragraph."
+    # offset 0 is in paragraph 1
+    assert _paragraph_number(contract, 0) == 1
+
+
+def test_paragraph_number_second_paragraph():
+    contract = "First paragraph here.\n\nSecond paragraph.\n\nThird paragraph."
+    # offset after the first double-newline
+    offset = contract.index("Second")
+    assert _paragraph_number(contract, offset) == 2
+
+
+def test_count_paragraphs():
+    contract = "Para one.\n\nPara two.\n\nPara three."
+    assert _count_paragraphs(contract) == 3
+
+
+def test_scan_for_location_finds_heading():
+    contract = "## Audit Rights\n\nThe supplier shall allow audits.\n\n## Termination\n\nEither party may terminate."
+    loc = _scan_for_location(contract, ["right to audit", "audit rights"])
+    assert "Audit Rights" in loc
+
+
+def test_scan_for_location_no_heading_fallback():
+    contract = "The supplier shall maintain certifications.\n\nAll other matters are governed by law."
+    loc = _scan_for_location(contract, ["right to audit", "third-party auditor"])
+    assert "full contract" in loc
+    assert "¶" in loc
+
+
+def test_source_location_populated_for_missing():
+    req = _make_req(
+        "T-SRC1",
+        ["right to audit"],
+        [],
+    )
+    contract = "The supplier shall maintain ISO 27001.\n\nAll services are delivered securely."
+    result = assess_requirement(req, contract, _normalise(contract), "critical_important")
+    assert result.status == ComplianceStatus.MISSING
+    assert result.source_location is not None
+    assert "¶" in result.source_location or "full contract" in result.source_location
+
+
+def test_source_location_populated_for_evidence_found():
+    req = _make_req(
+        "T-SRC2",
+        ["right to audit"],
+        [],
+    )
+    contract = "## Audit Rights\n\nThe customer has the right to audit the supplier at any time.\n\nAll fees are non-refundable."
+    result = assess_requirement(req, contract, _normalise(contract), "critical_important")
+    assert result.status == ComplianceStatus.EVIDENCE_FOUND
+    assert result.source_location is not None
+    # Should reference the section heading
+    assert "Audit Rights" in result.source_location or "¶" in result.source_location
+
+
+def test_evidence_passage_has_paragraph_num():
+    req = _make_req(
+        "T-SRC3",
+        ["right to audit"],
+        [],
+    )
+    contract = "## Intro\n\nGeneral terms.\n\n## Audit Rights\n\nThe customer has the right to audit."
+    result = assess_requirement(req, contract, _normalise(contract), "critical_important")
+    assert result.status == ComplianceStatus.EVIDENCE_FOUND
+    assert len(result.evidence) > 0
+    assert result.evidence[0]["paragraph_num"] is not None

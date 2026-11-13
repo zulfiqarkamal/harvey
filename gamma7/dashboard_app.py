@@ -219,6 +219,27 @@ def get_workpaper(control_id: str):
 
 
 
+@app.get("/api/risk-heatmap")
+def get_risk_heatmap():
+    """Return InherentRisk × TestResult control count matrix for the heatmap widget."""
+    if _work_paper_set is None:
+        return {"message": "No working papers loaded."}
+    risk_levels = ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
+    test_results = ["PASSED", "EXCEPTION", "NOT_TESTED", "NOT_APPLICABLE"]
+    matrix: dict[str, dict[str, int]] = {r: {t: 0 for t in test_results} for r in risk_levels}
+    for wp in _work_paper_set.work_papers:
+        r = wp.inherent_risk
+        t = wp.test_result.value
+        if r in matrix and t in matrix[r]:
+            matrix[r][t] += 1
+    return {
+        "risk_levels": risk_levels,
+        "test_results": test_results,
+        "matrix": matrix,
+        "total": len(_work_paper_set.work_papers),
+    }
+
+
 @app.get("/", response_class=HTMLResponse)
 def dashboard():
     """Serve the main dashboard HTML."""
@@ -626,6 +647,7 @@ async function loadWorkPapers() {
       <div class="card"><div class="label">Exceptions</div><div class="value ${data.exception_count>0?'yellow':''}">${data.exception_count}</div></div>
       <div class="card"><div class="label">Open findings</div><div class="value ${data.open_findings>0?'red':''}">${data.open_findings}</div></div>
     </div>
+    <div id="wp-heatmap" style="margin-bottom:20px"></div>
     <div class="table-wrap">
       <table>
         <thead><tr>
@@ -642,6 +664,62 @@ async function loadWorkPapers() {
       </table>
     </div>
     <div id="wp-detail" class="detail-panel"></div>
+  `;
+  await loadHeatmap();
+}
+
+async function loadHeatmap() {
+  const el = document.getElementById('wp-heatmap');
+  if (!el) return;
+  let hm;
+  try {
+    const res = await fetch('/api/risk-heatmap');
+    hm = await res.json();
+  } catch(e) { return; }
+  if (hm.message) return;
+
+  const riskColors = {CRITICAL:'#c0392b',HIGH:'#e67e22',MEDIUM:'#f1c40f',LOW:'#27ae60'};
+  const colLabels = {PASSED:'Passed',EXCEPTION:'Exception',NOT_TESTED:'Not Tested',NOT_APPLICABLE:'N/A'};
+  const colColors = {PASSED:'#27ae60',EXCEPTION:'#c0392b',NOT_TESTED:'#95a5a6',NOT_APPLICABLE:'#bdc3c7'};
+
+  let hdr = `<th style="font-size:11px;padding:6px 10px;text-align:left;color:var(--muted);border-bottom:1px solid var(--border)">InherentRisk \\ Result</th>`;
+  for (const tr of hm.test_results) {
+    hdr += `<th style="font-size:11px;padding:6px 10px;text-align:center;color:${colColors[tr]};border-bottom:1px solid var(--border)">${colLabels[tr]||tr}</th>`;
+  }
+
+  let rows = '';
+  for (const risk of hm.risk_levels) {
+    let cells = `<td style="font-size:12px;padding:6px 10px;font-weight:600;color:${riskColors[risk]||'var(--text)'};border-bottom:1px solid var(--border)">${risk}</td>`;
+    for (const tr of hm.test_results) {
+      const count = (hm.matrix[risk]||{})[tr] || 0;
+      let bg = 'transparent';
+      let textCol = 'var(--muted)';
+      if (count > 0) {
+        if (tr === 'EXCEPTION') {
+          bg = risk === 'CRITICAL' ? 'rgba(192,57,43,0.25)' : risk === 'HIGH' ? 'rgba(230,126,34,0.20)' : 'rgba(241,196,15,0.15)';
+          textCol = colColors[tr];
+        } else if (tr === 'PASSED') {
+          bg = 'rgba(39,174,96,0.15)';
+          textCol = colColors[tr];
+        } else {
+          bg = 'rgba(149,165,166,0.12)';
+          textCol = 'var(--text)';
+        }
+      }
+      cells += `<td style="text-align:center;padding:6px 10px;background:${bg};color:${textCol};font-size:14px;font-weight:${count>0?'600':'400'};border-bottom:1px solid var(--border)">${count > 0 ? count : '—'}</td>`;
+    }
+    rows += `<tr>${cells}</tr>`;
+  }
+
+  el.innerHTML = `
+    <div class="section-title" style="margin-bottom:8px">Risk Heatmap — Inherent Risk × Test Result</div>
+    <div style="overflow-x:auto">
+      <table style="border-collapse:collapse;min-width:400px;background:var(--surface);border-radius:8px;overflow:hidden;border:1px solid var(--border)">
+        <thead><tr>${hdr}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:6px">${hm.total} controls total. Red cells = exceptions on high/critical controls requiring immediate attention.</p>
   `;
 }
 
