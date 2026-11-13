@@ -19,14 +19,20 @@ All findings require human review before regulatory reporting.
 from __future__ import annotations
 
 import argparse
+import base64
 import datetime
 import json
+import os
 import pathlib
+import secrets
 from typing import Optional
 
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import HTMLResponse, JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response as _PlainResponse
 
 from .engine.analyser import ContractAnalyser, ContractMetadata
 from .engine.document_loader import load as load_document
@@ -54,6 +60,39 @@ _pipeline_results: list[PipelineResult] = []
 _register: list[RegisterEntry] = []
 _reconciliation: Optional[ReconciliationReport] = None
 _work_paper_set: Optional[WorkPaperSet] = None
+
+
+# ---------------------------------------------------------------------------
+# HTTP Basic Auth middleware
+# Enabled when DEMO_PASSWORD env var is set; skipped for local dev.
+# ---------------------------------------------------------------------------
+
+class _BasicAuthMiddleware(BaseHTTPMiddleware):
+    """Require HTTP Basic Auth (username: gamma7, password: DEMO_PASSWORD)."""
+
+    async def dispatch(self, request: Request, call_next):
+        password = os.environ.get("DEMO_PASSWORD", "")
+        if not password:
+            return await call_next(request)
+        if request.url.path == "/api/health":
+            return await call_next(request)
+        auth = request.headers.get("Authorization", "")
+        if auth.startswith("Basic "):
+            try:
+                decoded = base64.b64decode(auth[6:]).decode("utf-8")
+                username, _, given_password = decoded.partition(":")
+                if username == "gamma7" and secrets.compare_digest(given_password, password):
+                    return await call_next(request)
+            except Exception:
+                pass
+        return _PlainResponse(
+            content="Authentication required",
+            status_code=401,
+            headers={"WWW-Authenticate": 'Basic realm="Gamma7 Demo"'},
+        )
+
+
+app.add_middleware(_BasicAuthMiddleware)
 
 
 # ---------------------------------------------------------------------------
@@ -101,6 +140,41 @@ def get_analysis(key: str):
                 "overlay_summary": r.overlay_summary,
             }
     raise HTTPException(status_code=404, detail=f"Analysis '{key}' not found")
+
+
+@app.post("/api/analyse")
+async def analyse_upload(file: UploadFile = File(...)):
+    """Accept a contract file upload, run the pipeline, return result JSON, and add to in-memory state."""
+    import tempfile, os
+    content = await file.read()
+    suffix = pathlib.Path(file.filename or "contract.md").suffix or ".md"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(content)
+        tmp_path = tmp.name
+    try:
+        pipeline = SupplierAssurancePipeline()
+        result = pipeline.run(
+            contract_path=tmp_path,
+            supplier_name=file.filename or "Uploaded Supplier",
+            customer_name="Demo Customer",
+            classification="critical_important",
+        )
+        _pipeline_results.append(result)
+        return {
+            "analysis_id": result.analysis_id,
+            "contract_key": pathlib.Path(result.contract_path).stem,
+            "supplier_name": result.supplier_name,
+            "classification": result.classification,
+            "overall_status": result.overall_status,
+            "summary": result.summary,
+            "markdown_report": result.markdown_report,
+            "warnings": result.warnings,
+        }
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
 
 
 @app.get("/api/register")
@@ -385,6 +459,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <button onclick="showTab('register')">ICT Register</button>
   <button onclick="showTab('reconciliation')">Reconciliation</button>
   <button onclick="showTab('workpapers')">Working Papers</button>
+  <button onclick="showTab('audit')">Audit Intelligence</button>
 </nav>
 
 <main>
@@ -409,6 +484,14 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
 
   <!-- Contracts tab -->
   <div id="tab-contracts" class="tab-pane">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="section-title" style="margin:0">Contract Analyses</div>
+      <label class="btn" style="cursor:pointer">
+        ⬆ Upload Contract
+        <input type="file" id="upload-input" accept=".md,.txt,.pdf" style="display:none" onchange="uploadContract(this)">
+      </label>
+    </div>
+    <div id="upload-status" style="display:none;margin-bottom:12px;padding:10px 14px;border-radius:6px;font-size:13px"></div>
     <div class="table-wrap">
       <table>
         <thead><tr>
@@ -441,6 +524,11 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <!-- Working Papers tab (Agent 4) -->
   <div id="tab-workpapers" class="tab-pane">
     <div id="wp-content"><div class="loading">Loading working papers…</div></div>
+  </div>
+
+  <!-- Audit Intelligence tab (Agent 4) -->
+  <div id="tab-audit" class="tab-pane">
+    <div id="audit-content"><div class="loading">Loading audit intelligence…</div></div>
   </div>
 </main>
 
@@ -512,7 +600,7 @@ async function loadContracts() {
   tbody.innerHTML = analyses.map(a => `<tr onclick="showContractDetail('${a.contract_key || a.analysis_id}')">
     <td><code>${a.analysis_id}</code></td>
     <td>${a.supplier_name}</td>
-    <td style="color:var(--muted);font-size:12px">${(a.contract_path.split('\\').pop() || a.contract_path.split('/').pop())}</td>
+    <td style="color:var(--muted);font-size:12px">${(a.contract_path.replace(/\\\\/g,'/').split('/').pop())}</td>
     <td>${classBadge(a.classification)}</td>
     <td>${statusBadge(a.overall_status)}</td>
     <td>${a.summary ? a.summary.missing || 0 : 0}</td>
@@ -766,10 +854,118 @@ async function showWPDetail(controlId) {
   `;
 }
 
+async function uploadContract(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('upload-status');
+  statusEl.style.display = 'block';
+  statusEl.style.background = 'var(--surface2)';
+  statusEl.style.color = 'var(--muted)';
+  statusEl.style.border = '1px solid var(--border)';
+  statusEl.textContent = 'Analysing ' + file.name + '…';
+  input.value = '';
+  const fd = new FormData();
+  fd.append('file', file);
+  try {
+    const res = await fetch('/api/analyse', {method:'POST', body: fd});
+    const data = await res.json();
+    if (!res.ok) {
+      statusEl.style.background = '#2d1515';
+      statusEl.style.color = 'var(--red)';
+      statusEl.textContent = 'Error: ' + (data.detail || res.statusText);
+      return;
+    }
+    statusEl.style.background = '#0d2a0d';
+    statusEl.style.color = 'var(--green)';
+    statusEl.textContent = 'Done — ' + data.supplier_name + ' (' + data.analysis_id + '): ' + (data.overall_status || '');
+    analyses.push(data);
+    await loadContracts();
+    document.getElementById('stat-total').textContent = analyses.length;
+  } catch(e) {
+    statusEl.style.color = 'var(--red)';
+    statusEl.textContent = 'Upload failed: ' + e.message;
+  }
+}
+
+async function loadAuditIntelligence() {
+  const container = document.getElementById('audit-content');
+  let wpData;
+  try {
+    const res = await fetch('/api/workpapers');
+    wpData = await res.json();
+  } catch(e) {
+    container.innerHTML = '<div class="empty">Could not load audit data.</div>';
+    return;
+  }
+
+  if (wpData.message) {
+    container.innerHTML = '<div class="empty">' + wpData.message + '</div>';
+    return;
+  }
+
+  const riskClass = r => ({CRITICAL:'risk-critical',HIGH:'risk-high',MEDIUM:'risk-medium',LOW:'risk-low'}[r]||'');
+  const resultIcon = r => ({PASSED:'<span style="color:var(--green)">✅</span>',EXCEPTION:'<span style="color:var(--orange)">⚠️</span>',NOT_TESTED:'<span style="color:var(--muted)">⬜</span>',NOT_APPLICABLE:'<span style="color:var(--muted)">➖</span>'}[r]||r);
+
+  let hmHtml = '';
+  try {
+    const hmRes = await fetch('/api/risk-heatmap');
+    const hm = await hmRes.json();
+    if (!hm.message) {
+      const riskColors = {CRITICAL:'#c0392b',HIGH:'#e67e22',MEDIUM:'#f1c40f',LOW:'#27ae60'};
+      const colColors = {PASSED:'#27ae60',EXCEPTION:'#c0392b',NOT_TESTED:'#95a5a6',NOT_APPLICABLE:'#bdc3c7'};
+      const colLabels = {PASSED:'Passed',EXCEPTION:'Exception',NOT_TESTED:'Not Tested',NOT_APPLICABLE:'N/A'};
+      let hdr = '<th style="font-size:11px;padding:6px 10px;color:var(--muted);border-bottom:1px solid var(--border)">Risk / Result</th>';
+      for (const tr of hm.test_results) hdr += '<th style="font-size:11px;padding:6px 10px;text-align:center;color:' + (colColors[tr]||'var(--muted)') + ';border-bottom:1px solid var(--border)">' + (colLabels[tr]||tr) + '</th>';
+      let rows = '';
+      for (const risk of hm.risk_levels) {
+        let cells = '<td style="font-size:12px;padding:6px 10px;font-weight:600;color:' + (riskColors[risk]||'var(--text)') + ';border-bottom:1px solid var(--border)">' + risk + '</td>';
+        for (const tr of hm.test_results) {
+          const count = (hm.matrix[risk]||{})[tr] || 0;
+          let bg = 'transparent', textCol = 'var(--muted)';
+          if (count > 0) {
+            if (tr === 'EXCEPTION') { bg = risk==='CRITICAL'?'rgba(192,57,43,0.25)':risk==='HIGH'?'rgba(230,126,34,0.20)':'rgba(241,196,15,0.15)'; textCol = colColors[tr]; }
+            else if (tr === 'PASSED') { bg = 'rgba(39,174,96,0.15)'; textCol = colColors[tr]; }
+            else { bg = 'rgba(149,165,166,0.12)'; textCol = 'var(--text)'; }
+          }
+          cells += '<td style="text-align:center;padding:6px 10px;background:' + bg + ';color:' + textCol + ';font-size:14px;font-weight:' + (count>0?'600':'400') + ';border-bottom:1px solid var(--border)">' + (count>0?count:'—') + '</td>';
+        }
+        rows += '<tr>' + cells + '</tr>';
+      }
+      hmHtml = '<div class="section-title" style="margin-bottom:8px">3×3 Risk Heatmap — Inherent Risk × Test Result</div><div style="overflow-x:auto"><table style="border-collapse:collapse;min-width:400px;background:var(--surface);border-radius:8px;overflow:hidden;border:1px solid var(--border)"><thead><tr>' + hdr + '</tr></thead><tbody>' + rows + '</tbody></table></div><p style="font-size:11px;color:var(--muted);margin-top:6px">' + hm.total + ' controls. Red = exceptions requiring attention.</p>';
+    }
+  } catch(e) {}
+
+  const openFindings = wpData.work_papers.filter(w => w.open_finding_count > 0);
+
+  container.innerHTML = '<div style="margin-bottom:4px"><span style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em">Engagement:</span> <code>' + wpData.engagement_id + '</code> — ' + wpData.organisation + ' <span style="color:var(--muted);font-size:12px">/ ' + wpData.scope + '</span></div>'
+    + '<div class="summary-cards" style="margin:16px 0">'
+    + '<div class="card"><div class="label">Audit Universe</div><div class="value">' + wpData.total_controls + '</div></div>'
+    + '<div class="card"><div class="label">Tested</div><div class="value">' + wpData.tested_count + '</div></div>'
+    + '<div class="card"><div class="label">Passed</div><div class="value green">' + wpData.passed_count + '</div></div>'
+    + '<div class="card"><div class="label">Exceptions</div><div class="value ' + (wpData.exception_count>0?'yellow':'') + '">' + wpData.exception_count + '</div></div>'
+    + '<div class="card"><div class="label">Open Findings</div><div class="value ' + (wpData.open_findings>0?'red':'') + '">' + wpData.open_findings + '</div></div>'
+    + '</div>'
+    + (hmHtml ? '<div style="margin-bottom:20px">' + hmHtml + '</div>' : '')
+    + '<div class="section-title" style="margin-bottom:12px">Audit Universe (AU01–AU' + String(wpData.total_controls).padStart(2,'0') + ')</div>'
+    + '<div class="table-wrap"><table><thead><tr><th>Control ID</th><th>Title</th><th>Domain</th><th>Risk</th><th>Result</th><th>Open Findings</th></tr></thead><tbody>'
+    + wpData.work_papers.map(wp => '<tr onclick="showWPDetail(\'' + wp.control_id + '\')" style="cursor:pointer">'
+      + '<td><code>' + wp.control_id + '</code></td>'
+      + '<td>' + wp.control_title + '</td>'
+      + '<td style="color:var(--muted);font-size:12px">' + wp.control_domain + '</td>'
+      + '<td class="' + riskClass(wp.inherent_risk) + '">' + wp.inherent_risk + '</td>'
+      + '<td>' + resultIcon(wp.test_result) + ' ' + wp.test_result.replace(/_/g,' ') + '</td>'
+      + '<td>' + (wp.open_finding_count>0?'<span style="color:var(--orange)">' + wp.open_finding_count + '</span>':'—') + '</td>'
+      + '</tr>').join('')
+    + '</tbody></table></div>'
+    + (openFindings.length ? '<div style="margin-top:20px"><div class="section-title" style="margin-bottom:12px">Open Findings Summary</div>'
+      + openFindings.map(wp => '<div class="finding-row"><h4><code>' + wp.control_id + '</code> — ' + wp.control_title + '</h4><div class="finding-meta"><span class="badge" style="background:var(--surface2);color:var(--orange)">' + wp.open_finding_count + ' open finding' + (wp.open_finding_count>1?'s':'') + '</span><span class="badge badge-' + (wp.inherent_risk==='CRITICAL'?'critical':'gaps') + '">' + wp.inherent_risk + '</span></div></div>').join('')
+      + '</div>' : '');
+}
+
 // Load data on page load
 (async () => {
   await loadOverview();
-  await Promise.all([loadContracts(), loadRegister(), loadReconciliation(), loadWorkPapers()]);
+  await Promise.all([loadContracts(), loadRegister(), loadReconciliation(), loadWorkPapers(), loadAuditIntelligence()]);
 })();
 </script>
 </body>
@@ -955,8 +1151,9 @@ def main():
         print(f"Generated {len(wps.work_papers)} working papers for '{args.wp_org}'")
 
     create_app(results, register, customer_name=args.customer, work_paper_set=wps)
-    print(f"\nDashboard: http://{args.host}:{args.port}/\n")
-    uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
+    actual_port = int(os.environ.get("PORT", args.port))
+    print(f"\nDashboard: http://{args.host}:{actual_port}/\n")
+    uvicorn.run(app, host=args.host, port=actual_port, log_level="warning")
 
 
 if __name__ == "__main__":
