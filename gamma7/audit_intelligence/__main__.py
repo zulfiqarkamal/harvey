@@ -3,7 +3,7 @@ CLI entrypoint for Gamma7 Audit Intelligence Agent.
 
 Usage:
     python -m gamma7.audit_intelligence plan --org "Nordbank A/S" --scope iso27001 --output output/
-    python -m gamma7.audit_intelligence plan --org "Fjord Finans" --scope iso27001 --exclude A.7.1,A.7.8 --quarters 4 --output output/
+    python -m gamma7.audit_intelligence plan --org "Fjord Finans" --scope iso27001 --exclude A.7.1,A.7.8 --cycle-years 3 --output output/
 
     python -m gamma7.audit_intelligence workpapers --org "Nordbank A/S" --scope iso27001 --output output/
     python -m gamma7.audit_intelligence workpapers --org "Fjord Finans" --scope iso27001 --exclude A.7.1,A.7.8 --output output/
@@ -31,7 +31,7 @@ def cmd_plan(args: argparse.Namespace) -> None:
         scope=scope,
         exclude_control_ids=exclude or None,
     )
-    program = build_program(universe, quarters=args.quarters)
+    program = build_program(universe, cycle_years=args.cycle_years)
 
     if args.output:
         paths = save_outputs(universe, program, args.output)
@@ -40,6 +40,7 @@ def cmd_plan(args: argparse.Namespace) -> None:
         print(f"Organisation: {args.org}")
         print(f"Scope: {', '.join(scope)}")
         print(f"Controls in scope: {m['in_scope']} ({m['critical']} critical, {m['high']} high, {m['medium']} medium)")
+        print(f"Residual risk: {m['residual_high']} high, {m['residual_medium']} medium, {m['residual_low']} low")
         print(f"\nOutput:")
         for key, path in paths.items():
             print(f"  {key:20s}: {path}")
@@ -124,8 +125,8 @@ def build_parser() -> argparse.ArgumentParser:
                       help="Comma-separated scope keys (default: iso27001)")
     plan.add_argument("--exclude", default="", metavar="CONTROL_IDS",
                       help="Comma-separated control IDs to exclude (e.g. A.7.1,A.7.8)")
-    plan.add_argument("--quarters", type=int, default=4, metavar="N",
-                      help="Number of audit quarters to plan (default: 4)")
+    plan.add_argument("--cycle-years", type=int, default=3, metavar="N",
+                      help="Number of years in the rolling audit cycle (default: 3)")
     plan.add_argument("--output", default=None, metavar="DIR",
                       help="Output directory for YAML + Markdown (prints to stdout if omitted)")
 

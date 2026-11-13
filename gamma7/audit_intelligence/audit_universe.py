@@ -9,7 +9,7 @@ configurable organisation risk profile.
 
 Output:
   - Audit Universe (YAML) — full list of in-scope controls with risk scores
-  - Audit Program (YAML) — prioritised testing schedule with evidence artifacts
+  - Audit Program (YAML) — prioritised 3-year rolling plan with evidence artifacts
   - Markdown report — human-readable planning document
 """
 
@@ -39,10 +39,47 @@ class InherentRisk(str, Enum):
     LOW = "LOW"
 
 
+class ControlRating(str, Enum):
+    """Effectiveness of controls mitigating inherent risk (IIA / ISACA standard)."""
+    WEAK = "WEAK"           # Controls absent, poorly designed, or consistently failing
+    PARTIAL = "PARTIAL"     # Controls exist but have significant gaps or inconsistent operation
+    EFFECTIVE = "EFFECTIVE" # Controls well-designed and consistently operating
+
+
+class ResidualRisk(str, Enum):
+    """Qualitative residual risk after considering control effectiveness."""
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"
+
+
+class ReviewType(str, Enum):
+    FULL_AUDIT = "full_audit"
+    KEY_CONTROL_REVIEW = "key_control_review"
+
+
 class AuditDecision(str, Enum):
     INCLUDE = "include"
     EXCLUDE_OOS = "exclude_out_of_scope"
     DEFER = "defer"
+
+
+# IIA-aligned residual risk matrix: (InherentRisk, ControlRating) → ResidualRisk
+# Conservative: CRITICAL + PARTIAL stays HIGH; HIGH + EFFECTIVE drops to LOW
+_RESIDUAL_MATRIX: dict[tuple[str, str], str] = {
+    ("CRITICAL", "WEAK"):      "HIGH",
+    ("CRITICAL", "PARTIAL"):   "HIGH",
+    ("CRITICAL", "EFFECTIVE"): "MEDIUM",
+    ("HIGH",     "WEAK"):      "HIGH",
+    ("HIGH",     "PARTIAL"):   "MEDIUM",
+    ("HIGH",     "EFFECTIVE"): "LOW",
+    ("MEDIUM",   "WEAK"):      "MEDIUM",
+    ("MEDIUM",   "PARTIAL"):   "LOW",
+    ("MEDIUM",   "EFFECTIVE"): "LOW",
+    ("LOW",      "WEAK"):      "LOW",
+    ("LOW",      "PARTIAL"):   "LOW",
+    ("LOW",      "EFFECTIVE"): "LOW",
+}
 
 
 @dataclass
@@ -57,9 +94,18 @@ class ControlEntry:
     audit_approach: str
     evidence_artifacts: list[str]
     risk_indicators: list[str]
+    # Control effectiveness and residual risk
+    control_rating: ControlRating = ControlRating.PARTIAL
+    residual_risk: Optional[ResidualRisk] = None
+    # Tracking fields (from document methodology)
+    risk_owner: Optional[str] = None
+    last_assessed_date: Optional[str] = None
+    open_findings_count: int = 0
+    # Planning
     rationale: Optional[str] = None
     assigned_to: Optional[str] = None
-    planned_quarter: Optional[str] = None
+    planned_quarter: Optional[str] = None  # e.g. "Year 1", "Year 2", "Year 3"
+    review_type: Optional[str] = None      # "full_audit" or "key_control_review"
 
 
 @dataclass
@@ -90,11 +136,23 @@ class AuditUniverse:
 class AuditProgram:
     program_id: str
     universe_id: str
-    quarters: dict[str, list[str]]  # quarter → [control_id]
+    cycle_years: int  # 3-year rolling plan
+    plan: dict[str, list[str]]        # "Year 1" / "Year 2" / "Year 3" → [control_id]
+    plan_types: dict[str, str]        # control_id → "full_audit" or "key_control_review"
     generated_at: str
 
+    @property
+    def quarters(self) -> dict[str, list[str]]:
+        """Backward-compatibility alias for plan."""
+        return self.plan
+
     def to_yaml(self) -> str:
-        return yaml.dump(asdict(self), allow_unicode=True, default_flow_style=False, sort_keys=False)
+        return yaml.dump(
+            {k: v for k, v in asdict(self).items() if k != "plan_types"},
+            allow_unicode=True,
+            default_flow_style=False,
+            sort_keys=False,
+        )
 
 
 def _load_controls(scope_key: str) -> list[dict]:
@@ -112,12 +170,42 @@ def _load_controls(scope_key: str) -> list[dict]:
     return controls
 
 
-def _apply_risk_profile(default_risk: str, profile: dict) -> InherentRisk:
+def _apply_risk_profile(default_risk: str, control_id: str, profile: dict) -> InherentRisk:
     """
-    Adjust default control risk based on organisation's risk profile.
-    Profile keys: elevated_domains (list of domain names), reduced_domains.
+    Adjust inherent risk based on organisation risk profile.
+
+    Profile keys:
+        elevated_domains: list of domain names → upgrade risk one level
+        reduced_domains:  list of domain names → downgrade risk one level
+        elevated_controls: list of specific control IDs → force HIGH
     """
-    return InherentRisk(default_risk)
+    elevated_domains: list[str] = profile.get("elevated_domains", [])
+    reduced_domains: list[str] = profile.get("reduced_domains", [])
+    elevated_controls: list[str] = profile.get("elevated_controls", [])
+
+    risk = InherentRisk(default_risk)
+
+    if control_id in elevated_controls:
+        return InherentRisk.HIGH
+
+    # Domain-level elevation/reduction requires knowing the domain — callers pass it via profile
+    domain = profile.get("_current_domain", "")
+    _up = {"LOW": "MEDIUM", "MEDIUM": "HIGH", "HIGH": "CRITICAL", "CRITICAL": "CRITICAL"}
+    _down = {"CRITICAL": "HIGH", "HIGH": "MEDIUM", "MEDIUM": "LOW", "LOW": "LOW"}
+
+    if domain in elevated_domains:
+        risk = InherentRisk(_up.get(risk.value, risk.value))
+    elif domain in reduced_domains:
+        risk = InherentRisk(_down.get(risk.value, risk.value))
+
+    return risk
+
+
+def _compute_residual_risk(inherent: InherentRisk, rating: ControlRating) -> ResidualRisk:
+    """Look up residual risk from the IIA-aligned 3×3 matrix."""
+    key = (inherent.value, rating.value)
+    result = _RESIDUAL_MATRIX.get(key, "MEDIUM")
+    return ResidualRisk(result)
 
 
 def _risk_score(risk: InherentRisk) -> int:
@@ -129,32 +217,40 @@ def build_universe(
     scope: list[str],
     exclude_control_ids: Optional[list[str]] = None,
     risk_profile: Optional[dict] = None,
+    control_ratings: Optional[dict[str, str]] = None,
 ) -> AuditUniverse:
     """
     Build a full audit universe for the given organisation and regulatory scope.
 
     Args:
         organisation: Name of the organisation being audited.
-        scope: List of scope keys, e.g. ["iso27001"]. More will be added in Phase 2.
-        exclude_control_ids: Controls to explicitly exclude (e.g. not applicable domains).
-        risk_profile: Optional dict with keys elevated_domains, reduced_domains for adjustments.
+        scope: List of scope keys, e.g. ["iso27001"].
+        exclude_control_ids: Controls to explicitly exclude.
+        risk_profile: Optional dict with keys elevated_domains, reduced_domains,
+                      elevated_controls for inherent risk adjustments.
+        control_ratings: Optional dict mapping control_id → "WEAK"/"PARTIAL"/"EFFECTIVE".
+                         Defaults to PARTIAL for all controls if not supplied.
 
     Returns:
         AuditUniverse with all in-scope controls, risk-scored and ranked.
     """
     exclude_ids = set(exclude_control_ids or [])
     profile = risk_profile or {}
+    ratings = control_ratings or {}
     all_controls: list[ControlEntry] = []
 
     for scope_key in scope:
         raw_controls = _load_controls(scope_key)
         for ctrl in raw_controls:
             ctrl_id = ctrl["id"]
+            domain = ctrl["domain"]
+            profile_with_domain = {**profile, "_current_domain": domain}
+
             if ctrl_id in exclude_ids:
                 entry = ControlEntry(
                     control_id=ctrl_id,
                     title=ctrl["title"],
-                    domain=ctrl["domain"],
+                    domain=domain,
                     objective=ctrl.get("objective", ""),
                     inherent_risk=InherentRisk(ctrl.get("default_risk", "MEDIUM")),
                     audit_decision=AuditDecision.EXCLUDE_OOS,
@@ -165,28 +261,37 @@ def build_universe(
                     rationale="Excluded by scope configuration.",
                 )
             else:
-                risk = _apply_risk_profile(ctrl.get("default_risk", "MEDIUM"), profile)
+                inherent = _apply_risk_profile(ctrl.get("default_risk", "MEDIUM"), ctrl_id, profile_with_domain)
+                rating_str = ratings.get(ctrl_id, "PARTIAL")
+                control_rating = ControlRating(rating_str)
+                residual = _compute_residual_risk(inherent, control_rating)
                 entry = ControlEntry(
                     control_id=ctrl_id,
                     title=ctrl["title"],
-                    domain=ctrl["domain"],
+                    domain=domain,
                     objective=ctrl.get("objective", ""),
-                    inherent_risk=risk,
+                    inherent_risk=inherent,
                     audit_decision=AuditDecision.INCLUDE,
                     priority_rank=0,
                     audit_approach=ctrl.get("audit_approach", ""),
                     evidence_artifacts=ctrl.get("evidence_artifacts", []),
                     risk_indicators=ctrl.get("risk_indicators", []),
+                    control_rating=control_rating,
+                    residual_risk=residual,
                 )
             all_controls.append(entry)
 
-    # Rank by risk (CRITICAL first), then by control_id
+    # Rank by residual risk (included), then inherent, then control_id
     included = [c for c in all_controls if c.audit_decision == AuditDecision.INCLUDE]
-    included.sort(key=lambda c: (_risk_score(c.inherent_risk), c.control_id))
+    _res_order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
+    included.sort(key=lambda c: (
+        _res_order.get(c.residual_risk.value if c.residual_risk else "MEDIUM", 1),
+        _risk_score(c.inherent_risk),
+        c.control_id,
+    ))
     for i, c in enumerate(included, start=1):
         c.priority_rank = i
 
-    # Assign excluded controls rank 999
     all_controls_ordered = included + [c for c in all_controls if c.audit_decision != AuditDecision.INCLUDE]
 
     universe = AuditUniverse(
@@ -202,37 +307,65 @@ def build_universe(
             "critical": sum(1 for c in included if c.inherent_risk == InherentRisk.CRITICAL),
             "high": sum(1 for c in included if c.inherent_risk == InherentRisk.HIGH),
             "medium": sum(1 for c in included if c.inherent_risk == InherentRisk.MEDIUM),
+            "residual_high": sum(1 for c in included if c.residual_risk == ResidualRisk.HIGH),
+            "residual_medium": sum(1 for c in included if c.residual_risk == ResidualRisk.MEDIUM),
+            "residual_low": sum(1 for c in included if c.residual_risk == ResidualRisk.LOW),
         },
     )
     return universe
 
 
-def build_program(universe: AuditUniverse, quarters: int = 4) -> AuditProgram:
+def build_program(universe: AuditUniverse, cycle_years: int = 3) -> AuditProgram:
     """
-    Distribute in-scope controls across audit quarters (prioritising high-risk first).
+    Build a rolling 3-year risk-based audit plan (IIA / document methodology):
 
-    Critical + High risk controls → Q1 and Q2
-    Medium risk → Q3 and Q4
-    Low risk → Q4 or deferred
+      - Residual HIGH  → full audit every year (Years 1, 2, 3)
+      - Residual MEDIUM → full audit every 2 years (Years 1 and 3)
+      - Residual LOW   → 33% key-control review annually (all 3 years, lighter scope)
+
+    Args:
+        universe: Completed AuditUniverse.
+        cycle_years: Length of the rolling cycle. Default 3.
+
+    Returns:
+        AuditProgram with plan keyed by "Year 1" … "Year N".
     """
     included = [c for c in universe.controls if c.audit_decision == AuditDecision.INCLUDE]
-    critical_high = [c for c in included if c.inherent_risk in (InherentRisk.CRITICAL, InherentRisk.HIGH)]
-    medium = [c for c in included if c.inherent_risk == InherentRisk.MEDIUM]
-    low = [c for c in included if c.inherent_risk == InherentRisk.LOW]
+    plan: dict[str, list[str]] = {f"Year {y}": [] for y in range(1, cycle_years + 1)}
+    plan_types: dict[str, str] = {}
 
-    per_quarter = max(1, len(included) // quarters)
-    schedule: dict[str, list[str]] = {f"Q{q+1}": [] for q in range(quarters)}
+    for ctrl in included:
+        residual = ctrl.residual_risk or ResidualRisk.MEDIUM
 
-    all_ordered = critical_high + medium + low
-    for i, ctrl in enumerate(all_ordered):
-        q_index = min(i // per_quarter, quarters - 1)
-        schedule[f"Q{q_index + 1}"].append(ctrl.control_id)
-        ctrl.planned_quarter = f"Q{q_index + 1}"
+        if residual == ResidualRisk.HIGH:
+            # Annual full audit — appears every year
+            years = list(range(1, cycle_years + 1))
+            rtype = ReviewType.FULL_AUDIT.value
+        elif residual == ResidualRisk.MEDIUM:
+            # Biennial full audit — Year 1, Year 3 (odd years)
+            years = [y for y in range(1, cycle_years + 1) if y % 2 == 1]
+            rtype = ReviewType.FULL_AUDIT.value
+        else:
+            # LOW — key-control review in Year 1 only (33% of cycle = Year 1 of 3)
+            years = [1]
+            rtype = ReviewType.KEY_CONTROL_REVIEW.value
+
+        for y in years:
+            key = f"Year {y}"
+            if key in plan:
+                plan[key].append(ctrl.control_id)
+
+        plan_types[ctrl.control_id] = rtype
+        # Set planned_quarter to first scheduled year for ControlEntry
+        ctrl.planned_quarter = f"Year {years[0]}" if years else None
+        ctrl.review_type = rtype
 
     return AuditProgram(
         program_id=f"AP-{datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d-%H%M%S')}",
         universe_id=universe.universe_id,
-        quarters=schedule,
+        cycle_years=cycle_years,
+        plan=plan,
+        plan_types=plan_types,
         generated_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),
     )
 
@@ -255,33 +388,52 @@ def generate_markdown(universe: AuditUniverse, program: Optional[AuditProgram] =
         f"| Total controls | {m.get('total_controls', 0)} |",
         f"| In scope | {m.get('in_scope', 0)} |",
         f"| Excluded | {m.get('excluded', 0)} |",
-        f"| 🔴 Critical risk | {m.get('critical', 0)} |",
-        f"| 🟠 High risk | {m.get('high', 0)} |",
-        f"| 🟡 Medium risk | {m.get('medium', 0)} |",
+        f"| 🔴 Critical inherent risk | {m.get('critical', 0)} |",
+        f"| 🟠 High inherent risk | {m.get('high', 0)} |",
+        f"| 🟡 Medium inherent risk | {m.get('medium', 0)} |",
+        f"| 🔴 High residual risk | {m.get('residual_high', 0)} |",
+        f"| 🟡 Medium residual risk | {m.get('residual_medium', 0)} |",
+        f"| 🟢 Low residual risk | {m.get('residual_low', 0)} |",
         f"",
     ])
 
     if program:
-        lines.extend([f"## Audit Schedule", f""])
-        for q, ctrl_ids in program.quarters.items():
-            lines.append(f"### {q} ({len(ctrl_ids)} controls)")
+        lines.extend([f"## Audit Schedule ({program.cycle_years}-Year Rolling Plan)", f""])
+        for year_key, ctrl_ids in sorted(program.plan.items()):
+            lines.append(f"### {year_key} ({len(ctrl_ids)} engagements)")
             for cid in ctrl_ids:
                 ctrl = next((c for c in universe.controls if c.control_id == cid), None)
                 if ctrl:
-                    risk_icon = {"CRITICAL": "🔴", "HIGH": "🟠", "MEDIUM": "🟡", "LOW": "🟢"}.get(ctrl.inherent_risk.value, "⬜")
-                    lines.append(f"- {risk_icon} `{ctrl.control_id}` {ctrl.title}")
+                    res = ctrl.residual_risk.value if ctrl.residual_risk else "?"
+                    res_icon = {"HIGH": "🔴", "MEDIUM": "🟡", "LOW": "🟢"}.get(res, "⬜")
+                    rtype = program.plan_types.get(cid, "")
+                    rtype_label = " *(key-control review)*" if rtype == "key_control_review" else ""
+                    lines.append(f"- {res_icon} `{ctrl.control_id}` {ctrl.title}{rtype_label}")
             lines.append("")
 
     lines.extend([f"## Control Details", f""])
     for ctrl in universe.controls:
         if ctrl.audit_decision != AuditDecision.INCLUDE:
             continue
-        risk_icon = {"CRITICAL": "🔴", "HIGH": "🟠", "MEDIUM": "🟡", "LOW": "🟢"}.get(ctrl.inherent_risk.value, "⬜")
+        inh_icon = {"CRITICAL": "🔴", "HIGH": "🟠", "MEDIUM": "🟡", "LOW": "🟢"}.get(ctrl.inherent_risk.value, "⬜")
+        res_icon = {"HIGH": "🔴", "MEDIUM": "🟡", "LOW": "🟢"}.get(
+            ctrl.residual_risk.value if ctrl.residual_risk else "", "⬜"
+        )
         lines.extend([
-            f"### `{ctrl.control_id}` {ctrl.title} {risk_icon}",
+            f"### `{ctrl.control_id}` {ctrl.title}",
             f"**Domain:** {ctrl.domain}  ",
-            f"**Inherent Risk:** {ctrl.inherent_risk.value}  ",
+            f"**Inherent Risk:** {ctrl.inherent_risk.value} {inh_icon}  ",
+            f"**Control Rating:** {ctrl.control_rating.value}  ",
+            f"**Residual Risk:** {ctrl.residual_risk.value if ctrl.residual_risk else 'N/A'} {res_icon}  ",
             f"**Priority Rank:** #{ctrl.priority_rank}",
+        ])
+        if ctrl.risk_owner:
+            lines.append(f"**Risk Owner:** {ctrl.risk_owner}  ")
+        if ctrl.last_assessed_date:
+            lines.append(f"**Last Assessed:** {ctrl.last_assessed_date}  ")
+        if ctrl.open_findings_count:
+            lines.append(f"**Open Findings:** {ctrl.open_findings_count}  ")
+        lines.extend([
             f"",
             f"**Objective:** {ctrl.objective}",
             f"",
