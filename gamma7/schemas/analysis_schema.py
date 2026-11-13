@@ -24,6 +24,74 @@ class ComplianceStatus(str, Enum):
     NOT_ASSESSED = "not_assessed" # Analysis not yet performed
 
 
+# ---------------------------------------------------------------------------
+# Risk matrix — ISACA/IIA/COSO 3×3 (Likelihood × Impact)
+# ---------------------------------------------------------------------------
+
+class RiskRating(str, Enum):
+    LOW = "low"       # Score 1–2
+    MEDIUM = "medium" # Score 3–4
+    HIGH = "high"     # Score 6–9
+
+
+class ControlRisk(str, Enum):
+    """Effectiveness of controls mitigating inherent risk."""
+    LOW = "low"       # Controls effective and tested — reduces inherent risk ≥60 %
+    MEDIUM = "medium" # Controls exist but gaps — reduces 30–59 %
+    HIGH = "high"     # Controls missing / not implemented — reduces <30 %
+
+
+@dataclass
+class RiskScore:
+    """3×3 risk matrix score (Likelihood 1–3 × Impact 1–3)."""
+    likelihood: int    # 1=Low, 2=Medium, 3=High
+    impact: int        # 1=Low, 2=Medium, 3=High
+    score: int         # likelihood × impact (1–9)
+    rating: RiskRating
+
+    def __post_init__(self) -> None:
+        if self.likelihood not in (1, 2, 3):
+            raise ValueError(f"likelihood must be 1–3, got {self.likelihood}")
+        if self.impact not in (1, 2, 3):
+            raise ValueError(f"impact must be 1–3, got {self.impact}")
+
+    @classmethod
+    def from_components(cls, likelihood: int, impact: int) -> "RiskScore":
+        score = likelihood * impact
+        if score <= 2:
+            rating = RiskRating.LOW
+        elif score <= 4:
+            rating = RiskRating.MEDIUM
+        else:
+            rating = RiskRating.HIGH
+        return cls(likelihood=likelihood, impact=impact, score=score, rating=rating)
+
+
+# ---------------------------------------------------------------------------
+# Control effectiveness and residual risk
+# ---------------------------------------------------------------------------
+
+_CONTROL_EFFECTIVENESS_REDUCTION = {
+    ControlRisk.LOW: 0.65,    # ≥60 % — use midpoint 65 %
+    ControlRisk.MEDIUM: 0.45, # 30–59 % — use midpoint 45 %
+    ControlRisk.HIGH: 0.10,   # <30 % — use 10 %
+}
+
+
+def residual_score(inherent: RiskScore, control_risk: ControlRisk) -> float:
+    """Residual risk = inherent score × (1 − control effectiveness)."""
+    reduction = _CONTROL_EFFECTIVENESS_REDUCTION[control_risk]
+    return round(inherent.score * (1.0 - reduction), 2)
+
+
+def residual_rating(residual: float) -> RiskRating:
+    if residual <= 2.0:
+        return RiskRating.LOW
+    elif residual <= 4.0:
+        return RiskRating.MEDIUM
+    return RiskRating.HIGH
+
+
 class RiskLevel(str, Enum):
     CRITICAL = "critical"   # Must remediate before DORA deadline / active regulatory risk
     HIGH = "high"           # Significant gap, remediate within 30 days

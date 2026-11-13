@@ -364,6 +364,113 @@ def _remediation_priority(assessment: RequirementAssessment) -> str:
     return "medium_term"
 
 
+# ---------------------------------------------------------------------------
+# Risk matrix helpers (ISACA/IIA/COSO 3×3, Likelihood × Impact = 1–9)
+# ---------------------------------------------------------------------------
+
+# Map analyser RiskLevel → (likelihood, impact) for inherent risk
+_RISK_LEVEL_TO_COMPONENTS: dict[RiskLevel, tuple[int, int]] = {
+    RiskLevel.CRITICAL: (3, 3),  # 9 — High
+    RiskLevel.HIGH:     (3, 2),  # 6 — High
+    RiskLevel.MEDIUM:   (2, 2),  # 4 — Medium
+    RiskLevel.LOW:      (1, 2),  # 2 — Low
+    RiskLevel.INFO:     (1, 1),  # 1 — Low
+}
+
+# Score bands match analysis_schema.RiskRating
+def _score_to_rating(score: float) -> str:
+    if score <= 2.0:
+        return "low"
+    elif score <= 4.0:
+        return "medium"
+    return "high"
+
+# Control effectiveness reduction by control risk level
+_CONTROL_REDUCTION = {
+    "low":    0.65,  # effective controls — ≥60 %
+    "medium": 0.45,  # partial controls  — 30–59 %
+    "high":   0.10,  # weak controls     — <30 %
+}
+
+
+def _control_risk_for_assessment(assessment: RequirementAssessment) -> str:
+    """
+    Derive control risk from compliance status and finding severity.
+    - SATISFIED → low control risk (controls exist and evidenced)
+    - AMBIGUOUS → medium (controls exist but gaps)
+    - MISSING / NOT_ASSESSED → high (no controls evidenced)
+    """
+    if assessment.status == ComplianceStatus.SATISFIED:
+        return "low"
+    if assessment.status in (ComplianceStatus.AMBIGUOUS, ComplianceStatus.EVIDENCE_FOUND):
+        return "medium"
+    return "high"
+
+
+def compute_risk_heatmap(result: ContractAnalysisResult) -> dict:
+    """
+    Compute a 3×3 risk heatmap for a single contract analysis result.
+    Returns inherent counts, residual counts and per-requirement detail.
+
+    Returned structure::
+
+        {
+          "contract_id": "...",
+          "supplier_name": "...",
+          "inherent_risk_counts": {"low": n, "medium": n, "high": n},
+          "residual_risk_counts": {"low": n, "medium": n, "high": n},
+          "requirements": [
+            {
+              "requirement_id": "ART30-001",
+              "inherent_likelihood": 3, "inherent_impact": 2,
+              "inherent_score": 6, "inherent_rating": "high",
+              "control_risk": "medium",
+              "residual_score": 3.3, "residual_rating": "medium"
+            }, ...
+          ]
+        }
+    """
+    inherent_counts: dict[str, int] = {"low": 0, "medium": 0, "high": 0}
+    residual_counts: dict[str, int] = {"low": 0, "medium": 0, "high": 0}
+    requirements = []
+
+    for a in result.assessments:
+        if a.status == ComplianceStatus.NOT_APPLICABLE:
+            continue
+        risk_lvl = a.risk_level if a.risk_level is not None else RiskLevel.INFO
+        likelihood, impact = _RISK_LEVEL_TO_COMPONENTS.get(risk_lvl, (1, 1))
+        inherent_score = likelihood * impact
+        inherent_rating = _score_to_rating(inherent_score)
+        inherent_counts[inherent_rating] += 1
+
+        ctrl_risk = _control_risk_for_assessment(a)
+        reduction = _CONTROL_REDUCTION[ctrl_risk]
+        res_score = round(inherent_score * (1.0 - reduction), 2)
+        res_rating = _score_to_rating(res_score)
+        residual_counts[res_rating] += 1
+
+        requirements.append({
+            "requirement_id": a.requirement_id,
+            "requirement_summary": a.requirement_summary,
+            "compliance_status": a.status.value,
+            "inherent_likelihood": likelihood,
+            "inherent_impact": impact,
+            "inherent_score": inherent_score,
+            "inherent_rating": inherent_rating,
+            "control_risk": ctrl_risk,
+            "residual_score": res_score,
+            "residual_rating": res_rating,
+        })
+
+    return {
+        "contract_id": result.contract.contract_id,
+        "supplier_name": result.contract.supplier_name,
+        "inherent_risk_counts": inherent_counts,
+        "residual_risk_counts": residual_counts,
+        "requirements": requirements,
+    }
+
+
 def _metadata_from_filename(path: pathlib.Path, classification: str) -> ContractMetadata:
     return ContractMetadata(
         contract_id=path.stem,

@@ -28,7 +28,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 
-from .engine.analyser import ContractAnalyser, ContractMetadata
+from .engine.analyser import ContractAnalyser, ContractMetadata, compute_risk_heatmap
 from .engine.document_loader import load as load_document
 from .engine.register_reconciler import (
     ReconciliationReport,
@@ -215,6 +215,53 @@ def get_workpaper(control_id: str):
         "auditor_notes": wp.auditor_notes,
         "findings": findings,
         "workpaper_id": wp.workpaper_id,
+    }
+
+
+@app.get("/api/risk-heatmap")
+def get_risk_heatmap():
+    """
+    Return 3×3 risk heatmap data (Likelihood × Impact) for all loaded contract analyses.
+
+    Each contract entry includes:
+    - inherent risk counts (low/medium/high) — before control effectiveness
+    - residual risk counts — after applying control effectiveness reduction
+    - per-requirement breakdown with inherent score, control risk and residual score
+
+    Advisory: heatmap scores are derived from heuristic gap analysis.
+    Human review is required before use in regulatory reporting.
+    """
+    if not _pipeline_results:
+        return {"message": "No analyses loaded.", "contracts": []}
+
+    contracts = []
+    for pr in _pipeline_results:
+        # Build a minimal ContractAnalysisResult from PipelineResult for heatmap computation
+        if pr.result is not None:
+            heatmap = compute_risk_heatmap(pr.result)
+        else:
+            heatmap = {
+                "contract_id": pr.analysis_id,
+                "supplier_name": pr.supplier_name,
+                "inherent_risk_counts": {"low": 0, "medium": 0, "high": 0},
+                "residual_risk_counts": {"low": 0, "medium": 0, "high": 0},
+                "requirements": [],
+            }
+        contracts.append(heatmap)
+
+    # Aggregate across all contracts
+    totals_inherent: dict[str, int] = {"low": 0, "medium": 0, "high": 0}
+    totals_residual: dict[str, int] = {"low": 0, "medium": 0, "high": 0}
+    for c in contracts:
+        for k in ("low", "medium", "high"):
+            totals_inherent[k] += c["inherent_risk_counts"][k]
+            totals_residual[k] += c["residual_risk_counts"][k]
+
+    return {
+        "advisory": "Heuristic analysis only — human review required before regulatory use.",
+        "total_inherent_risk_counts": totals_inherent,
+        "total_residual_risk_counts": totals_residual,
+        "contracts": contracts,
     }
 
 
