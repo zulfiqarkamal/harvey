@@ -20,7 +20,7 @@ import pathlib
 from dataclasses import dataclass, field
 from typing import Optional
 
-from ..engine.analyser import ContractAnalyser, ContractAnalysisResult, ContractMetadata
+from ..engine.analyser import ContractAnalyser, ContractMetadata
 from ..engine.document_loader import load as load_document, LoadedDocument
 from ..engine.report_generator import save as save_report, generate_markdown
 
@@ -38,7 +38,6 @@ class PipelineResult:
     warnings: list[str]
     overlay_decisions: list = field(default_factory=list)
     overlay_summary: dict = field(default_factory=dict)
-    result: Optional[ContractAnalysisResult] = None  # raw analysis for downstream consumers (e.g. risk heatmap)
 
 
 class SupplierAssurancePipeline:
@@ -158,7 +157,6 @@ class SupplierAssurancePipeline:
             warnings=warnings,
             overlay_decisions=overlay_decisions,
             overlay_summary=overlay_summary,
-            result=analysis,
         )
 
     def run_batch(
