@@ -949,7 +949,7 @@ async function loadAuditIntelligence() {
     + (hmHtml ? '<div style="margin-bottom:20px">' + hmHtml + '</div>' : '')
     + '<div class="section-title" style="margin-bottom:12px">Audit Universe (AU01–AU' + String(wpData.total_controls).padStart(2,'0') + ')</div>'
     + '<div class="table-wrap"><table><thead><tr><th>Control ID</th><th>Title</th><th>Domain</th><th>Risk</th><th>Result</th><th>Open Findings</th></tr></thead><tbody>'
-    + wpData.work_papers.map(wp => '<tr onclick="showWPDetail(\'' + wp.control_id + '\')" style="cursor:pointer">'
+    + wpData.work_papers.map(wp => '<tr data-id="' + wp.control_id + '" onclick="showWPDetail(this.dataset.id)" style="cursor:pointer">'
       + '<td><code>' + wp.control_id + '</code></td>'
       + '<td>' + wp.control_title + '</td>'
       + '<td style="color:var(--muted);font-size:12px">' + wp.control_domain + '</td>'
