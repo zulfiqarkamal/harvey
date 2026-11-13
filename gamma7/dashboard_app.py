@@ -735,8 +735,8 @@ async function loadWorkPapers() {
       <div class="card"><div class="label">Controls in scope</div><div class="value">${data.total_controls}</div></div>
       <div class="card"><div class="label">Tested</div><div class="value">${data.tested_count}</div></div>
       <div class="card"><div class="label">Passed</div><div class="value green">${data.passed_count}</div></div>
-      <div class="card"><div class="label">Exceptions</div><div class="value ${data.exception_count>0?'yellow':''}">${data.exception_count}</div></div>
-      <div class="card"><div class="label">Open findings</div><div class="value ${data.open_findings>0?'red':''}">${data.open_findings}</div></div>
+      <div class="card"><div class="label">Exceptions</div><div class="value ${data.exception_count>0?'yellow':''}}">${data.exception_count}</div></div>
+      <div class="card"><div class="label">Open findings</div><div class="value ${data.open_findings>0?'red':''}}">${data.open_findings}</div></div>
     </div>
     <div id="wp-heatmap" style="margin-bottom:20px"></div>
     <div class="table-wrap">
@@ -1158,6 +1158,42 @@ def main():
     print(f"\nDashboard: http://{args.host}:{actual_port}/\n")
     uvicorn.run(app, host=args.host, port=actual_port, log_level="warning")
 
+
+# ---------------------------------------------------------------------------
+# Module-level demo init (for direct uvicorn invocation: uvicorn ... :app)
+# When DEMO_MODE=true, load synthetic data without requiring CLI args.
+# ---------------------------------------------------------------------------
+
+if os.environ.get("DEMO_MODE"):
+    _demo_results, _demo_register = _load_demo_results()
+    from .audit_intelligence.audit_universe import build_universe
+    from .audit_intelligence.workpaper import (
+        build_workpapers, TestResult, FindingSeverity, FindingStatus,
+    )
+    _demo_universe = build_universe(organisation="Demo Customer A/S", scope=["iso27001"])
+    _demo_wps = build_workpapers(_demo_universe)
+    _DEMO_TR = [
+        TestResult.PASSED, TestResult.PASSED, TestResult.PASSED,
+        TestResult.EXCEPTION, TestResult.PASSED, TestResult.EXCEPTION,
+        TestResult.NOT_TESTED, TestResult.PASSED, TestResult.PASSED,
+        TestResult.EXCEPTION, TestResult.NOT_APPLICABLE, TestResult.PASSED,
+    ]
+    for _di, _dwp in enumerate(_demo_wps.work_papers):
+        _dwp.test_result = _DEMO_TR[_di % len(_DEMO_TR)]
+        if _dwp.test_result == TestResult.EXCEPTION and not _dwp.findings:
+            _dwp.add_finding(
+                title="Demo finding — control not fully implemented",
+                condition="Control activity is partially configured.",
+                criteria="ISO 27001 requires full implementation of this control.",
+                cause="Resource constraints delayed implementation.",
+                effect="Residual risk remains above accepted threshold.",
+                recommendation="Complete implementation by Q1 and re-test.",
+                severity=FindingSeverity.MEDIUM,
+                status=FindingStatus.OPEN,
+                owner="IT Security",
+                target_remediation_date="2027-03-31",
+            )
+    create_app(_demo_results, _demo_register, customer_name="Demo Customer", work_paper_set=_demo_wps)
 
 if __name__ == "__main__":
     main()
