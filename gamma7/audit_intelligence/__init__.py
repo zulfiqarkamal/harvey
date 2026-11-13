@@ -1,5 +1,5 @@
 """Gamma7 Audit Intelligence Agent — audit universe, risk assessment, control testing programs."""
-from .audit_universe import AuditUniverse, AuditProgram, ControlRating, ResidualRisk, ReviewType
+from .audit_universe import AuditUniverse, AuditProgram, ControlRating, ResidualRisk, ReviewType, update_universe_from_workpapers
 from .audit_llm_overlay import SuggestedFinding, suggest_findings, suggest_findings_batch
 from .audit_report import generate_audit_report, save_audit_report
 from .workpaper import (
@@ -21,6 +21,7 @@ __all__ = [
     "ControlRating",
     "ResidualRisk",
     "ReviewType",
+    "update_universe_from_workpapers",
     "SuggestedFinding",
     "suggest_findings",
     "suggest_findings_batch",

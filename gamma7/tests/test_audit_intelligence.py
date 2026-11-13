@@ -10,6 +10,7 @@ from gamma7.audit_intelligence.audit_universe import (
     build_universe,
     build_program,
     generate_markdown,
+    update_universe_from_workpapers,
     AuditUniverse,
     AuditProgram,
     AuditDecision,
@@ -17,6 +18,14 @@ from gamma7.audit_intelligence.audit_universe import (
     ControlRating,
     ResidualRisk,
     ControlEntry,
+)
+from gamma7.audit_intelligence.workpaper import (
+    WorkPaper,
+    WorkPaperSet,
+    Finding,
+    TestResult,
+    FindingStatus,
+    FindingSeverity,
 )
 
 
@@ -269,3 +278,178 @@ def test_save_writes_expected_files(tmp_path):
     assert "program_yaml" in paths
     for key, path in paths.items():
         assert path.exists(), f"Expected {key} file at {path}"
+
+
+# --- update_universe_from_workpapers (feedback loop) ---
+
+def _first_included(universe: AuditUniverse):
+    """Return the first INCLUDE control entry."""
+    return next(c for c in universe.controls if c.audit_decision == AuditDecision.INCLUDE)
+
+
+def _make_wps(control_id: str, test_result, findings=None, tested_date=None) -> WorkPaperSet:
+    wp = WorkPaper(
+        workpaper_id=f"wp-{control_id}",
+        control_id=control_id,
+        control_title="Test control",
+        control_domain="Test",
+        inherent_risk="MEDIUM",
+        planned_quarter="Year 1",
+        audit_objective="Verify test control",
+        test_result=test_result,
+        findings=findings or [],
+        tested_date=tested_date,
+    )
+    return WorkPaperSet(
+        engagement_id="eng-001",
+        universe_id="u-001",
+        organisation="Test Bank",
+        scope=["iso27001"],
+        generated_at="2026-11-13",
+        work_papers=[wp],
+    )
+
+
+def test_update_universe_passed_becomes_effective():
+    u = build_universe(organisation="Test Bank", scope=["iso27001"])
+    ctrl = _first_included(u)
+    wps = _make_wps(ctrl.control_id, TestResult.PASSED)
+    update_universe_from_workpapers(u, wps)
+    assert ctrl.control_rating == ControlRating.EFFECTIVE
+
+
+def test_update_universe_exception_with_critical_becomes_weak():
+    u = build_universe(organisation="Test Bank", scope=["iso27001"])
+    ctrl = _first_included(u)
+    critical_finding = Finding(
+        finding_id="f-001",
+        control_id=ctrl.control_id,
+        title="Critical gap in control",
+        condition="Critical gap",
+        criteria="Policy requires X",
+        cause="Missing control",
+        effect="Exposure",
+        recommendation="Fix it",
+        severity=FindingSeverity.CRITICAL,
+        status=FindingStatus.OPEN,
+    )
+    wps = _make_wps(ctrl.control_id, TestResult.EXCEPTION, findings=[critical_finding])
+    update_universe_from_workpapers(u, wps)
+    assert ctrl.control_rating == ControlRating.WEAK
+
+
+def test_update_universe_exception_without_critical_becomes_partial():
+    u = build_universe(organisation="Test Bank", scope=["iso27001"])
+    ctrl = _first_included(u)
+    minor_finding = Finding(
+        finding_id="f-002",
+        control_id=ctrl.control_id,
+        title="Minor gap in control",
+        condition="Minor gap",
+        criteria="Policy requires Y",
+        cause="Partial implementation",
+        effect="Minor exposure",
+        recommendation="Improve it",
+        severity=FindingSeverity.LOW,
+        status=FindingStatus.OPEN,
+    )
+    wps = _make_wps(ctrl.control_id, TestResult.EXCEPTION, findings=[minor_finding])
+    update_universe_from_workpapers(u, wps)
+    assert ctrl.control_rating == ControlRating.PARTIAL
+
+
+def test_update_universe_not_tested_preserves_rating():
+    u = build_universe(organisation="Test Bank", scope=["iso27001"])
+    ctrl = _first_included(u)
+    original_rating = ctrl.control_rating
+    wps = _make_wps(ctrl.control_id, TestResult.NOT_TESTED)
+    update_universe_from_workpapers(u, wps)
+    assert ctrl.control_rating == original_rating
+
+
+def test_update_universe_sets_last_assessed_date():
+    u = build_universe(organisation="Test Bank", scope=["iso27001"])
+    ctrl = _first_included(u)
+    wps = _make_wps(ctrl.control_id, TestResult.PASSED, tested_date="2026-11-13")
+    update_universe_from_workpapers(u, wps)
+    assert ctrl.last_assessed_date == "2026-11-13"
+
+
+def test_update_universe_sets_last_assessed_date_fallback():
+    u = build_universe(organisation="Test Bank", scope=["iso27001"])
+    ctrl = _first_included(u)
+    wps = _make_wps(ctrl.control_id, TestResult.PASSED, tested_date=None)
+    update_universe_from_workpapers(u, wps, assessed_date="2026-01-01")
+    assert ctrl.last_assessed_date == "2026-01-01"
+
+
+def test_update_universe_sets_open_findings_count():
+    u = build_universe(organisation="Test Bank", scope=["iso27001"])
+    ctrl = _first_included(u)
+    open_f = Finding(
+        finding_id="f-open",
+        control_id=ctrl.control_id,
+        title="Open gap",
+        condition="Gap",
+        criteria="X",
+        cause="Y",
+        effect="Z",
+        recommendation="Fix",
+        severity=FindingSeverity.MEDIUM,
+        status=FindingStatus.OPEN,
+    )
+    closed_f = Finding(
+        finding_id="f-closed",
+        control_id=ctrl.control_id,
+        title="Closed gap",
+        condition="Old gap",
+        criteria="X",
+        cause="Y",
+        effect="Z",
+        recommendation="Fixed",
+        severity=FindingSeverity.LOW,
+        status=FindingStatus.CLOSED,
+    )
+    wps = _make_wps(ctrl.control_id, TestResult.EXCEPTION, findings=[open_f, closed_f])
+    update_universe_from_workpapers(u, wps)
+    assert ctrl.open_findings_count == 1
+
+
+def test_update_universe_recomputes_residual_risk():
+    u = build_universe(organisation="Test Bank", scope=["iso27001"])
+    ctrl = _first_included(u)
+    wps = _make_wps(ctrl.control_id, TestResult.PASSED)
+    update_universe_from_workpapers(u, wps)
+    # With EFFECTIVE rating, residual should not exceed inherent
+    assert ctrl.residual_risk is not None
+
+
+def test_update_universe_refreshes_metadata_counts():
+    u = build_universe(organisation="Test Bank", scope=["iso27001"])
+    ctrl = _first_included(u)
+    # Force a WEAK rating → HIGH residual (if inherent is CRITICAL or HIGH)
+    critical_f = Finding(
+        finding_id="f-crit",
+        control_id=ctrl.control_id,
+        title="Critical finding",
+        condition="Critical",
+        criteria="X",
+        cause="Y",
+        effect="Z",
+        recommendation="Fix",
+        severity=FindingSeverity.CRITICAL,
+        status=FindingStatus.OPEN,
+    )
+    wps = _make_wps(ctrl.control_id, TestResult.EXCEPTION, findings=[critical_f])
+    update_universe_from_workpapers(u, wps)
+    m = u.metadata
+    included = [c for c in u.controls if c.audit_decision == AuditDecision.INCLUDE]
+    assert m["residual_high"] + m["residual_medium"] + m["residual_low"] == len(included)
+
+
+def test_update_universe_returns_same_universe():
+    u = build_universe(organisation="Test Bank", scope=["iso27001"])
+    ctrl = _first_included(u)
+    wps = _make_wps(ctrl.control_id, TestResult.PASSED)
+    result = update_universe_from_workpapers(u, wps)
+    assert result is u

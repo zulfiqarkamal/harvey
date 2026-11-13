@@ -458,6 +458,88 @@ def generate_markdown(universe: AuditUniverse, program: Optional[AuditProgram] =
     return "\n".join(lines)
 
 
+def update_universe_from_workpapers(
+    universe: AuditUniverse,
+    work_paper_set: "WorkPaperSet",  # forward reference — avoids circular import
+    assessed_date: Optional[str] = None,
+) -> AuditUniverse:
+    """
+    Close the feedback loop: apply completed audit findings back to the universe.
+
+    For each WorkPaper in work_paper_set that has been tested (test_result ≠ NOT_TESTED):
+      1. Set last_assessed_date on the matching ControlEntry.
+      2. Count open findings → open_findings_count.
+      3. Derive a new ControlRating from TestResult:
+           PASSED                → EFFECTIVE
+           EXCEPTION + no CRITICAL findings → PARTIAL
+           EXCEPTION + any CRITICAL finding → WEAK
+           NOT_TESTED / NOT_APPLICABLE    → keep existing rating
+      4. Recompute residual_risk via _RESIDUAL_MATRIX.
+
+    The universe is mutated in-place and returned.  Metadata residual_* counts
+    are refreshed to reflect the new ratings.
+
+    Args:
+        universe:         AuditUniverse to update.
+        work_paper_set:   Completed (or partially completed) WorkPaperSet.
+        assessed_date:    ISO-format date string to stamp on updated entries.
+                          Defaults to today (UTC).
+    Returns:
+        The same AuditUniverse, mutated.
+    """
+    from .workpaper import TestResult, FindingSeverity, FindingStatus  # local import
+
+    today = assessed_date or datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+
+    ctrl_index: dict[str, ControlEntry] = {
+        c.control_id: c for c in universe.controls
+        if c.audit_decision == AuditDecision.INCLUDE
+    }
+
+    for wp in work_paper_set.work_papers:
+        ctrl = ctrl_index.get(wp.control_id)
+        if ctrl is None:
+            continue
+
+        # Only update controls that were actually tested
+        if wp.test_result in (TestResult.NOT_TESTED, TestResult.NOT_APPLICABLE):
+            continue
+
+        ctrl.last_assessed_date = wp.tested_date or today
+
+        open_findings = [
+            f for f in wp.findings
+            if f.status == FindingStatus.OPEN
+        ]
+        ctrl.open_findings_count = len(open_findings)
+
+        # Map test result → control rating
+        if wp.test_result == TestResult.PASSED:
+            new_rating = ControlRating.EFFECTIVE
+        else:  # EXCEPTION
+            has_critical = any(
+                f.severity == FindingSeverity.CRITICAL for f in open_findings
+            )
+            new_rating = ControlRating.WEAK if has_critical else ControlRating.PARTIAL
+
+        ctrl.control_rating = new_rating
+        ctrl.residual_risk = _compute_residual_risk(ctrl.inherent_risk, new_rating)
+
+    # Refresh residual counts in metadata
+    included = [c for c in universe.controls if c.audit_decision == AuditDecision.INCLUDE]
+    universe.metadata["residual_high"] = sum(
+        1 for c in included if c.residual_risk == ResidualRisk.HIGH
+    )
+    universe.metadata["residual_medium"] = sum(
+        1 for c in included if c.residual_risk == ResidualRisk.MEDIUM
+    )
+    universe.metadata["residual_low"] = sum(
+        1 for c in included if c.residual_risk == ResidualRisk.LOW
+    )
+
+    return universe
+
+
 def save(
     universe: AuditUniverse,
     program: Optional[AuditProgram],
