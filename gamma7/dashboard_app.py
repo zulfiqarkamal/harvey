@@ -71,6 +71,7 @@ def list_analyses():
     return [
         {
             "analysis_id": r.analysis_id,
+            "contract_key": pathlib.Path(r.contract_path).stem,
             "contract_path": r.contract_path,
             "supplier_name": r.supplier_name,
             "classification": r.classification,
@@ -82,13 +83,14 @@ def list_analyses():
     ]
 
 
-@app.get("/api/analyses/{analysis_id}")
-def get_analysis(analysis_id: str):
-    """Return full analysis detail including per-requirement assessments."""
+@app.get("/api/analyses/{key}")
+def get_analysis(key: str):
+    """Return full analysis detail. `key` may be analysis_id or contract filename stem."""
     for r in _pipeline_results:
-        if r.analysis_id == analysis_id:
+        if r.analysis_id == key or pathlib.Path(r.contract_path).stem == key:
             return {
                 "analysis_id": r.analysis_id,
+                "contract_key": pathlib.Path(r.contract_path).stem,
                 "contract_path": r.contract_path,
                 "supplier_name": r.supplier_name,
                 "classification": r.classification,
@@ -98,7 +100,7 @@ def get_analysis(analysis_id: str):
                 "warnings": r.warnings,
                 "overlay_summary": r.overlay_summary,
             }
-    raise HTTPException(status_code=404, detail=f"Analysis '{analysis_id}' not found")
+    raise HTTPException(status_code=404, detail=f"Analysis '{key}' not found")
 
 
 @app.get("/api/register")
@@ -507,10 +509,10 @@ async function loadContracts() {
     tbody.innerHTML = '<tr><td colspan="6" class="empty">No analyses loaded</td></tr>';
     return;
   }
-  tbody.innerHTML = analyses.map(a => `<tr onclick="showContractDetail('${a.analysis_id}')">
+  tbody.innerHTML = analyses.map(a => `<tr onclick="showContractDetail('${a.contract_key || a.analysis_id}')">
     <td><code>${a.analysis_id}</code></td>
     <td>${a.supplier_name}</td>
-    <td style="color:var(--muted);font-size:12px">${a.contract_path.split('/').pop()}</td>
+    <td style="color:var(--muted);font-size:12px">${(a.contract_path.split('\\').pop() || a.contract_path.split('/').pop())}</td>
     <td>${classBadge(a.classification)}</td>
     <td>${statusBadge(a.overall_status)}</td>
     <td>${a.summary ? a.summary.missing || 0 : 0}</td>
