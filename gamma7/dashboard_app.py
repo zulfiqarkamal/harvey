@@ -517,6 +517,39 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   /* Working paper text */
   .wp-text-block { font-size: 13px; line-height: 1.8; padding: 14px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); margin-bottom: 14px; }
   .wp-declaration-label { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 6px; }
+  .result-effective { color: var(--green); font-weight: 600; }
+  .result-partial { color: var(--orange); font-weight: 600; }
+  .result-not-effective { color: var(--red); font-weight: 600; }
+  .result-residual-low { color: var(--green); }
+  .result-residual-medium { color: var(--yellow); }
+  .result-residual-na { color: var(--muted); }
+  .result-not-tested { color: var(--muted); }
+  .result-passed { color: var(--green); font-weight: 600; }
+  .result-exception { color: var(--orange); font-weight: 600; }
+  .result-na { color: var(--muted); }
+  .info-box { background: rgba(124,106,255,0.08); border: 1px solid rgba(124,106,255,0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; line-height: 1.7; }
+  .info-box strong { color: var(--accent); }
+  .def-table { width: 100%; border-collapse: collapse; margin: 10px 0 0; font-size: 13px; }
+  .def-table td { padding: 5px 8px; vertical-align: top; }
+  .def-table td.term { font-weight: 600; white-space: nowrap; color: var(--accent); width: 1%; padding-right: 14px; }
+  .def-table td.def { color: var(--text); line-height: 1.6; }
+  .agent-label { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--accent); font-weight: 600; margin: 4px 0 10px; opacity: 0.85; }
+  .proc-accordion { margin-bottom: 20px; }
+  .proc-header { cursor: pointer; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; user-select: none; }
+  .proc-header:hover { background: var(--border); }
+  .proc-body { display: none; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 0 0 6px 6px; margin-top: -4px; margin-bottom: 8px; }
+  .proc-body.open { display: block; }
+  .sub-proc-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; border-bottom: 1px solid var(--surface2); }
+  .sub-proc-row:last-child { border-bottom: none; }
+  .ctrl-badge { font-size: 10px; padding: 1px 6px; border-radius: 3px; font-family: monospace; }
+  .ctrl-badge-mapped { background: rgba(124,106,255,0.15); color: var(--accent); }
+  .ctrl-badge-passed { background: rgba(74,222,128,0.15); color: var(--green); }
+  .ctrl-badge-exception { background: rgba(251,146,60,0.15); color: var(--orange); }
+  .ctrl-badge-not-tested { background: var(--surface2); color: var(--muted); }
+  .lfap-tabs { display: flex; gap: 4px; margin-bottom: 14px; flex-wrap: wrap; }
+  .lfap-tab { padding: 5px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
+  .lfap-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .dar-modal-content { padding: 4px 0; }
 </style>
 </head>
 <body>
@@ -608,17 +641,30 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <!-- Reconciliation tab -->
   <div id="tab-reconciliation" class="tab-pane">
     <div class="tab-header">
-      <h2>ICT Register Reconciliation — DORA Art. 28(3)</h2>
-      <p><strong>What is this?</strong> The ICT Register Reconciliation is a requirement under DORA Art. 28(3), which obliges financial entities to maintain a complete, accurate register of all ICT third-party service providers. This tab cross-checks two datasets: <strong>(1) the ICT Register</strong> (every supplier you use) and <strong>(2) the contract analyses</strong> performed to date (which contracts have been DORA/GDPR assessed). <span style="color:var(--orange)">&#9888; Register Only</span> means a provider is in your register but has no contract analysis — DORA requires you to assess all ICT contracts before renewal; this is an open compliance gap. <span style="color:var(--yellow)">&#9888; Contract Only</span> means a contract was analysed but the supplier is not in the register — the register is incomplete and must be updated. At any supervisory review, you must demonstrate that (a) the register is complete and (b) every critical/important provider has been assessed. Click any row to view the analysis or register entry.</p>
+      <h2>ICT Register Reconciliation</h2>
+      <div class="agent-label">DORA Art. 28(3) — ICT Third-Party Register Completeness Check</div>
+      <table class="def-table">
+        <tr><td class="term">What is this?</td><td class="def">DORA Art. 28(3) requires financial entities to maintain a complete, accurate register of all ICT third-party service providers. This tab cross-checks the ICT Register against contract analyses performed to date.</td></tr>
+        <tr><td class="term"><span style="color:var(--orange)">&#9888; Register Only</span></td><td class="def">Provider is in the ICT Register but has no contract analysis. DORA requires assessment of all ICT contracts before renewal — this is an open compliance gap.</td></tr>
+        <tr><td class="term"><span style="color:var(--yellow)">&#9888; Contract Only</span></td><td class="def">A contract was analysed but the supplier is not in the register. The register is incomplete and must be updated.</td></tr>
+        <tr><td class="term">Supervisory readiness</td><td class="def">You must demonstrate (a) the register is complete and (b) every critical/important provider has been assessed. Click any row to view the analysis or register entry.</td></tr>
+      </table>
     </div>
     <div id="recon-content"><div class="loading">Loading reconciliation&#8230;</div></div>
   </div>
 
-  <!-- Working Papers tab (Agent 4) -->
+  <!-- Working Papers tab (Agent 2) -->
   <div id="tab-workpapers" class="tab-pane">
     <div class="tab-header">
-      <h2>Working Papers — Agent 2: Supplier Assurance</h2>
-      <p>IIA 5-C revisionsdokumentation: <strong>Condition</strong> (hvad er observeret), <strong>Criteria</strong> (krav / standard), <strong>Cause</strong> (årsag til afvigelse), <strong>Effect</strong> (konsekvens), <strong>Recommendation</strong> (anbefalet handling). Klik på et kontrolmål for at se de fulde findings og testresultater. <strong>Control Strength</strong> beregnes ud fra antal manglende krav; <strong>Residual Risk</strong> kombinerer klassifikation og control strength.</p>
+      <h2>Working Papers</h2>
+      <div class="agent-label">Agent 2 — Supplier Assurance (DORA Art. 30 ICT Third-Party)</div>
+      <table class="def-table">
+        <tr><td class="term">Condition</td><td class="def">What was observed — the factual finding from testing.</td></tr>
+        <tr><td class="term">Criteria</td><td class="def">The requirement or standard the control is measured against.</td></tr>
+        <tr><td class="term">Cause</td><td class="def">Root cause of any deviation from the criteria.</td></tr>
+        <tr><td class="term">Effect</td><td class="def">Consequence of the gap — risk or compliance impact.</td></tr>
+        <tr><td class="term">Recommendation</td><td class="def">Agreed action to close the gap. Click any control row to view the full working paper and D&amp;I declaration.</td></tr>
+      </table>
     </div>
     <div id="wp-content"><div class="loading">Loading working papers&#8230;</div></div>
   </div>
@@ -626,8 +672,14 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <!-- Audit Intelligence tab (Agent 4) -->
   <div id="tab-audit" class="tab-pane">
     <div class="tab-header">
-      <h2>Audit Intelligence — Agent 4: Intern Revisionsplanlægning</h2>
-      <p>Agent 4 understøtter intern revision efter ISACA/IIA/COSO: audit universe, risikovurdering, revisionsprogrammer, kontroltest og ISAE 3402-rapportering. 3×3 risk matrix: Likelihood × Impact (1–9). Heatmappen viser iboende risiko × testresultat. <em>Agent 2 (Working Papers) dækker leverandørsikring; Agent 4 dækker den bredere interne revisionsproces.</em></p>
+      <h2>Audit Intelligence</h2>
+      <div class="agent-label">Agent 4 — Internal Audit &amp; Board Reporting (ISO 27001 / ISAE 3402)</div>
+      <table class="def-table">
+        <tr><td class="term">Audit Universe</td><td class="def">Complete inventory of controls, processes and systems subject to this engagement.</td></tr>
+        <tr><td class="term">Risk Matrix</td><td class="def">3×3 Likelihood × Impact (1–9). Heatmap shows inherent risk × test result.</td></tr>
+        <tr><td class="term">Draft Audit Report</td><td class="def">Working papers support each DAR. Click a report card to view scope and findings summary.</td></tr>
+        <tr><td class="term">Agent 2 vs Agent 4</td><td class="def">Agent 2 covers ICT supplier assurance (DORA Art. 30 contract testing). Agent 4 covers broader internal audit, ISO 27001 control testing, and board reporting (ISAE 3402 / IIA).</td></tr>
+      </table>
     </div>
     <div id="audit-content"><div class="loading">Loading audit intelligence…</div></div>
   </div>
@@ -635,8 +687,15 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <!-- Board Report tab -->
   <div id="tab-boardreport" class="tab-pane">
     <div class="tab-header">
-      <h2>Board Report — Audit Findings Summary</h2>
-      <p>Aggregated view of audit findings and results for board and senior management reporting. Finalized audit reports, open findings under follow-up, and control status overview. <strong>Human review required</strong> before distributing to governance bodies.</p>
+      <h2>Board Report</h2>
+      <div class="agent-label">Agent 4 — Internal Audit &amp; Board Reporting (ISO 27001 / ISAE 3402)</div>
+      <table class="def-table">
+        <tr><td class="term">Open / Closed Findings</td><td class="def">Current status of all findings from the period under review.</td></tr>
+        <tr><td class="term">Finalised Reports</td><td class="def">Board-presented audit reports with follow-up obligations.</td></tr>
+        <tr><td class="term">Prior Period (LFAP)</td><td class="def">Log of Follow-up Actions from prior period finalised reports — tracked by quarter.</td></tr>
+        <tr><td class="term">Board Intelligence</td><td class="def">Value tracker — control improvements, risk reductions, and compliance milestones surfaced this period.</td></tr>
+        <tr><td class="term">Next Quarter Focus</td><td class="def">Internal audit plan priorities for the upcoming quarter. <strong style="color:var(--orange)">Human review required</strong> before distributing to governance bodies.</td></tr>
+      </table>
     </div>
     <div id="boardreport-content"><div class="loading">Loading board report&#8230;</div></div>
   </div>
@@ -647,6 +706,14 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <div class="modal-box">
     <button class="modal-close" onclick="document.getElementById('contract-modal').classList.remove('open')">&#10005;</button>
     <div id="contract-modal-content"></div>
+  </div>
+</div>
+
+<!-- Draft Audit Report modal -->
+<div id="dar-modal" class="modal-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box" style="max-width:720px">
+    <button class="modal-close" onclick="document.getElementById('dar-modal').classList.remove('open')">&#10005;</button>
+    <div id="dar-modal-content" class="dar-modal-content"></div>
   </div>
 </div>
 
@@ -834,6 +901,151 @@ async function loadBoardReport() {
   openFindings.sort((a,b) => (priSort[a.severity]??9) - (priSort[b.severity]??9));
 
   const recon = reconData.summary || {};
+
+  // --- Section 1: Open / Closed Findings ---
+  const sec1 = (() => {
+    const findingsHtml = openFindings.length ? `
+    <div class="table-wrap"><table>
+      <thead><tr><th>Finding</th><th>Severity</th><th>Owner</th><th>Due</th><th>Condition (5-C)</th><th>Recommendation</th></tr></thead>
+      <tbody>${openFindings.map(f => `<tr>
+        <td style="font-size:12px;font-weight:600">${f.finding_id}: ${f.title}</td>
+        <td><span class="badge" style="background:var(--surface2);color:${sevColor(f.severity)}">${f.severity}</span></td>
+        <td style="font-size:12px;color:var(--muted)">${f.owner||'—'}</td>
+        <td style="font-size:12px;color:${f.target_remediation_date?'var(--yellow)':'var(--muted)'}">${f.target_remediation_date||'TBD'}</td>
+        <td style="font-size:12px;max-width:180px">${f.condition||'—'}</td>
+        <td style="font-size:12px;color:var(--accent);max-width:180px">${f.recommendation||'—'}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>` : '<p style="color:var(--green);font-size:13px">&#10003; No open findings.</p>';
+    const closedHtml = closedFindings.length ? `<div style="margin-top:12px;font-size:12px;color:var(--muted)">${closedFindings.length} finding(s) closed this period — no further action required.</div>` : '';
+    return `<div class="board-section" style="margin-bottom:24px">
+      <div class="section-title" style="color:${openFindings.length?'var(--orange)':'var(--green)'};margin-bottom:8px">${openFindings.length?'&#9888;':'&#10003;'} Open / Closed Findings — ${openFindings.length} open, ${closedFindings.length} closed</div>
+      ${findingsHtml}${closedHtml}
+    </div>`;
+  })();
+
+  // --- Section 2: Finalised Reports ---
+  const sec2 = `<div class="board-section" style="margin-bottom:24px">
+    <div class="section-title" style="margin-bottom:4px">Finalised Audit Reports — Board Reporting Register</div>
+    <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Once an audit report is finalised and presented to the board, it is tracked here for follow-up only. Internal Audit monitors implementation of agreed actions.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Report</th><th>Presented</th><th>Findings</th><th>Open</th><th>Closed</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-size:12px"><strong>DORA Art. 30 ICT Contract Gap Analysis — FY 2024</strong><br><code style="font-size:10px">IAR-2024-003</code></td>
+          <td style="font-size:12px;color:var(--muted)">2024-12-10<br>Board meeting #Q4-2024</td>
+          <td style="font-size:12px">4</td>
+          <td style="font-size:12px;color:var(--orange)">2</td>
+          <td style="font-size:12px;color:var(--green)">2</td>
+          <td><span style="background:rgba(251,191,36,0.2);color:var(--yellow);border-radius:4px;padding:2px 8px;font-size:11px">In Progress</span></td>
+        </tr>
+        <tr>
+          <td style="font-size:12px"><strong>ISO 27001 Information Security Review — H1 2024</strong><br><code style="font-size:10px">IAR-2024-001</code></td>
+          <td style="font-size:12px;color:var(--muted)">2024-06-25<br>Board meeting #Q2-2024</td>
+          <td style="font-size:12px">3</td>
+          <td style="font-size:12px;color:var(--green)">0</td>
+          <td style="font-size:12px;color:var(--green)">3</td>
+          <td><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 8px;font-size:11px">All Closed</span></td>
+        </tr>
+      </tbody>
+    </table></div>
+  </div>`;
+
+  // --- Section 3: Prior Period Follow-Up ---
+  const sec3 = `<div class="board-section" style="margin-bottom:24px">
+    <div class="section-title" style="color:var(--orange);margin-bottom:4px">&#9654; Prior Period Follow-Up Action Tracker</div>
+    <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Findings from finalised, board-reported audits. Internal Audit tracks implementation. Resolution is confirmed before a finding is marked Closed.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Finding</th><th>Source</th><th>Priority</th><th>Owner</th><th>Original Due</th><th>Revised Due</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-size:12px"><strong>F-2024-003-01</strong><br>Exit strategy not documented (NNS-NET-2021-007)</td>
+          <td style="font-size:11px;color:var(--muted)">IAR-2024-003</td>
+          <td><span style="color:var(--red);font-size:12px;font-weight:600">HIGH</span></td>
+          <td style="font-size:12px">Legal &amp; Procurement</td>
+          <td style="font-size:12px;color:var(--muted)">2025-03-31</td>
+          <td style="font-size:12px;color:var(--orange)">2025-06-30 &#8593;</td>
+          <td><span style="background:rgba(251,191,36,0.2);color:var(--yellow);border-radius:4px;padding:2px 8px;font-size:11px">Overdue</span></td>
+        </tr>
+        <tr>
+          <td style="font-size:12px"><strong>F-2024-003-02</strong><br>PayLink contract — DORA Art. 30(2)(d) SLAs missing</td>
+          <td style="font-size:11px;color:var(--muted)">IAR-2024-003</td>
+          <td><span style="color:var(--orange);font-size:12px;font-weight:600">MEDIUM</span></td>
+          <td style="font-size:12px">Contract Manager</td>
+          <td style="font-size:12px;color:var(--muted)">2025-05-31</td>
+          <td style="font-size:12px;color:var(--green)">2025-05-31</td>
+          <td><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 8px;font-size:11px">On Track</span></td>
+        </tr>
+      </tbody>
+    </table></div>
+  </div>`;
+
+  // --- Section 4: LFAP with period tabs ---
+  const sec4 = `<div class="board-section" style="margin-bottom:24px">
+    <div class="section-title" style="margin-bottom:8px">Log of Follow-up Actions (LFAP) — by Period</div>
+    <p style="font-size:12px;color:var(--muted);margin:0 0 10px">The LFAP aggregates all prior-period management actions by quarter and half-year. Used for board-level trend reporting.</p>
+    <div class="lfap-tabs">
+      <div class="lfap-tab active" onclick="showLFAP('Q1',this)">Q1</div>
+      <div class="lfap-tab" onclick="showLFAP('Q2',this)">Q2</div>
+      <div class="lfap-tab" onclick="showLFAP('Q3',this)">Q3</div>
+      <div class="lfap-tab" onclick="showLFAP('Q4',this)">Q4</div>
+      <div class="lfap-tab" onclick="showLFAP('1H',this)">1H</div>
+      <div class="lfap-tab" onclick="showLFAP('Full Year',this)">Full Year</div>
+    </div>
+    <div id="lfap-content"></div>
+  </div>`;
+
+  // --- Section 5: Board Intelligence Value Tracker ---
+  const sec5 = `<div class="board-section" style="margin-bottom:24px">
+    <div class="section-title" style="margin-bottom:8px">Board Intelligence — Value Tracker</div>
+    <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Control improvements, risk reductions, and compliance milestones surfaced this period by Internal Audit.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px">
+      <div style="background:rgba(74,222,128,0.07);border:1px solid rgba(74,222,128,0.2);border-radius:8px;padding:14px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--green);font-weight:600;margin-bottom:6px">Control Improvements</div>
+        <div style="font-size:13px;line-height:1.6">NNS-NET-2021-003 contract schedule fully remediated. DORA Art. 30(2)(a)–(c) now met across all critical ICT providers.</div>
+      </div>
+      <div style="background:rgba(124,106,255,0.07);border:1px solid rgba(124,106,255,0.2);border-radius:8px;padding:14px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:600;margin-bottom:6px">Risk Reductions</div>
+        <div style="font-size:13px;line-height:1.6">Residual risk on AU01 (Identity &amp; Access) reduced from MEDIUM to LOW following access review remediation and quarterly re-certification rollout.</div>
+      </div>
+      <div style="background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:14px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--yellow);font-weight:600;margin-bottom:6px">Compliance Milestones</div>
+        <div style="font-size:13px;line-height:1.6">DORA Art. 28(3) register completeness reached 100% for Tier 1 ICT providers. Art. 30 contract schedule annex signed by all critical providers.</div>
+      </div>
+    </div>
+  </div>`;
+
+  // --- Section 6: Next Quarter Focus ---
+  const sec6 = `<div class="board-section" style="margin-bottom:24px">
+    <div class="section-title" style="margin-bottom:4px">Next Quarter Focus — Internal Audit Plan</div>
+    <div style="background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.3);border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--orange)">&#9888; <strong>Human review required</strong> before distributing to governance bodies.</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px">
+        <div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:6px">Q1 Priority</div>
+        <div style="font-size:12px;line-height:1.6">Follow-up on F-2024-003-01 (Exit Strategy). Target closure 2025-06-30. Escalation path to CRO if overdue again.</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px">
+        <div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:6px">Planned Engagements</div>
+        <div style="font-size:12px;line-height:1.6">ISO 27001 access control deep-dive (AU02). GDPR Art. 28 processor agreements refresh. DORA concentration risk assessment (new).</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px">
+        <div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:6px">Supervisory Readiness</div>
+        <div style="font-size:12px;line-height:1.6">Prepare DORA register package for potential supervisory review in Q2. Update ICT risk assessment with Q4 findings.</div>
+      </div>
+    </div>
+  </div>`;
+
+  container.innerHTML = `
+    <div class="summary-cards" style="margin-bottom:24px">
+      <div class="card"><div class="label">Total Controls Tested</div><div class="value">${wpData.tested_count||0} / ${wpData.total_controls||0}</div></div>
+      <div class="card"><div class="label">Exceptions</div><div class="value ${(wpData.exception_count||0)>0?'yellow':''}">${wpData.exception_count||0}</div></div>
+      <div class="card"><div class="label">Open Findings</div><div class="value ${openFindings.length>0?'red':''}">${openFindings.length}</div></div>
+      <div class="card"><div class="label">Closed Findings</div><div class="value green">${closedFindings.length}</div></div>
+      <div class="card"><div class="label">Register Gaps</div><div class="value ${(recon.register_only||0)>0?'red':''}">${recon.register_only||0}</div></div>
+    </div>
+    ${sec1}${sec2}${sec3}${sec4}${sec5}${sec6}
+  `;
+  showLFAP('Q1', document.querySelector('.lfap-tab'));
+}
 
   container.innerHTML = `
     <!-- Executive summary cards -->
@@ -1193,8 +1405,8 @@ async function loadWorkPapers() {
   }
 
   const riskClass = r => ({CRITICAL:'risk-critical',HIGH:'risk-high',MEDIUM:'risk-medium',LOW:'risk-low'}[r]||'');
-  const resultIcon = r => ({PASSED:'✅',EXCEPTION:'⚠️',NOT_TESTED:'⬜',NOT_APPLICABLE:'➖'}[r]||r);
-  const resultClass = r => r==='EXCEPTION'?'result-exception':r==='PASSED'?'result-passed':'result-not_tested';
+  const resultIcon = r => ({PASSED:'<span class="result-passed">✓ Passed</span>',EXCEPTION:'<span class="result-exception">⚠ Exception</span>',NOT_TESTED:'<span class="result-not-tested">— Not Tested</span>',NOT_APPLICABLE:'<span class="result-na">— N/A</span>'}[r]||r);
+  const resultClass = r => r==='PASSED'?'result-passed':r==='EXCEPTION'?'result-exception':r==='NOT_APPLICABLE'?'result-na':'result-not-tested';
 
   container.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
@@ -1208,8 +1420,8 @@ async function loadWorkPapers() {
       <div class="card"><div class="label">Controls in scope</div><div class="value">${data.total_controls}</div></div>
       <div class="card"><div class="label">Tested</div><div class="value">${data.tested_count}</div></div>
       <div class="card"><div class="label">Passed</div><div class="value green">${data.passed_count}</div></div>
-      <div class="card"><div class="label">Exceptions</div><div class="value ${data.exception_count>0?'yellow':''}}">${data.exception_count}</div></div>
-      <div class="card"><div class="label">Open findings</div><div class="value ${data.open_findings>0?'red':''}}">${data.open_findings}</div></div>
+      <div class="card"><div class="label">Exceptions</div><div class="value ${data.exception_count>0?'yellow':''}">${data.exception_count}</div></div>
+      <div class="card"><div class="label">Open findings</div><div class="value ${data.open_findings>0?'red':''}">${data.open_findings}</div></div>
     </div>
     <div id="wp-heatmap" style="margin-bottom:20px"></div>
     <div class="table-wrap">
@@ -1227,7 +1439,7 @@ async function loadWorkPapers() {
             <td>${wp.control_title}</td>
             <td style="color:var(--muted);font-size:12px">${wp.control_domain}</td>
             <td class="${riskClass(wp.inherent_risk)}">${wp.inherent_risk}</td>
-            <td class="${resultClass(wp.test_result)}">${resultIcon(wp.test_result)} ${wp.test_result.replace(/_/g,' ')}</td>
+            <td>${resultIcon(wp.test_result)}</td>
             <td>${wp.open_finding_count>0?`<span style="color:var(--orange)">${wp.finding_count} (${wp.open_finding_count} open)</span>`:wp.finding_count>0?wp.finding_count:''}</td>
             <td><span class="badge ${csC}">${cs}</span></td>
             <td><span class="badge ${rrC}">${rr}</span></td>
@@ -1305,34 +1517,49 @@ async function showWPDetail(controlId) {
   const severityColor = s => ({CRITICAL:'var(--red)',HIGH:'var(--orange)',MEDIUM:'var(--yellow)',LOW:'var(--green)',INFO:'var(--muted)'}[s]||'var(--muted)');
   const statusColor = s => s==='open'?'var(--orange)':s==='closed'?'var(--green)':'var(--muted)';
 
-  // Audit declaration text — 4 scenarios based on test_result
-  let declarationLabel, declarationText;
-  const evidenceList = (wp.expected_evidence_artifacts||[]).join(', ') || 'relevant documentation';
-  const testDate = new Date().toLocaleDateString('da-DK', {month:'long', year:'numeric'});
-  if (wp.test_result === 'PASSED' && (wp.open_finding_count||0) === 0) {
-    declarationLabel = 'Scenario A — Design & Implementation Review (D&I)';
-    declarationText = `We inspected the policies and procedures for <strong>${wp.control_domain}</strong>. The control <strong>${wp.control_id} — ${wp.control_title}</strong> is designed adequately and has been implemented. We reviewed the following evidence: ${evidenceList}. We inquired with the responsible control owner and confirmed the control is operating and was last reviewed in ${testDate}. Our review did not give rise to further comments. <strong>Control effective. Residual risk is ${wp.inherent_risk==='LOW'?'low':'low to medium — no exceptions noted'}.</strong>`;
-  } else if (wp.test_result === 'PASSED') {
-    declarationLabel = 'Scenario A — Design & Implementation Review (D&I)';
-    declarationText = `We inspected the policies and procedures for <strong>${wp.control_domain}</strong>. The control <strong>${wp.control_id} — ${wp.control_title}</strong> is designed adequately and has been implemented. We reviewed ${evidenceList}. We inquired with the responsible control owner and confirmed the policy is valid and in operation. Our review did not give rise to further comments. <strong>Control effective. Residual risk: low.</strong>`;
+  // Structured D&I declaration blocks
+  const evidenceItems = wp.expected_evidence_artifacts||[];
+  const evidenceHtml = evidenceItems.length
+    ? '<ul style="margin:6px 0 0;padding-left:18px;font-size:12px">' + evidenceItems.map(e => '<li style="margin-bottom:3px">' + e + '</li>').join('') + '</ul>'
+    : '<p style="font-size:12px;color:var(--muted);margin:4px 0 0">No evidence artifacts specified.</p>';
+  const inquiryDate = new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'});
+
+  let scenarioLabel, resultSpan, residualSpan, declarationBody;
+  if (wp.test_result === 'PASSED') {
+    scenarioLabel = 'Design &amp; Implementation Review (D&amp;I) — Scenario A';
+    resultSpan = '<span class="result-effective">&#10003; Control Effective</span>';
+    residualSpan = '<span class="result-residual-low">Residual Risk: Low</span>';
+    declarationBody = `We inspected the policies and procedures for <strong>${wp.control_domain}</strong>. The control <strong>${wp.control_id} — ${wp.control_title}</strong> is designed adequately and has been implemented as intended. We inquired with the responsible control owner on <em>${inquiryDate}</em> and confirmed the control is operating effectively. Our review did not give rise to further comments.`;
   } else if (wp.test_result === 'EXCEPTION') {
-    declarationLabel = 'Scenario B — Effectiveness Testing (ISAE 3402 / Internal Audit) — Exception Found';
-    declarationText = `We inspected the policies and procedures for <strong>${wp.control_domain}</strong> in relation to the requirements of <strong>${wp.control_id} — ${wp.control_title}</strong>. We tested the operating effectiveness of the control over the engagement period by examining a sample of evidence from the period under review. We inspected that ${evidenceList} was available and correctly executed for the sampled period. After our initial review, the requirements appeared adequately designed and implemented. <strong style="color:var(--orange)">However, our testing identified one or more exceptions.</strong> The exceptions are documented in full 5-C format below. The control is <strong>partially effective</strong> for the period. <strong>Residual risk is elevated — see findings below.</strong>`;
+    scenarioLabel = 'Effectiveness Testing (ISAE 3402 / Internal Audit) — Scenario B — Exception Found';
+    resultSpan = '<span class="result-partial">&#9888; Partially Effective — Exception(s) Noted</span>';
+    residualSpan = '<span class="result-residual-medium">Residual Risk: Elevated — see findings</span>';
+    declarationBody = `We tested the operating effectiveness of <strong>${wp.control_id} — ${wp.control_title}</strong> over the engagement period by examining a sample of evidence. We inquired with the responsible control owner on <em>${inquiryDate}</em>. The control appears adequately designed. <strong class="result-partial">However, our testing identified one or more exceptions documented in 5-C format below.</strong>`;
   } else if (wp.test_result === 'NOT_APPLICABLE') {
-    declarationLabel = 'Scenario C — Not Applicable to This Engagement Scope';
-    declarationText = `Control <strong>${wp.control_id} — ${wp.control_title}</strong> was reviewed for inclusion in the audit universe but determined to be <strong>not applicable</strong> to this engagement scope or the specific entity under review. No testing was performed. Control strength: N/A. Residual risk: N/A.`;
+    scenarioLabel = 'Not Applicable to This Engagement Scope — Scenario C';
+    resultSpan = '<span class="result-na">— Not Applicable</span>';
+    residualSpan = '<span class="result-residual-na">Residual Risk: N/A</span>';
+    declarationBody = `Control <strong>${wp.control_id} — ${wp.control_title}</strong> was reviewed for inclusion in the audit universe but determined to be <strong>not applicable</strong> to this engagement scope or the specific entity under review. No testing was performed.`;
   } else {
-    declarationLabel = 'Scenario D — Scoped In, Not Tested This Period';
-    declarationText = `Control <strong>${wp.control_id} — ${wp.control_title}</strong> is included in the audit universe for this engagement but was <strong>not tested</strong> in this audit cycle. The decision to defer was made on a risk-based assessment — either adequate evidence was not available during the fieldwork period, or testing was deferred to the next review cycle. As no testing was performed, control strength is <strong>N/A</strong> and residual risk equals inherent risk: <strong>${wp.inherent_risk}</strong>. This control should be prioritised in the next audit cycle.`;
+    scenarioLabel = 'Scoped In, Not Tested This Period — Scenario D';
+    resultSpan = '<span class="result-not-tested">— Not Tested This Period</span>';
+    residualSpan = '<span class="result-residual-na">Residual Risk equals Inherent Risk: ' + wp.inherent_risk + '</span>';
+    declarationBody = `Control <strong>${wp.control_id} — ${wp.control_title}</strong> is included in the audit universe but was <strong>not tested</strong> in this cycle based on a risk-based deferral decision. This control should be prioritised in the next audit cycle.`;
   }
 
   panel.innerHTML = `
     <h3><code>${wp.control_id}</code> — ${wp.control_title}</h3>
-    <p style="color:var(--muted);font-size:12px;margin:6px 0 16px">${wp.control_domain} · Inherent Risk: <strong style="color:${({'CRITICAL':'var(--red)','HIGH':'var(--orange)','MEDIUM':'var(--yellow)','LOW':'var(--green)'}[wp.inherent_risk]||'var(--muted)')}}">${wp.inherent_risk}</strong> · Result: <strong>${wp.test_result.replace(/_/g,' ')}</strong></p>
+    <p style="color:var(--muted);font-size:12px;margin:6px 0 16px">${wp.control_domain} · Inherent Risk: <strong style="color:${({'CRITICAL':'var(--red)','HIGH':'var(--orange)','MEDIUM':'var(--yellow)','LOW':'var(--green)'}[wp.inherent_risk]||'var(--muted)')}">${wp.inherent_risk}</strong></p>
 
     <div class="wp-text-block" style="margin-bottom:16px">
-      <div class="wp-declaration-label">${declarationLabel}</div>
-      <p style="margin:8px 0 0;line-height:1.7;font-size:13px">${declarationText}</p>
+      <div class="wp-declaration-label">${scenarioLabel}</div>
+      <p style="margin:8px 0 10px;line-height:1.7;font-size:13px">${declarationBody}</p>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px">Evidence Reviewed</div>
+      ${evidenceHtml}
+      <div style="margin-top:12px;display:flex;gap:16px;flex-wrap:wrap">
+        <div>${resultSpan}</div>
+        <div>${residualSpan}</div>
+      </div>
     </div>
 
     ${wp.audit_objective ? `<div style="margin-bottom:12px"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Audit Procedure</span><p style="font-size:13px;margin:4px 0 0">${wp.audit_objective}</p></div>` : ''}
@@ -1404,6 +1631,27 @@ async function uploadContract(input) {
   }
 }
 
+const DEMO_ORG_STRUCTURE = [
+  { process: 'Information Security', subprocesses: [
+    { name: 'Identity & Access Management', controls: ['AU01','AU02'] },
+    { name: 'Data Protection & Encryption', controls: ['AU03'] },
+    { name: 'Vulnerability Management', controls: ['AU04','AU05'] },
+  ]},
+  { process: 'ICT Third-Party Risk', subprocesses: [
+    { name: 'Supplier Onboarding & Due Diligence', controls: ['NNS-NET-2021-001','NNS-NET-2021-002'] },
+    { name: 'Contract Governance (DORA Art. 30)', controls: ['NNS-NET-2021-003','NNS-NET-2021-004','NNS-NET-2021-005'] },
+    { name: 'Exit Strategy & Concentration Risk', controls: ['NNS-NET-2021-006','NNS-NET-2021-007'] },
+  ]},
+  { process: 'Operational Resilience', subprocesses: [
+    { name: 'Business Continuity Planning', controls: ['AU07'] },
+    { name: 'Incident Response & Recovery', controls: [] },
+  ]},
+  { process: 'Data Privacy & GDPR', subprocesses: [
+    { name: 'Article 28 Processor Agreements', controls: [] },
+    { name: 'Data Subject Rights', controls: [] },
+  ]},
+];
+
 async function loadAuditIntelligence() {
   const container = document.getElementById('audit-content');
   let wpData;
@@ -1414,7 +1662,6 @@ async function loadAuditIntelligence() {
     container.innerHTML = '<div class="empty">Could not load audit data.</div>';
     return;
   }
-
   if (wpData.message) {
     container.innerHTML = '<div class="empty">' + wpData.message + '</div>';
     return;
@@ -1423,59 +1670,67 @@ async function loadAuditIntelligence() {
   const wps = wpData.work_papers || [];
   const openFindings = wps.flatMap(w => (w.findings||[]).filter(f => f.status === 'open'));
   const sevColor = s => ({CRITICAL:'var(--red)',HIGH:'var(--orange)',MEDIUM:'var(--yellow)',LOW:'var(--green)'}[s]||'var(--muted)');
+  const wpByCtrl = {};
+  for (const wp of wps) wpByCtrl[wp.control_id] = wp;
 
-  // --- Audit Universe hierarchy: group controls by domain ---
-  const domains = {};
-  for (const wp of wps) {
-    const d = wp.control_domain || 'Other';
-    if (!domains[d]) domains[d] = [];
-    domains[d].push(wp);
-  }
+  // --- Info box ---
+  const infoBox = '<div class="info-box"><strong>Agent 4 — Internal Audit:</strong> This tab covers the full internal audit cycle — universe, risk assessment, control testing, draft reporting, and board intelligence. <strong>Agent 2 — Supplier Assurance:</strong> handles DORA Art. 30 contract testing (see Working Papers tab). The two agents share the same working paper data but serve distinct governance audiences.</div>';
 
-  const resultDot = r => ({
-    PASSED: '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:5px"></span>',
-    EXCEPTION: '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--orange);margin-right:5px"></span>',
-    NOT_TESTED: '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--border);margin-right:5px"></span>',
-    NOT_APPLICABLE: '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-right:5px"></span>',
-  }[r] || '');
+  // --- Org process mapping accordion ---
+  let accordionHtml = '<div class="section-title" style="margin-bottom:8px">Organisation Process &amp; Control Mapping</div>';
+  accordionHtml += '<p style="font-size:12px;color:var(--muted);margin:0 0 12px">Entity &#8594; Process &#8594; Subprocess &#8594; ISO Controls. Click a process to expand. Badge colour shows test result.</p>';
+  accordionHtml += '<div class="proc-accordion">';
+  DEMO_ORG_STRUCTURE.forEach((proc, pi) => {
+    const domainId = 'proc-' + pi;
+    const totalCtrls = proc.subprocesses.reduce((s, sp) => s + sp.controls.length, 0);
+    const mappedWps = proc.subprocesses.flatMap(sp => sp.controls.map(c => wpByCtrl[c]).filter(Boolean));
+    const excCount = mappedWps.filter(w => w.test_result === 'EXCEPTION').length;
+    const passCount = mappedWps.filter(w => w.test_result === 'PASSED').length;
+    const statusChip = excCount ? '<span style="font-size:11px;color:var(--orange);margin-left:8px">&#9888; ' + excCount + ' exception(s)</span>'
+      : passCount ? '<span style="font-size:11px;color:var(--green);margin-left:8px">&#10003; ' + passCount + ' passed</span>'
+      : '';
+    accordionHtml += '<div class="proc-header" onclick="const b=document.getElementById(\\'' + domainId + '\\');b.classList.toggle(\\'open\\')">'
+      + '<span style="font-size:13px;font-weight:600">' + proc.process + statusChip + '</span>'
+      + '<span style="font-size:11px;color:var(--muted)">' + totalCtrls + ' control(s) &#9660;</span>'
+      + '</div>';
+    accordionHtml += '<div id="' + domainId + '" class="proc-body">';
+    proc.subprocesses.forEach(sp => {
+      accordionHtml += '<div style="margin-bottom:10px"><div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px">' + sp.name + '</div>';
+      if (sp.controls.length === 0) {
+        accordionHtml += '<div style="font-size:11px;color:var(--muted);padding-left:8px">No controls mapped — scope to be defined.</div>';
+      } else {
+        sp.controls.forEach(ctrlId => {
+          const wp = wpByCtrl[ctrlId];
+          const badgeCls = !wp ? 'ctrl-badge-mapped' : wp.test_result === 'PASSED' ? 'ctrl-badge-passed' : wp.test_result === 'EXCEPTION' ? 'ctrl-badge-exception' : 'ctrl-badge-not-tested';
+          const dot = !wp ? '&#11044; ' : wp.test_result === 'PASSED' ? '&#10003; ' : wp.test_result === 'EXCEPTION' ? '&#9888; ' : '&#8211; ';
+          accordionHtml += '<div class="sub-proc-row">'
+            + '<span class="ctrl-badge ' + badgeCls + '" onclick="' + (wp ? 'showWPDetail(\\'' + ctrlId + '\\')' : '') + '" style="' + (wp ? 'cursor:pointer' : '') + '">' + ctrlId + '</span>'
+            + '<span style="font-size:12px;flex:1">' + (wp ? wp.control_title : ctrlId) + '</span>'
+            + (wp ? '<span style="font-size:11px;color:var(--muted)">' + wp.test_result.replace(/_/g,' ') + '</span>' : '<span style="font-size:11px;color:var(--muted)">Not in scope</span>')
+            + '</div>';
+        });
+      }
+      accordionHtml += '</div>';
+    });
+    accordionHtml += '</div>';
+  });
+  accordionHtml += '</div>';
 
-  let universeHtml = '<div style="margin-bottom:24px">';
-  universeHtml += '<div class="section-title" style="margin-bottom:4px">Audit Universe — ' + wpData.organisation + '</div>';
-  universeHtml += '<p style="font-size:12px;color:var(--muted);margin:0 0 14px">The audit universe is the complete inventory of controls, processes and systems subject to this engagement. It is structured as Entity &rarr; Process Domain &rarr; Control. Clicking any control opens its working paper.</p>';
-  universeHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">';
-  for (const [domain, controls] of Object.entries(domains)) {
-    const passed = controls.filter(c => c.test_result === 'PASSED').length;
-    const exc = controls.filter(c => c.test_result === 'EXCEPTION').length;
-    universeHtml += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px">';
-    universeHtml += '<div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">' + domain + '</div>';
-    universeHtml += '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">' + controls.length + ' control' + (controls.length!==1?'s':'') + ' &nbsp;·&nbsp; <span style="color:var(--green)">' + passed + ' passed</span>' + (exc?' &nbsp;·&nbsp; <span style="color:var(--orange)">' + exc + ' exception(s)</span>':'') + '</div>';
-    for (const wp of controls) {
-      universeHtml += '<div onclick="showWPDetail(\\'' + wp.control_id + '\\')" style="cursor:pointer;display:flex;align-items:center;padding:4px 6px;border-radius:4px;margin-bottom:2px;background:var(--surface2)">'
-        + resultDot(wp.test_result)
-        + '<span style="font-size:11px;font-family:monospace;color:var(--accent);margin-right:6px">' + wp.control_id + '</span>'
-        + '<span style="font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + wp.control_title + '</span>'
-        + '<span style="font-size:11px;color:var(--muted);margin-left:4px">' + wp.inherent_risk + '</span>'
-        + '</div>';
-    }
-    universeHtml += '</div>';
-  }
-  universeHtml += '</div></div>';
-
-  // --- Draft Audit Reports (synthetic) ---
+  // --- Draft Audit Reports (open DAR modal on click) ---
   const draftReports = [
-    {id:'DAR-2025-001', title:'ISO 27001 Information Security Controls Assessment — Q4 2025', scope:'AU01–AU05 (Identity, Access, Data Protection)', status:'Draft', date:'2025-12-15', findings:2, auditor:'Internal Audit'},
-    {id:'DAR-2025-002', title:'DORA Art. 30 ICT Third-Party Contract Gap Analysis — FY 2025', scope:'5 ICT contracts assessed against DORA Art. 30 requirements', status:'Draft', date:'2025-12-20', findings:1, auditor:'IT Audit'},
-    {id:'DAR-2025-003', title:'BCP / DR Operational Resilience Review — Q4 2025', scope:'AU07 (Business Continuity Planning)', status:'In Review', date:'2025-11-30', findings:0, auditor:'Internal Audit'},
+    {id:'DAR-2025-001', title:'ISO 27001 Information Security Controls Assessment — Q4 2025', scope:'AU01–AU05 (Identity, Access, Data Protection)', status:'Draft', date:'2025-12-15', findings:2, auditor:'Internal Audit', summary:'Controls AU01–AU05 were tested for the Q4 2025 period. Two exceptions were identified in access review and vulnerability patch timelines. Management has acknowledged findings and agreed remediation plans.'},
+    {id:'DAR-2025-002', title:'DORA Art. 30 ICT Third-Party Contract Gap Analysis — FY 2025', scope:'5 ICT contracts assessed against DORA Art. 30 requirements', status:'Draft', date:'2025-12-20', findings:1, auditor:'IT Audit', summary:'Five ICT contracts were assessed for compliance with DORA Art. 30. One exception was identified relating to missing exit strategy documentation for a critical provider.'},
+    {id:'DAR-2025-003', title:'BCP / DR Operational Resilience Review — Q4 2025', scope:'AU07 (Business Continuity Planning)', status:'In Review', date:'2025-11-30', findings:0, auditor:'Internal Audit', summary:'Business continuity and disaster recovery controls were reviewed. No exceptions identified. BCP documentation is current and DR test was completed successfully.'},
   ];
+  window._darReports = draftReports;
   const statusBadgeRpt = s => s === 'Draft' ? '<span style="background:rgba(124,106,255,0.2);color:var(--accent);border-radius:4px;padding:2px 8px;font-size:11px">Draft</span>'
     : s === 'In Review' ? '<span style="background:rgba(251,191,36,0.2);color:var(--yellow);border-radius:4px;padding:2px 8px;font-size:11px">In Review</span>'
     : '<span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 8px;font-size:11px">Finalised</span>';
 
-  let reportsHtml = '<div style="margin-bottom:24px">';
-  reportsHtml += '<div class="section-title" style="margin-bottom:4px">Draft Audit Reports — Period</div>';
-  reportsHtml += '<p style="font-size:12px;color:var(--muted);margin:0 0 14px">Working papers are the evidence supporting these reports. A draft report is in preparation; once finalised and reported to the board it moves to the Board Report tab for follow-up tracking only.</p>';
-  for (const r of draftReports) {
-    reportsHtml += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick="document.getElementById(\\'board-tab\\').click()">'
+  let reportsHtml = '<div style="margin-bottom:24px"><div class="section-title" style="margin-bottom:4px">Draft Audit Reports — Period</div>';
+  reportsHtml += '<p style="font-size:12px;color:var(--muted);margin:0 0 14px">Working papers are the evidence supporting these reports. Click a card to view scope and findings summary. Once finalised, reports move to Board Report for follow-up tracking.</p>';
+  draftReports.forEach((r, i) => {
+    reportsHtml += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick="showDARModal(' + i + ')">'
       + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
       + '<div style="font-size:14px;font-weight:600">' + r.title + '</div>'
       + statusBadgeRpt(r.status)
@@ -1487,7 +1742,7 @@ async function loadAuditIntelligence() {
       + '<span style="margin-right:16px">Responsible: ' + r.auditor + '</span>'
       + (r.findings > 0 ? '<span style="color:var(--orange)">' + r.findings + ' open finding(s)</span>' : '<span style="color:var(--green)">No findings</span>')
       + '</div></div>';
-  }
+  });
   reportsHtml += '</div>';
 
   // --- Open Findings (compact) ---
@@ -1496,13 +1751,11 @@ async function loadAuditIntelligence() {
     findingsHtml = '<div style="margin-bottom:24px"><div class="section-title" style="color:var(--orange);margin-bottom:8px">&#9888; Open Findings — ' + openFindings.length + ' item(s) pending resolution</div>';
     findingsHtml += '<div class="table-wrap"><table><thead><tr><th>Finding ID</th><th>Title</th><th>Severity</th><th>Owner</th><th>Deadline</th></tr></thead><tbody>';
     findingsHtml += openFindings.map(f =>
-      '<tr>'
-      + '<td><code style="font-size:11px">' + f.finding_id + '</code></td>'
+      '<tr><td><code style="font-size:11px">' + f.finding_id + '</code></td>'
       + '<td style="font-size:12px">' + f.title + '</td>'
       + '<td><span style="color:' + sevColor(f.severity) + ';font-weight:600;font-size:12px">' + f.severity + '</span></td>'
       + '<td style="font-size:12px;color:var(--muted)">' + (f.owner||'—') + '</td>'
-      + '<td style="font-size:12px;color:var(--yellow)">' + (f.target_remediation_date||'TBD') + '</td>'
-      + '</tr>'
+      + '<td style="font-size:12px;color:var(--yellow)">' + (f.target_remediation_date||'TBD') + '</td></tr>'
     ).join('');
     findingsHtml += '</tbody></table></div></div>';
   }
@@ -1515,9 +1768,74 @@ async function loadAuditIntelligence() {
     + '<div class="card"><div class="label">Exceptions</div><div class="value ' + (wpData.exception_count>0?'yellow':'') + '">' + wpData.exception_count + '</div></div>'
     + '<div class="card"><div class="label">Open Findings</div><div class="value ' + (wpData.open_findings>0?'red':'') + '">' + wpData.open_findings + '</div></div>'
     + '</div>'
-    + universeHtml
+    + infoBox
+    + accordionHtml
     + reportsHtml
     + findingsHtml;
+}
+
+function showDARModal(idx) {
+  const reports = window._darReports || [];
+  const r = reports[idx];
+  if (!r) return;
+  const statusHtml = r.status === 'Draft' ? '<span style="background:rgba(124,106,255,0.2);color:var(--accent);border-radius:4px;padding:2px 8px;font-size:11px">Draft</span>'
+    : r.status === 'In Review' ? '<span style="background:rgba(251,191,36,0.2);color:var(--yellow);border-radius:4px;padding:2px 8px;font-size:11px">In Review</span>'
+    : '<span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 8px;font-size:11px">Finalised</span>';
+  document.getElementById('dar-modal-content').innerHTML = `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:12px">
+      <div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:4px">${r.title}</div>
+        <div style="font-size:12px;color:var(--muted)"><code>${r.id}</code> &nbsp;·&nbsp; Responsible: ${r.auditor} &nbsp;·&nbsp; Target issue: ${r.date}</div>
+      </div>
+      ${statusHtml}
+    </div>
+    <table class="def-table" style="margin-bottom:16px">
+      <tr><td class="term">Scope</td><td class="def">${r.scope}</td></tr>
+      <tr><td class="term">Findings</td><td class="def">${r.findings > 0 ? '<span style="color:var(--orange)">' + r.findings + ' open finding(s)</span>' : '<span style="color:var(--green)">No open findings</span>'}</td></tr>
+      <tr><td class="term">Summary</td><td class="def">${r.summary}</td></tr>
+      <tr><td class="term">Next Step</td><td class="def">${r.status === 'Finalised' ? 'Report presented to board. Findings tracked in Board Report tab.' : 'Report in preparation. Working papers are the evidence base. Human review required before board distribution.'}</td></tr>
+    </table>
+    <p style="font-size:11px;color:var(--muted);margin:0">&#9432; This is a draft audit report. It has not been finalised or presented to the board. For working paper detail, use the Working Papers tab.</p>
+  `;
+  document.getElementById('dar-modal').classList.add('open');
+}
+
+function showLFAP(period, el) {
+  if (el) {
+    document.querySelectorAll('.lfap-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+  const LFAP_DATA = {
+    'Q1': [{id:'F-2024-003-01', title:'Exit strategy not documented', source:'IAR-2024-003', priority:'HIGH', owner:'Legal & Procurement', due:'2025-03-31', status:'Overdue', note:'Deadline extended to 2025-06-30.'},],
+    'Q2': [{id:'F-2024-003-01', title:'Exit strategy not documented', source:'IAR-2024-003', priority:'HIGH', owner:'Legal & Procurement', due:'2025-06-30', status:'Overdue', note:'Second extension. Escalation to CRO recommended.'},{id:'F-2024-003-02', title:'PayLink SLAs missing (Art. 30(2)(d))', source:'IAR-2024-003', priority:'MEDIUM', owner:'Contract Manager', due:'2025-05-31', status:'On Track', note:''},],
+    'Q3': [{id:'F-2024-003-02', title:'PayLink SLAs missing (Art. 30(2)(d))', source:'IAR-2024-003', priority:'MEDIUM', owner:'Contract Manager', due:'2025-05-31', status:'Closed', note:'SLA annex signed 2025-05-28. Verified by Internal Audit.'},],
+    'Q4': [],
+    '1H': [{id:'F-2024-003-01', title:'Exit strategy not documented', source:'IAR-2024-003', priority:'HIGH', owner:'Legal & Procurement', due:'2025-06-30', status:'Overdue', note:''},{id:'F-2024-003-02', title:'PayLink SLAs missing', source:'IAR-2024-003', priority:'MEDIUM', owner:'Contract Manager', due:'2025-05-31', status:'Closed', note:'Closed Q3.'},],
+    'Full Year': [{id:'F-2024-003-01', title:'Exit strategy not documented', source:'IAR-2024-003', priority:'HIGH', owner:'Legal & Procurement', due:'2025-06-30', status:'Overdue', note:''},{id:'F-2024-003-02', title:'PayLink SLAs missing', source:'IAR-2024-003', priority:'MEDIUM', owner:'Contract Manager', due:'2025-05-31', status:'Closed', note:''},],
+  };
+  const rows = LFAP_DATA[period] || [];
+  const target = document.getElementById('lfap-content');
+  if (!target) return;
+  if (!rows.length) {
+    target.innerHTML = '<p style="font-size:12px;color:var(--muted);padding:8px 0">No follow-up actions recorded for ' + period + '.</p>';
+    return;
+  }
+  const statusBadge = s => s === 'Closed' ? '<span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 7px;font-size:11px">Closed</span>'
+    : s === 'On Track' ? '<span style="background:rgba(74,222,128,0.1);color:var(--green);border-radius:4px;padding:2px 7px;font-size:11px">On Track</span>'
+    : '<span style="background:rgba(251,191,36,0.2);color:var(--yellow);border-radius:4px;padding:2px 7px;font-size:11px">Overdue</span>';
+  const priColor = p => ({HIGH:'var(--red)',MEDIUM:'var(--orange)',LOW:'var(--green)'}[p]||'var(--muted)');
+  target.innerHTML = '<div class="table-wrap"><table>'
+    + '<thead><tr><th>Finding</th><th>Source</th><th>Priority</th><th>Owner</th><th>Due</th><th>Status</th><th>Note</th></tr></thead><tbody>'
+    + rows.map(r => `<tr>
+        <td style="font-size:12px"><strong>${r.id}</strong><br>${r.title}</td>
+        <td style="font-size:11px;color:var(--muted)">${r.source}</td>
+        <td><span style="color:${priColor(r.priority)};font-size:12px;font-weight:600">${r.priority}</span></td>
+        <td style="font-size:12px">${r.owner}</td>
+        <td style="font-size:12px;color:var(--muted)">${r.due}</td>
+        <td>${statusBadge(r.status)}</td>
+        <td style="font-size:11px;color:var(--muted)">${r.note||'—'}</td>
+      </tr>`).join('')
+    + '</tbody></table></div>';
 }
 
 // Load data on page load
