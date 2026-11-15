@@ -546,6 +546,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   .ctrl-badge-passed { background: rgba(74,222,128,0.15); color: var(--green); }
   .ctrl-badge-exception { background: rgba(251,146,60,0.15); color: var(--orange); }
   .ctrl-badge-not-tested { background: var(--surface2); color: var(--muted); }
+  .badge-na { background: var(--surface2); color: var(--muted); }
   .lfap-tabs { display: flex; gap: 4px; margin-bottom: 14px; flex-wrap: wrap; }
   .lfap-tab { padding: 5px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
   .lfap-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
@@ -666,7 +667,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
         <tr><td class="term">Recommendation</td><td class="def">Agreed action to close the gap. Click any control row to view the full working paper and D&amp;I declaration.</td></tr>
       </table>
     </div>
-    <div id="wp-content"><div class="loading">Loading working papers&#8230;</div></div>
+    <div id="wp-content"></div>
   </div>
 
   <!-- Audit Intelligence tab (Agent 4) -->
@@ -681,7 +682,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
         <tr><td class="term">Agent 2 vs Agent 4</td><td class="def">Agent 2 covers ICT supplier assurance (DORA Art. 30 contract testing). Agent 4 covers broader internal audit, ISO 27001 control testing, and board reporting (ISAE 3402 / IIA).</td></tr>
       </table>
     </div>
-    <div id="audit-content"><div class="loading">Loading audit intelligence…</div></div>
+    <div id="audit-content"></div>
   </div>
 
   <!-- Board Report tab -->
@@ -697,7 +698,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
         <tr><td class="term">Next Quarter Focus</td><td class="def">Internal audit plan priorities for the upcoming quarter. <strong style="color:var(--orange)">Human review required</strong> before distributing to governance bodies.</td></tr>
       </table>
     </div>
-    <div id="boardreport-content"><div class="loading">Loading board report&#8230;</div></div>
+    <div id="boardreport-content"></div>
   </div>
 </main>
 
@@ -878,6 +879,7 @@ function openContractForSupplier(supplierName, evt) {
 // ── Board Report ──────────────────────────────────────────────────────────
 async function loadBoardReport() {
   const container = document.getElementById('boardreport-content');
+  container.innerHTML = '<div class="loading">Loading board report&#8230;</div>';
   let wpData, reconData;
   try {
     [wpData, reconData] = await Promise.all([
@@ -1391,6 +1393,7 @@ async function loadReconciliation() {
 
 async function loadWorkPapers() {
   const container = document.getElementById('wp-content');
+  container.innerHTML = '<div class="loading">Loading working papers&#8230;</div>';
   let data;
   try {
     const res = await fetch('/api/workpapers');
@@ -1405,7 +1408,7 @@ async function loadWorkPapers() {
   }
 
   const riskClass = r => ({CRITICAL:'risk-critical',HIGH:'risk-high',MEDIUM:'risk-medium',LOW:'risk-low'}[r]||'');
-  const resultIcon = r => ({PASSED:'<span class="result-passed">✓ Passed</span>',EXCEPTION:'<span class="result-exception">⚠ Exception</span>',NOT_TESTED:'<span class="result-not-tested">— Not Tested</span>',NOT_APPLICABLE:'<span class="result-na">— N/A</span>'}[r]||r);
+  const resultIcon = r => ({PASSED:'<span class="result-passed">✓ Pass</span>',EXCEPTION:'<span class="result-exception">⚠ Exception</span>',NOT_TESTED:'<span class="result-not-tested">— Not Tested</span>',NOT_APPLICABLE:'<span class="result-na">— N/A</span>'}[r]||r);
   const resultClass = r => r==='PASSED'?'result-passed':r==='EXCEPTION'?'result-exception':r==='NOT_APPLICABLE'?'result-na':'result-not-tested';
 
   container.innerHTML = `
@@ -1430,10 +1433,11 @@ async function loadWorkPapers() {
           <th>Control ID</th><th>Title</th><th>Domain</th><th>Inherent Risk</th><th>Result</th><th>Findings</th><th>Control Strength</th><th>Residual Risk</th>
         </tr></thead>
         <tbody>${data.work_papers.map(wp => {
-          const cs = controlStrengthWP(wp.open_finding_count);
-          const csC = controlStrengthClassWP(wp.open_finding_count);
-          const rr = residualRiskWP(wp.inherent_risk, wp.open_finding_count);
-          const rrC = residualRiskClassWP(wp.inherent_risk, wp.open_finding_count);
+          const isNA = wp.test_result === 'NOT_TESTED' || wp.test_result === 'NOT_APPLICABLE';
+          const cs = isNA ? 'N/A' : controlStrengthWP(wp.open_finding_count);
+          const csC = isNA ? 'badge-na' : controlStrengthClassWP(wp.open_finding_count);
+          const rr = isNA ? 'N/A' : residualRiskWP(wp.inherent_risk, wp.open_finding_count);
+          const rrC = isNA ? 'badge-na' : residualRiskClassWP(wp.inherent_risk, wp.open_finding_count);
           return `<tr onclick="showWPDetail('${wp.control_id}')" style="cursor:pointer">
             <td><code>${wp.control_id}</code></td>
             <td>${wp.control_title}</td>
@@ -1517,34 +1521,69 @@ async function showWPDetail(controlId) {
   const severityColor = s => ({CRITICAL:'var(--red)',HIGH:'var(--orange)',MEDIUM:'var(--yellow)',LOW:'var(--green)',INFO:'var(--muted)'}[s]||'var(--muted)');
   const statusColor = s => s==='open'?'var(--orange)':s==='closed'?'var(--green)':'var(--muted)';
 
-  // Structured D&I declaration blocks
-  const evidenceItems = wp.expected_evidence_artifacts||[];
-  const evidenceHtml = evidenceItems.length
-    ? '<ul style="margin:6px 0 0;padding-left:18px;font-size:12px">' + evidenceItems.map(e => '<li style="margin-bottom:3px">' + e + '</li>').join('') + '</ul>'
-    : '<p style="font-size:12px;color:var(--muted);margin:4px 0 0">No evidence artifacts specified.</p>';
   const inquiryDate = new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'});
+  const evidenceItems = wp.expected_evidence_artifacts||[];
 
-  let scenarioLabel, resultSpan, residualSpan, declarationBody;
+  // Build evidence as links with version/date annotation
+  const evidenceHtml = evidenceItems.length
+    ? '<ul style="margin:6px 0 0;padding-left:18px;font-size:12px">' + evidenceItems.map(e => {
+        // If item contains a version marker like "v." or "version", render as link with annotation
+        const vMatch = e.match(/(.+?),?\\s*(v\\.?\\s*\\d[^,]*(?:,\\s*\\d{1,2}\\s+\\w+\\s+\\d{4})?)(.*)/i);
+        if (vMatch) {
+          return '<li style="margin-bottom:4px"><a href="#" onclick="return false" style="color:var(--accent);text-decoration:underline">' + vMatch[1].trim() + '</a><span style="color:var(--muted);font-size:11px;margin-left:6px">(' + vMatch[2].trim() + (vMatch[3]?vMatch[3]:'') + ')</span></li>';
+        }
+        return '<li style="margin-bottom:4px"><a href="#" onclick="return false" style="color:var(--accent);text-decoration:underline">' + e + '</a></li>';
+      }).join('') + '</ul>'
+    : '<p style="font-size:12px;color:var(--muted);margin:4px 0 0">No evidence artifacts specified.</p>';
+
+  let scenarioLabel, declarationHtml, resultLine, csLine, rrLine;
+  const hasFindings = wp.findings && wp.findings.length > 0;
+
   if (wp.test_result === 'PASSED') {
     scenarioLabel = 'Design &amp; Implementation Review (D&amp;I) — Scenario A';
-    resultSpan = '<span class="result-effective">&#10003; Control Effective</span>';
-    residualSpan = '<span class="result-residual-low">Residual Risk: Low</span>';
-    declarationBody = `We inspected the policies and procedures for <strong>${wp.control_domain}</strong>. The control <strong>${wp.control_id} — ${wp.control_title}</strong> is designed adequately and has been implemented as intended. We inquired with the responsible control owner on <em>${inquiryDate}</em> and confirmed the control is operating effectively. Our review did not give rise to further comments.`;
+    const policyRef = wp.policy_reference || (wp.control_domain + ' Policy');
+    declarationHtml =
+      '<p style="margin:8px 0 6px;line-height:1.7;font-size:13px">We inspected 1-2 items from the <a href="#" onclick="return false" style="color:var(--accent);text-decoration:underline">' + policyRef + '</a> for <strong>' + wp.control_domain + '</strong>.</p>' +
+      '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">The control <strong>' + wp.control_id + ' — ' + wp.control_title + '</strong> is designed adequately and has been implemented as intended.</p>' +
+      '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">We inquired with the responsible control owner on <strong>' + inquiryDate + '</strong> and confirmed the control is operating as designed. A communication log of the inquiry is available on request.</p>' +
+      '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">Our review did not give rise to further comments.</p>';
+    resultLine = '<p style="margin:8px 0 4px;font-size:13px;font-weight:600;color:var(--green)">&#10003; Pass — Control Effective</p>';
+    const cs = controlStrengthWP(wp.open_finding_count);
+    csLine = '<p style="margin:4px 0 4px;font-size:13px;font-weight:600;color:var(--green)">Control Strength: ' + cs + '</p>';
+    rrLine = '<p style="margin:4px 0 4px;font-size:13px">Residual Risk: <strong style="color:var(--green)">Low</strong></p>';
   } else if (wp.test_result === 'EXCEPTION') {
-    scenarioLabel = 'Effectiveness Testing (ISAE 3402 / Internal Audit) — Scenario B — Exception Found';
-    resultSpan = '<span class="result-partial">&#9888; Partially Effective — Exception(s) Noted</span>';
-    residualSpan = '<span class="result-residual-medium">Residual Risk: Elevated — see findings</span>';
-    declarationBody = `We tested the operating effectiveness of <strong>${wp.control_id} — ${wp.control_title}</strong> over the engagement period by examining a sample of evidence. We inquired with the responsible control owner on <em>${inquiryDate}</em>. The control appears adequately designed. <strong class="result-partial">However, our testing identified one or more exceptions documented in 5-C format below.</strong>`;
+    scenarioLabel = 'Design &amp; Implementation Review (D&amp;I) — Scenario B — Exception(s) Noted';
+    const policyRef = wp.policy_reference || (wp.control_domain + ' Policy');
+    declarationHtml =
+      '<p style="margin:8px 0 6px;line-height:1.7;font-size:13px">We inspected 1-2 items from the <a href="#" onclick="return false" style="color:var(--accent);text-decoration:underline">' + policyRef + '</a> for <strong>' + wp.control_domain + '</strong>.</p>' +
+      '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">The control <strong>' + wp.control_id + ' — ' + wp.control_title + '</strong> was reviewed for design adequacy and implementation.</p>' +
+      '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">We inquired with the responsible control owner on <strong>' + inquiryDate + '</strong>. A communication log of the inquiry is available on request.</p>' +
+      '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px;color:var(--orange)"><strong>Our review identified exceptions (see findings below).</strong></p>';
+    const cs = controlStrengthWP(wp.open_finding_count);
+    const isPartial = cs === 'Partially Effective';
+    resultLine = '<p style="margin:8px 0 4px;font-size:13px;font-weight:600;color:var(--orange)">&#9888; ' + (isPartial ? 'Partly Effective' : 'Not Effective') + ' — Exception(s) Noted</p>';
+    csLine = '<p style="margin:4px 0 4px;font-size:13px;font-weight:600;color:' + (isPartial ? 'var(--orange)' : 'var(--red)') + '">Control Strength: ' + cs + '</p>';
+    if (isPartial) {
+      rrLine = '<p style="margin:4px 0 4px;font-size:13px">Residual Risk: <strong style="color:var(--orange)">Medium</strong> — refer to exceptions below</p>';
+    } else {
+      rrLine = '';
+    }
   } else if (wp.test_result === 'NOT_APPLICABLE') {
     scenarioLabel = 'Not Applicable to This Engagement Scope — Scenario C';
-    resultSpan = '<span class="result-na">— Not Applicable</span>';
-    residualSpan = '<span class="result-residual-na">Residual Risk: N/A</span>';
-    declarationBody = `Control <strong>${wp.control_id} — ${wp.control_title}</strong> was reviewed for inclusion in the audit universe but determined to be <strong>not applicable</strong> to this engagement scope or the specific entity under review. No testing was performed.`;
+    declarationHtml =
+      '<p style="margin:8px 0 6px;line-height:1.7;font-size:13px">Control <strong>' + wp.control_id + ' — ' + wp.control_title + '</strong> was reviewed for inclusion in the audit universe but determined to be <strong>not applicable</strong> to this engagement scope or the specific entity under review.</p>' +
+      '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">No testing was performed.</p>';
+    resultLine = '<p style="margin:8px 0 4px;font-size:13px;font-weight:600;color:var(--muted)">— Not Applicable</p>';
+    csLine = '<p style="margin:4px 0 4px;font-size:13px;color:var(--muted)">Control Strength: N/A</p>';
+    rrLine = '';
   } else {
-    scenarioLabel = 'Scoped In, Not Tested This Period — Scenario D';
-    resultSpan = '<span class="result-not-tested">— Not Tested This Period</span>';
-    residualSpan = '<span class="result-residual-na">Residual Risk equals Inherent Risk: ' + wp.inherent_risk + '</span>';
-    declarationBody = `Control <strong>${wp.control_id} — ${wp.control_title}</strong> is included in the audit universe but was <strong>not tested</strong> in this cycle based on a risk-based deferral decision. This control should be prioritised in the next audit cycle.`;
+    scenarioLabel = 'Scoped In — Not Tested This Period — Scenario D';
+    declarationHtml =
+      '<p style="margin:8px 0 6px;line-height:1.7;font-size:13px">Control <strong>' + wp.control_id + ' — ' + wp.control_title + '</strong> is included in the audit universe but was <strong>not tested</strong> in this cycle based on a risk-based deferral decision.</p>' +
+      '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">This control should be prioritised in the next audit cycle.</p>';
+    resultLine = '<p style="margin:8px 0 4px;font-size:13px;font-weight:600;color:var(--muted)">— Not Tested This Period</p>';
+    csLine = '<p style="margin:4px 0 4px;font-size:13px;color:var(--muted)">Control Strength: N/A</p>';
+    rrLine = '';
   }
 
   panel.innerHTML = `
@@ -1553,24 +1592,18 @@ async function showWPDetail(controlId) {
 
     <div class="wp-text-block" style="margin-bottom:16px">
       <div class="wp-declaration-label">${scenarioLabel}</div>
-      <p style="margin:8px 0 10px;line-height:1.7;font-size:13px">${declarationBody}</p>
-      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px">Evidence Reviewed</div>
+      ${declarationHtml}
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px;margin-top:10px">Evidence Reviewed</div>
       ${evidenceHtml}
-      <div style="margin-top:12px;display:flex;gap:16px;flex-wrap:wrap">
-        <div>${resultSpan}</div>
-        <div>${residualSpan}</div>
+      <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
+        ${resultLine}
+        ${csLine}
+        ${rrLine}
+        ${hasFindings ? '<p style="margin:4px 0 4px;font-size:12px;color:var(--orange)">&#8594; Exceptions refer to the findings noted below.</p>' : ''}
       </div>
     </div>
 
     ${wp.audit_objective ? `<div style="margin-bottom:12px"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Audit Procedure</span><p style="font-size:13px;margin:4px 0 0">${wp.audit_objective}</p></div>` : ''}
-
-    ${wp.expected_evidence_artifacts && wp.expected_evidence_artifacts.length ? `
-    <div style="margin-bottom:12px">
-      <span style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Expected Evidence Reviewed</span>
-      <ul style="margin:4px 0 0;padding-left:18px;font-size:12px;color:var(--text)">
-        ${wp.expected_evidence_artifacts.map(e => `<li style="margin-bottom:2px">${e}</li>`).join('')}
-      </ul>
-    </div>` : ''}
 
     ${wp.testing_notes ? `<div style="margin-bottom:16px"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Testing Notes</span><p style="font-size:12px;margin:4px 0 0;color:var(--muted)">${wp.testing_notes}</p></div>` : ''}
 
@@ -1633,27 +1666,28 @@ async function uploadContract(input) {
 
 const DEMO_ORG_STRUCTURE = [
   { process: 'Information Security', subprocesses: [
-    { name: 'Identity & Access Management', controls: ['AU01','AU02'] },
-    { name: 'Data Protection & Encryption', controls: ['AU03'] },
-    { name: 'Vulnerability Management', controls: ['AU04','AU05'] },
+    { name: 'Identity & Access Management', controls: ['AU01','AU02'], critical_apps: ['Azure AD / Entra ID','CyberArk PAM','Okta SSO'] },
+    { name: 'Data Protection & Encryption', controls: ['AU03'], critical_apps: ['Varonis DLP','Azure Information Protection','BitLocker'] },
+    { name: 'Vulnerability Management', controls: ['AU04','AU05'], critical_apps: ['Tenable.io','Qualys','Microsoft Defender for Endpoint'] },
   ]},
   { process: 'ICT Third-Party Risk', subprocesses: [
-    { name: 'Supplier Onboarding & Due Diligence', controls: ['NNS-NET-2021-001','NNS-NET-2021-002'] },
-    { name: 'Contract Governance (DORA Art. 30)', controls: ['NNS-NET-2021-003','NNS-NET-2021-004','NNS-NET-2021-005'] },
-    { name: 'Exit Strategy & Concentration Risk', controls: ['NNS-NET-2021-006','NNS-NET-2021-007'] },
+    { name: 'Supplier Onboarding & Due Diligence', controls: ['NNS-NET-2021-001','NNS-NET-2021-002'], critical_apps: ['ServiceNow GRC','Prevalent TPRM'] },
+    { name: 'Contract Governance (DORA Art. 30)', controls: ['NNS-NET-2021-003','NNS-NET-2021-004','NNS-NET-2021-005'], critical_apps: ['DocuSign CLM','SharePoint Contract Repository'] },
+    { name: 'Exit Strategy & Concentration Risk', controls: ['NNS-NET-2021-006','NNS-NET-2021-007'], critical_apps: ['ServiceNow GRC','Internal BCMS'] },
   ]},
   { process: 'Operational Resilience', subprocesses: [
-    { name: 'Business Continuity Planning', controls: ['AU07'] },
-    { name: 'Incident Response & Recovery', controls: [] },
+    { name: 'Business Continuity Planning', controls: ['AU07'], critical_apps: ['Fusion Framework','Everbridge','Veeam Backup'] },
+    { name: 'Incident Response & Recovery', controls: [], critical_apps: ['PagerDuty','Splunk SIEM','ServiceNow IRM'] },
   ]},
   { process: 'Data Privacy & GDPR', subprocesses: [
-    { name: 'Article 28 Processor Agreements', controls: [] },
-    { name: 'Data Subject Rights', controls: [] },
+    { name: 'Article 28 Processor Agreements', controls: [], critical_apps: ['OneTrust DPA Manager','DocuSign'] },
+    { name: 'Data Subject Rights', controls: [], critical_apps: ['OneTrust Privacy Portal','Salesforce Service Cloud'] },
   ]},
 ];
 
 async function loadAuditIntelligence() {
   const container = document.getElementById('audit-content');
+  container.innerHTML = '<div class="loading">Loading audit intelligence&#8230;</div>';
   let wpData;
   try {
     const res = await fetch('/api/workpapers');
@@ -1695,18 +1729,26 @@ async function loadAuditIntelligence() {
       + '</div>';
     accordionHtml += '<div id="' + domainId + '" class="proc-body">';
     proc.subprocesses.forEach(sp => {
-      accordionHtml += '<div style="margin-bottom:10px"><div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px">' + sp.name + '</div>';
+      const apps = sp.critical_apps || [];
+      accordionHtml += '<div style="margin-bottom:12px"><div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px">' + sp.name + '</div>';
+      if (apps.length) {
+        accordionHtml += '<div style="margin-bottom:6px;display:flex;flex-wrap:wrap;gap:4px">'
+          + '<span style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);align-self:center;margin-right:4px">Critical Apps:</span>'
+          + apps.map(a => '<span style="font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 7px;color:var(--text)">' + a + '</span>').join('')
+          + '</div>';
+      }
       if (sp.controls.length === 0) {
         accordionHtml += '<div style="font-size:11px;color:var(--muted);padding-left:8px">No controls mapped — scope to be defined.</div>';
       } else {
         sp.controls.forEach(ctrlId => {
           const wp = wpByCtrl[ctrlId];
           const badgeCls = !wp ? 'ctrl-badge-mapped' : wp.test_result === 'PASSED' ? 'ctrl-badge-passed' : wp.test_result === 'EXCEPTION' ? 'ctrl-badge-exception' : 'ctrl-badge-not-tested';
-          const dot = !wp ? '&#11044; ' : wp.test_result === 'PASSED' ? '&#10003; ' : wp.test_result === 'EXCEPTION' ? '&#9888; ' : '&#8211; ';
+          const csText = wp ? (wp.test_result === 'NOT_TESTED' || wp.test_result === 'NOT_APPLICABLE' ? 'N/A' : controlStrength(wp.open_finding_count)) : '';
+          const csColor = !wp ? '' : (wp.test_result === 'PASSED' && wp.open_finding_count === 0) ? 'color:var(--green)' : wp.test_result === 'EXCEPTION' ? 'color:var(--orange)' : 'color:var(--muted)';
           accordionHtml += '<div class="sub-proc-row">'
             + '<span class="ctrl-badge ' + badgeCls + '" onclick="' + (wp ? 'showWPDetail(\\'' + ctrlId + '\\')' : '') + '" style="' + (wp ? 'cursor:pointer' : '') + '">' + ctrlId + '</span>'
             + '<span style="font-size:12px;flex:1">' + (wp ? wp.control_title : ctrlId) + '</span>'
-            + (wp ? '<span style="font-size:11px;color:var(--muted)">' + wp.test_result.replace(/_/g,' ') + '</span>' : '<span style="font-size:11px;color:var(--muted)">Not in scope</span>')
+            + (wp ? '<span style="font-size:11px;' + csColor + '">' + wp.test_result.replace(/_/g,' ') + (csText ? ' · ' + csText : '') + '</span>' : '<span style="font-size:11px;color:var(--muted)">Not in scope</span>')
             + '</div>';
         });
       }
