@@ -731,7 +731,7 @@ const CONSEQUENCES = {
   'ART30-009': 'Business continuity obligations not specified — supplier not contractually required to maintain resilience capabilities required under DORA.',
   'ART30-010': 'No obligation to test continuity/recovery plans — supplier resilience is unverified and cannot be relied upon for DORA operational resilience.',
   'ART30-011': 'No change management or notification requirements — supplier may change infrastructure/processes without customer awareness, introducing uncontrolled risk.',
-  'ART30-012': 'No capacity management provisions — supplier may not scale to meet the financial entity\'s needs, creating availability and performance risk.',
+  'ART30-012': 'No capacity management provisions — supplier may not scale to meet the financial entity\\'s needs, creating availability and performance risk.',
   'ART30-013': 'No data processing agreement — GDPR Art. 28 violation; potential supervisory authority enforcement and fines up to 2% of global annual turnover.',
 };
 function getConsequence(reqId) {
@@ -1135,9 +1135,9 @@ async function loadReconciliation() {
       <div class="section-title">Matched (register &#8596; contract)</div>
       <div class="table-wrap"><table>
         <thead><tr><th>Supplier</th><th>Contract Ref</th><th>Classification</th><th>Status</th><th>Missing</th><th>Match via</th></tr></thead>
-        <tbody>${data.matched.map(m => '<tr style="cursor:pointer" onclick="showContractModal(\'' + (m.analysis_key||m.analysis_id||'') + '\')">'
+        <tbody>${data.matched.map(m => '<tr style="cursor:pointer" onclick="showContractModal(\\'' + (m.analysis_key||m.analysis_id||'') + '\\')">'
           + '<td style="font-weight:500">' + m.register_entry.supplier_name + '</td>'
-          + '<td><button onclick="event.stopPropagation();showContractModal(\'' + (m.analysis_key||m.analysis_id||'') + '\')" style="background:var(--surface2);color:var(--accent);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer">' + m.register_entry.contract_reference + ' &#8594;</button></td>'
+          + '<td><button onclick="event.stopPropagation();showContractModal(\\'' + (m.analysis_key||m.analysis_id||'') + '\\')" style="background:var(--surface2);color:var(--accent);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer">' + m.register_entry.contract_reference + ' &#8594;</button></td>'
           + '<td>' + classBadge(m.register_entry.classification) + '</td>'
           + '<td>' + statusBadge(m.overall_status) + '</td>'
           + '<td style="font-weight:600;color:' + (m.missing_count>0?'var(--orange)':'var(--green)') + '">' + m.missing_count + '</td>'
@@ -1450,7 +1450,7 @@ async function loadAuditIntelligence() {
     universeHtml += '<div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">' + domain + '</div>';
     universeHtml += '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">' + controls.length + ' control' + (controls.length!==1?'s':'') + ' &nbsp;·&nbsp; <span style="color:var(--green)">' + passed + ' passed</span>' + (exc?' &nbsp;·&nbsp; <span style="color:var(--orange)">' + exc + ' exception(s)</span>':'') + '</div>';
     for (const wp of controls) {
-      universeHtml += '<div onclick="showWPDetail(\'' + wp.control_id + '\')" style="cursor:pointer;display:flex;align-items:center;padding:4px 6px;border-radius:4px;margin-bottom:2px;background:var(--surface2)">'
+      universeHtml += '<div onclick="showWPDetail(\\'' + wp.control_id + '\\')" style="cursor:pointer;display:flex;align-items:center;padding:4px 6px;border-radius:4px;margin-bottom:2px;background:var(--surface2)">'
         + resultDot(wp.test_result)
         + '<span style="font-size:11px;font-family:monospace;color:var(--accent);margin-right:6px">' + wp.control_id + '</span>'
         + '<span style="font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + wp.control_title + '</span>'
@@ -1475,7 +1475,7 @@ async function loadAuditIntelligence() {
   reportsHtml += '<div class="section-title" style="margin-bottom:4px">Draft Audit Reports — Period</div>';
   reportsHtml += '<p style="font-size:12px;color:var(--muted);margin:0 0 14px">Working papers are the evidence supporting these reports. A draft report is in preparation; once finalised and reported to the board it moves to the Board Report tab for follow-up tracking only.</p>';
   for (const r of draftReports) {
-    reportsHtml += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick="document.getElementById(\'board-tab\').click()">'
+    reportsHtml += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick="document.getElementById(\\'board-tab\\').click()">'
       + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
       + '<div style="font-size:14px;font-weight:600">' + r.title + '</div>'
       + statusBadgeRpt(r.status)
