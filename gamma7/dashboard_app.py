@@ -347,20 +347,20 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #09090b;
-    --surface: #111113;
-    --surface2: #18181b;
-    --border: #27272a;
-    --border-hover: #3f3f46;
-    --text: #fafafa;
-    --secondary: #a1a1aa;
-    --muted: #71717a;
-    --accent: #8b5cf6;
-    --green: #22c55e;
-    --yellow: #eab308;
-    --red: #ef4444;
-    --orange: #f97316;
-    --critical: #c084fc;
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --surface2: #f1f5f9;
+    --border: #e2e8f0;
+    --border-hover: #cbd5e1;
+    --text: #0f172a;
+    --secondary: #475569;
+    --muted: #94a3b8;
+    --accent: #7c3aed;
+    --green: #16a34a;
+    --yellow: #d97706;
+    --red: #dc2626;
+    --orange: #ea580c;
+    --critical: #9333ea;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     font-size: 14px;
     line-height: 1.5;
@@ -384,8 +384,31 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     width: 100%; text-align: left; border-left: 2px solid transparent;
     transition: color 0.12s, background 0.12s, border-color 0.12s; margin-bottom: 2px;
   }
-  .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
-  .nav-item.active { color: var(--text); border-left-color: var(--accent); background: rgba(139,92,246,0.08); }
+  .nav-item:hover { color: var(--text); background: rgba(0,0,0,0.04); }
+  .nav-item.active { color: var(--text); border-left-color: var(--accent); background: rgba(124,58,237,0.06); }
+  /* per-section accent colours */
+  .nav-overview.active    { color: #7c3aed; border-left-color: #7c3aed; background: rgba(124,58,237,0.06); }
+  .nav-contracts.active   { color: #2563eb; border-left-color: #2563eb; background: rgba(37,99,235,0.06); }
+  .nav-register.active    { color: #0d9488; border-left-color: #0d9488; background: rgba(13,148,136,0.06); }
+  .nav-reconciliation.active { color: #d97706; border-left-color: #d97706; background: rgba(217,119,6,0.06); }
+  .nav-workpapers.active  { color: #16a34a; border-left-color: #16a34a; background: rgba(22,163,74,0.06); }
+  .nav-audit.active       { color: #e11d48; border-left-color: #e11d48; background: rgba(225,29,72,0.06); }
+  .nav-boardreport.active { color: #6366f1; border-left-color: #6366f1; background: rgba(99,102,241,0.06); }
+  /* section colour dots shown even when inactive */
+  .nav-overview::before    { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:8px; background:#7c3aed; opacity:0.5; flex-shrink:0; }
+  .nav-contracts::before   { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:8px; background:#2563eb; opacity:0.5; flex-shrink:0; }
+  .nav-register::before    { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:8px; background:#0d9488; opacity:0.5; flex-shrink:0; }
+  .nav-reconciliation::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:8px; background:#d97706; opacity:0.5; flex-shrink:0; }
+  .nav-workpapers::before  { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:8px; background:#16a34a; opacity:0.5; flex-shrink:0; }
+  .nav-audit::before       { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:8px; background:#e11d48; opacity:0.5; flex-shrink:0; }
+  .nav-boardreport::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:8px; background:#6366f1; opacity:0.5; flex-shrink:0; }
+  .nav-overview.active::before    { opacity:1; }
+  .nav-contracts.active::before   { opacity:1; }
+  .nav-register.active::before    { opacity:1; }
+  .nav-reconciliation.active::before { opacity:1; }
+  .nav-workpapers.active::before  { opacity:1; }
+  .nav-audit.active::before       { opacity:1; }
+  .nav-boardreport.active::before { opacity:1; }
   .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); flex-shrink: 0; }
   .advisory-badge { font-size: 10px; color: var(--orange); background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.25); padding: 4px 8px; border-radius: 4px; line-height: 1.4; }
   .content-area { margin-left: 220px; flex: 1; min-width: 0; }
@@ -568,13 +591,13 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="logo-sub">Audit &amp; Compliance</div>
   </div>
   <nav class="sidebar-nav">
-    <button class="nav-item active" onclick="showTab(\\'overview\\')">Overview</button>
-    <button class="nav-item" onclick="showTab(\\'contracts\\')">Contracts</button>
-    <button class="nav-item" onclick="showTab(\\'register\\')">ICT Register</button>
-    <button class="nav-item" onclick="showTab(\\'reconciliation\\')">Reconciliation</button>
-    <button class="nav-item" onclick="showTab(\\'workpapers\\')">Working Papers</button>
-    <button class="nav-item" onclick="showTab(\\'audit\\')">Audit Intelligence</button>
-    <button class="nav-item" onclick="showTab(\\'boardreport\\')">Board Report</button>
+    <button class="nav-item nav-overview active" onclick="showTab(\\'overview\\')">Overview</button>
+    <button class="nav-item nav-contracts" onclick="showTab(\\'contracts\\')">Contracts</button>
+    <button class="nav-item nav-register" onclick="showTab(\\'register\\')">ICT Register</button>
+    <button class="nav-item nav-reconciliation" onclick="showTab(\\'reconciliation\\')">Reconciliation</button>
+    <button class="nav-item nav-workpapers" onclick="showTab(\\'workpapers\\')">Working Papers</button>
+    <button class="nav-item nav-audit" onclick="showTab(\\'audit\\')">Audit Intelligence</button>
+    <button class="nav-item nav-boardreport" onclick="showTab(\\'boardreport\\')">Board Report</button>
   </nav>
   <div class="sidebar-footer">
     <div class="advisory-badge">&#9888; Advisory — Human review required before regulatory use</div>
