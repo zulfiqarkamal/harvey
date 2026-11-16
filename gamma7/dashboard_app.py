@@ -421,7 +421,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   .card {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: 12px; padding: 18px 20px;
-    transition: transform 0.1s, border-color 0.1s;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
   }
   .card:hover { transform: translateY(-1px); border-color: var(--border-hover); }
   .card .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
@@ -581,6 +581,60 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 2px; }
+
+  /* ── Enhanced interactivity ───────────────────────────────── */
+  .card {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.09); border-color: var(--border-hover); }
+  .nav-item { transition: color 0.15s, background 0.15s, border-color 0.15s; }
+  .table-wrap { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+  tr:hover td { background: rgba(0,0,0,0.018); }
+  .modal-box { box-shadow: 0 20px 60px rgba(0,0,0,0.18); }
+  button, [role=button] { transition: background 0.15s, color 0.15s, transform 0.1s, box-shadow 0.15s; }
+  .tab-pane.active { animation: fade-in 0.18s ease; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .sidebar-brand .logo { letter-spacing: 0.08em; }
+
+  /* ── Responsive ───────────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .sidebar { width: 180px; min-width: 180px; }
+    .content-area { margin-left: 180px; }
+    main { padding: 20px 24px; }
+  }
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100%; min-width: 0; height: auto;
+      flex-direction: row; top: 0; left: 0;
+      border-right: none; border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .sidebar-brand { padding: 10px 14px; border-bottom: none; border-right: 1px solid var(--border); flex-shrink: 0; }
+    .sidebar-brand .logo-sub { display: none; }
+    .sidebar-nav { flex-direction: row; padding: 0; overflow-x: auto; scrollbar-width: none; }
+    .sidebar-nav::-webkit-scrollbar { display: none; }
+    .nav-item {
+      white-space: nowrap; padding: 12px 14px; border-left: none;
+      border-bottom: 2px solid transparent; border-radius: 0;
+    }
+    .nav-item:hover { background: rgba(0,0,0,0.04); }
+    .nav-overview.active    { border-bottom-color: #7c3aed; border-left-color: transparent; }
+    .nav-contracts.active   { border-bottom-color: #2563eb; border-left-color: transparent; }
+    .nav-register.active    { border-bottom-color: #0d9488; border-left-color: transparent; }
+    .nav-reconciliation.active { border-bottom-color: #d97706; border-left-color: transparent; }
+    .nav-workpapers.active  { border-bottom-color: #16a34a; border-left-color: transparent; }
+    .nav-audit.active       { border-bottom-color: #e11d48; border-left-color: transparent; }
+    .nav-boardreport.active { border-bottom-color: #6366f1; border-left-color: transparent; }
+    .sidebar-footer { display: none; }
+    .content-area { margin-left: 0; margin-top: 48px; }
+    main { padding: 16px; }
+    .summary-cards { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .summary-cards { grid-template-columns: 1fr; }
+    .nav-item::before { display: none; }
+  }
 </style>
 </head>
 <body>
