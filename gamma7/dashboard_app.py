@@ -1254,11 +1254,23 @@ async function loadBoardReport() {
 }
 
 async function loadOverview() {
-  const [analysisRes, registerRes, reconRes] = await Promise.all([
-    fetch('/api/analyses'),
-    fetch('/api/register'),
-    fetch('/api/reconciliation'),
-  ]);
+  let analysisRes, registerRes, reconRes;
+  try {
+    [analysisRes, registerRes, reconRes] = await Promise.all([
+      fetch('/api/analyses'),
+      fetch('/api/register'),
+      fetch('/api/reconciliation'),
+    ]);
+  } catch(e) {
+    document.getElementById('overview-table').innerHTML =
+      `<tr><td colspan="7" class="empty" style="color:var(--red)">Could not reach API: ${e.message}. Is the server running?</td></tr>`;
+    return;
+  }
+  if (!analysisRes.ok) {
+    document.getElementById('overview-table').innerHTML =
+      `<tr><td colspan="7" class="empty" style="color:var(--red)">API error ${analysisRes.status} on /api/analyses</td></tr>`;
+    return;
+  }
   analyses = await analysisRes.json();
   registerEntries = await registerRes.json();
   const recon = await reconRes.json();
@@ -1972,8 +1984,14 @@ function showLFAP(period, el) {
 
 // Load data on page load
 (async () => {
-  await loadOverview();
-  await Promise.all([loadContracts(), loadRegister(), loadReconciliation(), loadWorkPapers(), loadAuditIntelligence(), loadBoardReport()]);
+  try {
+    await loadOverview();
+    await Promise.all([loadContracts(), loadRegister(), loadReconciliation(), loadWorkPapers(), loadAuditIntelligence(), loadBoardReport()]);
+  } catch(e) {
+    console.error('Dashboard init error:', e);
+    const tb = document.getElementById('overview-table');
+    if (tb) tb.innerHTML = `<tr><td colspan="7" class="empty" style="color:var(--red)">Init error: ${e.message}</td></tr>`;
+  }
 })();
 </script>
 </body>
