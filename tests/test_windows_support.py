@@ -44,6 +44,7 @@ def test_every_text_file_is_read_and_written_as_utf8():
     offenders = [
         f"{path.relative_to(HARVEY.parent)}:{line}"
         for path in sorted(HARVEY.rglob("*.py"))
+        if ".venv" not in path.relative_to(HARVEY).parts
         for line in _text_io_without_encoding(ast.parse(path.read_text(encoding="utf-8")))
     ]
     assert offenders == []

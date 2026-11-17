@@ -1,0 +1,260 @@
+# Expected Findings — Out-of-Sample Holdout Set
+# Version: 1.0 — 2026-11-09
+#
+# These contracts were NOT used to tune match_terms.
+# P/R figures from these contracts are independently verified estimates of heuristic performance.
+#
+# Annotation methodology:
+#   - Each requirement was assessed against contract text without reference to match_terms.
+#   - "satisfied"/"evidence_found" items are NOT listed (only gaps are listed).
+#   - For non_critical contracts, ART30-009, 011, 012, 013 are N/A and excluded.
+#   - RPO gap in ART30-004/011 noted where only RTOs are present.
+#
+# Contract 06: Critical/important fintech — well-drafted 2024 DORA-aware contract.
+#   Intentionally designed with partial compliance to test ambiguous-gap detection.
+#   Expected: 7 gaps (5 ambiguous, 1 missing, 1 ambiguous-critical_only).
+#
+# Contract 07: Non-critical SaaS — HR analytics, standard SaaS contract.
+#   No DORA drafting. Expected: 6 gaps (2 missing, 4 ambiguous).
+#   ART30-009, 011, 012, 013 are N/A.
+
+contract_06_modern_fintech:
+  supplier: "CloudCore Infrastructure ApS"
+  classification: "critical_important"
+  expected_gaps:
+    - requirement_id: ART30-004
+      expected_status: ambiguous
+      reason: >
+        RTO is present (2 hours for payment processing). However, Recovery Point Objective (RPO)
+        is explicitly deferred to "the BCP technical annex" — it is not stated in the contract.
+        DORA Art. 30(2)(d) requires arrangements to be in the contract itself. SLA does not
+        include a revision/review process either.
+      expected_risk: medium
+
+    - requirement_id: ART30-005
+      expected_status: ambiguous
+      reason: >
+        Data export clause present (30 days, deletion certification within 60 days). However,
+        format is stated as "agreed formats" — not specified in the contract. DORA Art. 30(2)(e)
+        requires data be returned in an easily accessible format. "Agreed" is deferred and
+        creates lock-in risk.
+      expected_risk: low
+
+    - requirement_id: ART30-008
+      expected_status: ambiguous
+      reason: >
+        P1 notification within 4 hours is present and Article 5.3 explicitly references
+        major ICT incidents for regulatory notification support. However, incident category
+        coverage maps to Provider's P1/P2/P3 severity scheme rather than DORA's incident
+        classification categories. P1 is defined as "complete service unavailability or data
+        breach" — partial degradation with material impact may not trigger 4-hour notification.
+      expected_risk: medium
+
+    - requirement_id: ART30-009
+      expected_status: missing
+      reason: >
+        No TLPT (Threat-Led Penetration Testing) cooperation clause anywhere in the contract.
+        Contract is for a critical/important function. ART30-009 requires the provider to
+        participate in and cooperate with TLPT exercises. Absent entirely.
+      expected_risk: high
+
+    - requirement_id: ART30-011
+      expected_status: ambiguous
+      reason: >
+        Quantitative RTO (2 hours) present. Availability SLAs (99.95%, 99.99%) present.
+        RPO deferred to BCP technical annex — not in the contract body. ART30-011 requires
+        both quantitative metrics and qualitative performance standards in the contract for
+        critical/important functions. RPO is a core quantitative metric that is missing.
+      expected_risk: medium
+
+    - requirement_id: ART30-012
+      expected_status: ambiguous
+      reason: >
+        Specific notice periods present for subprocessors (30 days) and planned audits
+        (15 business days). However, no general obligation for the provider to proactively
+        notify Client of forthcoming developments that may adversely affect service performance.
+        ART30-012 requires proactive reporting of such developments, beyond specific scenario
+        notices.
+      expected_risk: low
+
+    - requirement_id: ART30-013
+      expected_status: ambiguous
+      reason: >
+        BCP present. Article 7.3 states "Provider conducts business continuity and disaster
+        recovery tests" (descriptive, present tense) but contains no contractual obligation
+        phrased as "shall test". No joint testing clause. Test results summaries shared
+        annually — but the obligation to test is not contractually binding on Provider.
+        DORA requires the ICT third-party provider to implement AND TEST business continuity plans.
+      expected_risk: high
+
+  gdpr_findings:
+    - requirement_id: ART28-002
+      expected_status: missing
+      reason: >
+        No explicit "process only on documented instructions from the controller" clause
+        in the contract. Article 2.3 covers data categories and subprocessors but does
+        not establish the fundamental instruction-based processing obligation required by
+        Art. 28(3)(a). The contract focuses on DORA obligations; a GDPR DPA is implied
+        but the instructions clause is not present in the contract text.
+      expected_risk: high
+
+    - requirement_id: ART28-005
+      expected_status: ambiguous
+      reason: >
+        Article 2.2 / Article 9 permits approved subcontractors from Schedule C without
+        prior approval, requiring only 30 days' notice for new subcontractors. While a
+        change notification obligation is present, there is no explicit "right to object"
+        clause. GDPR Art. 28(3)(d) requires the controller to have the opportunity to
+        object — not merely be notified. This gap creates ambiguity.
+      expected_risk: medium
+
+    - requirement_id: ART28-010
+      expected_status: ambiguous
+      reason: >
+        Article 9.2 states that "security, audit, and incident notification obligations
+        shall be flowed down to material subcontractors" — but this is a DORA-oriented
+        clause, not a GDPR flow-down. There is no obligation to impose the same GDPR
+        Art. 28 data protection obligations on sub-processors as required by Art. 28(2)
+        and Art. 28(4). A generic security flow-down does not satisfy the GDPR requirement.
+      expected_risk: medium
+
+contract_07_nonfinancial:
+  supplier: "DataBridge Solutions Ltd."
+  classification: "non_critical"
+  expected_gaps:
+    - requirement_id: ART30-009
+      expected_status: na
+      reason: N/A — non_critical classification; TLPT only applies to critical/important functions.
+    - requirement_id: ART30-011
+      expected_status: na
+      reason: N/A — non_critical classification; enhanced SLA requirements only apply to critical/important functions.
+    - requirement_id: ART30-012
+      expected_status: na
+      reason: N/A — non_critical classification; enhanced notice period requirements only apply to critical/important functions.
+    - requirement_id: ART30-013
+      expected_status: na
+      reason: N/A — non_critical classification; BCP testing requirements only apply to critical/important functions.
+    - requirement_id: ART30-003
+      expected_status: ambiguous
+      reason: >
+        Security obligations described as "industry-standard security measures" with a brief
+        list (encrypted storage, access controls, regular security assessments, backups).
+        No specific standards referenced (no ISO 27001, no specific encryption algorithms,
+        no authentication strength requirements). ART30-003 requires specific provisions
+        on availability, authenticity, integrity and confidentiality — not met by vague
+        "industry-standard" language.
+      expected_risk: medium
+
+    - requirement_id: ART30-004
+      expected_status: ambiguous
+      reason: >
+        99.5% uptime target present. 24-hour full restoration time mentioned. However,
+        this is in a paragraph on backups, not an SLA schedule. No RPO defined. No SLA
+        revision process. No monitoring right beyond support ticket. Satisfies the minimum
+        bar for non-critical functions only partially.
+      expected_risk: low
+
+    - requirement_id: ART30-006
+      expected_status: missing
+      reason: >
+        No clause addressing cooperation with competent authorities, resolution authorities,
+        or regulatory supervisors. No obligation to assist Client with regulatory audits.
+        DORA Art. 30(2)(f) requires explicit cooperation obligations. Absent entirely.
+      expected_risk: high
+
+    - requirement_id: ART30-007
+      expected_status: ambiguous
+      reason: >
+        Auto-renewal with 90-day written notice of non-renewal. No early termination for
+        cause provision. No exit assistance rights on early termination. No data return
+        or migration support obligations tied to termination. DORA requires termination
+        rights linked to material failures — absent here.
+      expected_risk: medium
+
+    - requirement_id: ART30-008
+      expected_status: ambiguous
+      reason: >
+        Only personal data breach notification within 48 hours (Article 4.2). No general
+        ICT incident notification obligation. DORA Art. 30(2)(h) requires ICT incident
+        management provisions and reporting obligations — not satisfied by GDPR-only
+        data breach notification.
+      expected_risk: high
+
+    - requirement_id: ART30-010
+      expected_status: missing
+      reason: >
+        No audit rights clause. No right to audit Provider's ICT systems, processes or
+        security controls. No provision for competent authority access. DORA Art. 30(2)(j)
+        requires full cooperation with the financial entity, competent authorities and
+        resolution authorities. Entirely absent.
+      expected_risk: critical
+
+  gdpr_findings:
+    - requirement_id: ART28-001
+      expected_status: ambiguous
+      reason: >
+        Provider implements "industry-standard security measures" (Article 4.1) but
+        provides no ISO 27001 certification, SOC 2 Type II report, or other formal
+        guarantee of "sufficient guarantees" as required by Art. 28(1). Without a
+        certification or documented due-diligence assessment, the controller cannot
+        demonstrate it verified the processor's suitability.
+      expected_risk: medium
+
+    - requirement_id: ART28-003
+      expected_status: missing
+      reason: >
+        No clause binding Provider's staff to confidentiality obligations. Article 4
+        addresses security measures but does not state that authorized personnel are
+        under confidentiality commitments. Art. 28(3)(b) requires that persons
+        authorized to process personal data have committed to confidentiality.
+        Entirely absent from the contract.
+      expected_risk: medium
+
+    - requirement_id: ART28-004
+      expected_status: ambiguous
+      reason: >
+        Article 4.1 describes "industry-standard security measures" (encryption, access
+        controls, security assessments, backups) without referencing Article 32 of the
+        GDPR or specifying the standard of measures as "appropriate to the risk".
+        No ISO 27001 certification. The vague "industry-standard" language does not
+        satisfy the specific obligation to implement measures pursuant to Art. 32.
+      expected_risk: medium
+
+    - requirement_id: ART28-005
+      expected_status: ambiguous
+      reason: >
+        Article 2.4 permits AWS Ireland as a subprocessor and requires 30 days' notice
+        for additional subprocessors — but contains no explicit right to object.
+        GDPR Art. 28(3)(d) requires the controller's opportunity to object, not merely
+        to be informed. The absence of an objection right renders the sub-processor
+        clause incomplete under GDPR.
+      expected_risk: medium
+
+    - requirement_id: ART28-008
+      expected_status: ambiguous
+      reason: >
+        Article 6 requires Provider to export data in CSV format within 30 days of
+        termination and delete data within 90 days. However, there is no written
+        certification of deletion and no explicit statement that the controller has
+        the choice between return and deletion as required by Art. 28(3)(g). The
+        deletion-only path without controller choice creates a gap.
+      expected_risk: low
+
+    - requirement_id: ART28-009
+      expected_status: missing
+      reason: >
+        No audit rights clause in the contract. Provider has no obligation to allow
+        audits, inspections, or to make compliance information available to the
+        controller. GDPR Art. 28(3)(h) requires the processor to allow for and
+        contribute to audits conducted by the controller or a mandated auditor.
+        Entirely absent from the contract.
+      expected_risk: high
+
+    - requirement_id: ART28-010
+      expected_status: missing
+      reason: >
+        No sub-processor flow-down clause imposing GDPR obligations on sub-processors.
+        Article 2.4 merely lists the approved subprocessor and requires notice for
+        additions — it does not impose the same data protection obligations on those
+        sub-processors as required by Art. 28(2) and Art. 28(4). Entirely absent.
+      expected_risk: high

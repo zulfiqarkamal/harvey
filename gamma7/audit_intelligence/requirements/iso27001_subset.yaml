@@ -1,0 +1,317 @@
+meta:
+  standard: ISO/IEC 27001:2022
+  reference: Annex A — Information Security Controls
+  note: >
+    Subset of 24 controls from ISO 27001:2022 Annex A, organized into 5 control domains.
+    Used by Gamma7 Audit Intelligence to generate a risk-scored audit universe.
+    This is a structured interpretation aid only — not a substitute for the full standard.
+  domains:
+    - Organisational controls
+    - People controls
+    - Physical controls
+    - Technological controls
+
+control_domains:
+  - id: "A.5"
+    name: "Organisational controls"
+    controls:
+      - id: "A.5.1"
+        title: "Policies for information security"
+        objective: "Information security policy and topic-specific policies are defined, approved, published, communicated and acknowledged by relevant personnel."
+        audit_approach: "Obtain and review information security policy. Check approval, communication evidence, and review schedule."
+        risk_indicators:
+          - No formal policy documented
+          - Policy older than 2 years without review
+          - Policy not communicated to all staff
+        evidence_artifacts:
+          - Information security policy (approved, dated, signed)
+          - Communication records (email, training attendance)
+          - Policy review log
+        default_risk: HIGH
+
+      - id: "A.5.2"
+        title: "Information security roles and responsibilities"
+        objective: "Information security roles and responsibilities are defined and allocated."
+        audit_approach: "Review RACI/responsibility matrix. Confirm CISO or equivalent role exists. Check whether responsibilities are reflected in job descriptions."
+        risk_indicators:
+          - No designated information security role
+          - Roles undefined or undocumented
+        evidence_artifacts:
+          - Organisational chart with security function
+          - Job descriptions with security responsibilities
+          - Terms of reference for security committee (if applicable)
+        default_risk: HIGH
+
+      - id: "A.5.9"
+        title: "Inventory of information and other associated assets"
+        objective: "An inventory of information and other associated assets is developed, maintained and kept up to date."
+        audit_approach: "Request asset inventory. Test completeness by sampling production systems. Check update frequency."
+        risk_indicators:
+          - No asset inventory exists
+          - Inventory not updated in past 12 months
+          - Critical systems missing from inventory
+        evidence_artifacts:
+          - Asset register/CMDB extract
+          - Last update timestamp
+          - Owner assigned for each asset
+        default_risk: HIGH
+
+      - id: "A.5.10"
+        title: "Acceptable use of information and other associated assets"
+        objective: "Rules for acceptable use and procedures for handling information and other assets are identified, documented and implemented."
+        audit_approach: "Review acceptable use policy. Confirm staff acknowledgement. Test through HR onboarding records."
+        risk_indicators:
+          - No acceptable use policy
+          - Policy not signed by employees
+        evidence_artifacts:
+          - Acceptable use policy
+          - Signed acknowledgements
+        default_risk: MEDIUM
+
+      - id: "A.5.14"
+        title: "Information transfer"
+        objective: "Information transfer rules, procedures, or agreements are in place for all transfer facilities in the organisation."
+        audit_approach: "Review data transfer agreements. Test encryption for transfers containing personal or sensitive data."
+        risk_indicators:
+          - No data transfer agreements with third parties
+          - Unencrypted transfers of sensitive data
+        evidence_artifacts:
+          - Data transfer / NDA agreements
+          - Encryption configuration evidence
+        default_risk: HIGH
+
+      - id: "A.5.19"
+        title: "Information security in supplier relationships"
+        objective: "Processes and procedures are defined and implemented to manage information security risks associated with the use of supplier products or services."
+        audit_approach: "Review supplier management policy. Sample supplier contracts for security requirements. Check supplier risk assessment records."
+        risk_indicators:
+          - No supplier security policy
+          - Critical suppliers without security clauses
+          - No supplier risk assessments performed
+        evidence_artifacts:
+          - Supplier management policy
+          - Supplier contracts with security requirements
+          - Supplier risk assessment records
+        default_risk: HIGH
+
+      - id: "A.5.23"
+        title: "Information security for use of cloud services"
+        objective: "Processes for acquisition, use, management and exit from cloud services are established, in accordance with the organisation's information security requirements."
+        audit_approach: "Identify cloud services in use. Review cloud security controls. Check exit/migration clauses."
+        risk_indicators:
+          - Unregistered cloud services in use (shadow IT)
+          - No exit strategy for critical cloud services
+        evidence_artifacts:
+          - Cloud services register
+          - Cloud service agreements with security provisions
+        default_risk: MEDIUM
+
+  - id: "A.6"
+    name: "People controls"
+    controls:
+      - id: "A.6.1"
+        title: "Screening"
+        objective: "Background verification checks are carried out before and during employment, in accordance with applicable laws, regulations and ethics."
+        audit_approach: "Review HR pre-employment screening policy. Sample personnel files for evidence of background checks."
+        risk_indicators:
+          - No background check policy
+          - Privileged users without completed screening
+        evidence_artifacts:
+          - Background check policy
+          - Screening completion records
+        default_risk: MEDIUM
+
+      - id: "A.6.3"
+        title: "Information security awareness, education and training"
+        objective: "Personnel and relevant interested parties receive appropriate information security awareness, education and training and regular updates."
+        audit_approach: "Review training curriculum and completion records. Test recall through interview sampling."
+        risk_indicators:
+          - No annual security awareness training
+          - Training completion below 90%
+          - No phishing simulation program
+        evidence_artifacts:
+          - Training completion records (past 12 months)
+          - Training curriculum / materials
+        default_risk: HIGH
+
+      - id: "A.6.5"
+        title: "Responsibilities after termination or change of employment"
+        objective: "Information security responsibilities and duties that remain valid after termination or change of employment are defined and enforced."
+        audit_approach: "Test leaver process. Verify access revocation within defined SLA. Review NDA/confidentiality agreements."
+        risk_indicators:
+          - Accounts not disabled on day of termination
+          - No offboarding checklist
+        evidence_artifacts:
+          - Leaver process documentation
+          - Access revocation evidence (sample)
+        default_risk: HIGH
+
+  - id: "A.7"
+    name: "Physical controls"
+    controls:
+      - id: "A.7.1"
+        title: "Physical security perimeters"
+        objective: "Security perimeters are defined and used to protect areas that contain information and other associated assets."
+        audit_approach: "Inspect physical access controls. Review access log samples. Test badge/PIN access to server room."
+        risk_indicators:
+          - No controlled access to server rooms
+          - No visitor access log
+        evidence_artifacts:
+          - Physical access control system logs
+          - Visitor register
+        default_risk: MEDIUM
+
+      - id: "A.7.8"
+        title: "Equipment siting and protection"
+        objective: "Equipment is sited securely and protected."
+        audit_approach: "Inspect server room layout. Check environmental controls (temperature, fire suppression, UPS)."
+        risk_indicators:
+          - Servers in uncontrolled environment
+          - No environmental monitoring
+        evidence_artifacts:
+          - Data centre environmental reports
+          - UPS test records
+        default_risk: MEDIUM
+
+  - id: "A.8"
+    name: "Technological controls"
+    controls:
+      - id: "A.8.2"
+        title: "Privileged access rights"
+        objective: "The allocation and use of privileged access rights are restricted and managed."
+        audit_approach: "Extract privileged account list. Test for segregation of duties. Verify quarterly review of privileged access."
+        risk_indicators:
+          - Excessive privileged accounts
+          - No periodic privileged access review
+          - Shared admin credentials
+        evidence_artifacts:
+          - Privileged access register
+          - Access review records (last quarter)
+        default_risk: CRITICAL
+
+      - id: "A.8.3"
+        title: "Information access restriction"
+        objective: "Access to information and other associated assets is restricted in accordance with the established access control policy."
+        audit_approach: "Test access control implementation. Sample user access vs job role. Check least-privilege principle."
+        risk_indicators:
+          - Users with excessive permissions
+          - No role-based access control
+        evidence_artifacts:
+          - Access control matrix
+          - User provisioning records
+        default_risk: HIGH
+
+      - id: "A.8.5"
+        title: "Secure authentication"
+        objective: "Secure authentication technologies and procedures are implemented based on information access restrictions and topic-specific access control policy."
+        audit_approach: "Test MFA implementation for critical systems and remote access. Review password policy enforcement."
+        risk_indicators:
+          - No MFA for remote access or privileged accounts
+          - Weak password policy
+        evidence_artifacts:
+          - MFA implementation evidence
+          - Password policy configuration
+        default_risk: CRITICAL
+
+      - id: "A.8.7"
+        title: "Protection against malware"
+        objective: "Protection against malware is implemented and supported by appropriate user awareness."
+        audit_approach: "Confirm anti-malware deployment across all endpoints. Review update frequency and coverage."
+        risk_indicators:
+          - Unprotected endpoints
+          - Outdated malware signatures
+        evidence_artifacts:
+          - Anti-malware management console report
+          - Coverage and update status
+        default_risk: HIGH
+
+      - id: "A.8.8"
+        title: "Management of technical vulnerabilities"
+        objective: "Information about technical vulnerabilities of information systems in use is obtained, the organisation's exposure to such vulnerabilities is evaluated and appropriate measures are taken."
+        audit_approach: "Review vulnerability scan reports. Check patch management SLA compliance."
+        risk_indicators:
+          - No vulnerability scanning program
+          - Critical patches unapplied >30 days
+        evidence_artifacts:
+          - Vulnerability scan reports (last 90 days)
+          - Patch management records
+        default_risk: CRITICAL
+
+      - id: "A.8.13"
+        title: "Information backup"
+        objective: "Backup copies of information, software and systems are maintained and regularly tested."
+        audit_approach: "Review backup policy and execution logs. Verify restoration tests have been performed."
+        risk_indicators:
+          - No documented backup policy
+          - Backups untested in past 12 months
+          - Backups not stored off-site or in separate cloud region
+        evidence_artifacts:
+          - Backup policy
+          - Backup completion logs
+          - Restoration test records
+        default_risk: CRITICAL
+
+      - id: "A.8.15"
+        title: "Logging"
+        objective: "Logs that record activities, exceptions, faults and other relevant events are produced, stored, protected and regularly analysed."
+        audit_approach: "Confirm logging enabled on critical systems. Test log retention against policy. Verify log integrity protection."
+        risk_indicators:
+          - Logging not enabled on critical systems
+          - Logs retained less than required period
+          - No log review process
+        evidence_artifacts:
+          - Log management configuration
+          - Retention policy
+          - Log review/SIEM alert records
+        default_risk: HIGH
+
+      - id: "A.8.16"
+        title: "Monitoring activities"
+        objective: "Networks, systems and applications are monitored for anomalous behaviour and appropriate actions taken to evaluate potential information security incidents."
+        audit_approach: "Review SIEM/monitoring tool coverage. Test alert response time. Check coverage of critical systems."
+        risk_indicators:
+          - No continuous monitoring of critical systems
+          - Alerts not reviewed or actioned
+        evidence_artifacts:
+          - SIEM/monitoring coverage report
+          - Incident alert response records
+        default_risk: HIGH
+
+      - id: "A.8.20"
+        title: "Networks security"
+        objective: "Networks and network devices are secured, managed and controlled to protect information systems and applications."
+        audit_approach: "Review network architecture. Test firewall rule-sets. Confirm network segmentation between production and development."
+        risk_indicators:
+          - No network segmentation
+          - Overly permissive firewall rules
+        evidence_artifacts:
+          - Network architecture diagram
+          - Firewall rule review report
+        default_risk: HIGH
+
+      - id: "A.8.24"
+        title: "Use of cryptography"
+        objective: "Rules for the effective use of cryptography, including cryptographic key management, are defined and implemented."
+        audit_approach: "Review cryptography policy. Test encryption in transit and at rest for sensitive data systems."
+        risk_indicators:
+          - No encryption policy
+          - Sensitive data not encrypted at rest
+          - Weak cipher suites in use
+        evidence_artifacts:
+          - Cryptography policy
+          - Encryption configuration evidence
+          - TLS scan results
+        default_risk: HIGH
+
+      - id: "A.8.25"
+        title: "Secure development life cycle"
+        objective: "Rules for the secure development of software and systems are established and applied."
+        audit_approach: "Review SDLC policy. Check SAST/DAST tooling. Test security testing in CI/CD pipeline."
+        risk_indicators:
+          - No secure coding standards
+          - No security testing in CI/CD
+        evidence_artifacts:
+          - SDLC / secure coding policy
+          - SAST/DAST scan reports
+          - Code review process documentation
+        default_risk: MEDIUM

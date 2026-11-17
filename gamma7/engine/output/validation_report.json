@@ -1,0 +1,127 @@
+{
+  "run_date": "2026-11-09T07:09:31.404162+00:00",
+  "engine_version": "gamma7-engine-v2",
+  "contracts_tested": 5,
+  "caveat": "Precision/recall measured on the same 5 contracts used to tune match_terms. Figures reflect in-sample fit only \u2014 not independently verified on held-out data.",
+  "aggregate": {
+    "total_gaps": 54,
+    "total_na": 4,
+    "total_matched": 54,
+    "total_na_matched": 4,
+    "total_false_positives": 0,
+    "overall_accuracy_pct": 100.0,
+    "tp": 54,
+    "fp": 0,
+    "fn": 0,
+    "precision_pct": 100.0,
+    "recall_pct": 100.0,
+    "f1_pct": 100.0
+  },
+  "results": [
+    {
+      "contract_key": "contract_01_cloudhost",
+      "expected_genuine_gaps": 7,
+      "na_expectations": 0,
+      "matched": 7,
+      "na_matched": 0,
+      "missed": [],
+      "na_missed": [],
+      "false_positives": [],
+      "accuracy_pct": 100.0,
+      "supplier": "NordCloud Hosting A/S",
+      "classification": "critical_important",
+      "summary_stats": {
+        "satisfied": 0,
+        "evidence_found": 17,
+        "missing": 3,
+        "ambiguous": 4,
+        "na": 0,
+        "not_assessed": 0
+      }
+    },
+    {
+      "contract_key": "contract_02_payment",
+      "expected_genuine_gaps": 17,
+      "na_expectations": 0,
+      "matched": 17,
+      "na_matched": 0,
+      "missed": [],
+      "na_missed": [],
+      "false_positives": [],
+      "accuracy_pct": 100.0,
+      "supplier": "PayLink Technologies Ltd",
+      "classification": "critical_important",
+      "summary_stats": {
+        "satisfied": 0,
+        "evidence_found": 7,
+        "missing": 16,
+        "ambiguous": 1,
+        "na": 0,
+        "not_assessed": 0
+      }
+    },
+    {
+      "contract_key": "contract_03_legacy",
+      "expected_genuine_gaps": 19,
+      "na_expectations": 2,
+      "matched": 19,
+      "na_matched": 2,
+      "missed": [],
+      "na_missed": [],
+      "false_positives": [],
+      "accuracy_pct": 100.0,
+      "supplier": "DataCenter DK ApS",
+      "classification": "non_critical",
+      "summary_stats": {
+        "satisfied": 0,
+        "evidence_found": 0,
+        "missing": 18,
+        "ambiguous": 1,
+        "na": 4,
+        "not_assessed": 1
+      }
+    },
+    {
+      "contract_key": "contract_04_saas",
+      "expected_genuine_gaps": 10,
+      "na_expectations": 2,
+      "matched": 10,
+      "na_matched": 2,
+      "missed": [],
+      "na_missed": [],
+      "false_positives": [],
+      "accuracy_pct": 100.0,
+      "supplier": "ComplianceTools International BV",
+      "classification": "non_critical",
+      "summary_stats": {
+        "satisfied": 0,
+        "evidence_found": 10,
+        "missing": 9,
+        "ambiguous": 1,
+        "na": 4,
+        "not_assessed": 0
+      }
+    },
+    {
+      "contract_key": "contract_05_good",
+      "expected_genuine_gaps": 1,
+      "na_expectations": 0,
+      "matched": 1,
+      "na_matched": 0,
+      "missed": [],
+      "na_missed": [],
+      "false_positives": [],
+      "accuracy_pct": 100.0,
+      "supplier": "SecureVault Nordic A/S",
+      "classification": "critical_important",
+      "summary_stats": {
+        "satisfied": 0,
+        "evidence_found": 23,
+        "missing": 0,
+        "ambiguous": 1,
+        "na": 0,
+        "not_assessed": 0
+      }
+    }
+  ]
+}

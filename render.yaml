@@ -1,0 +1,15 @@
+# Render.com web service — Gamma7 Demo Dashboard
+# Deploy: connect GitHub repo → Render will pick this file up automatically.
+# Set DEMO_PASSWORD in the Render dashboard (Environment tab) to protect the demo.
+services:
+  - type: web
+    name: gamma7-demo
+    env: python
+    plan: free
+    buildCommand: pip install -e .
+    startCommand: uvicorn gamma7.dashboard_app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DEMO_PASSWORD
+        generateValue: true
+      - key: DEMO_MODE
+        value: "true"
