@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="da" data-lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-da="Gamma7 | AI-agenter til revision og compliance" data-en="Gamma7 | AI Agents for Audit and Compliance">Gamma7 | AI-agenter til revision og compliance</title>
+<meta name="description" content="Gamma7 AI-agenter: Supplier Assurance og Audit Intelligence &mdash; automatiseret compliance og IT-revision med menneskelig kontrol">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0D1E37; --bg-alt: #112445; --surface: #172D52; --surface-hi: #1D3A6A;
+  --border: rgba(140,180,255,0.10); --border-mid: rgba(140,180,255,0.18);
+  --accent: #00D4B4; --accent-dim: rgba(0,212,180,0.13); --accent-glow: rgba(0,212,180,0.28);
+  --accent-muted: #4AE8CC; --warn: #F59E0B; --crit: #EF4444;
+  --text: #EDF3FF; --text-2: #8DB4D6; --text-dim: #5A87AD;
+  --font-d: 'Cormorant', Georgia, serif; --font-b: 'Inter', -apple-system, sans-serif;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:16px;line-height:1.7;min-height:100vh}
+a{color:var(--accent-muted);text-decoration:none}
+a:hover{text-decoration:underline;color:var(--accent)}
+nav.g7-nav{position:sticky;top:0;z-index:100;background:rgba(13,30,55,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;gap:1.5rem}
+.g7-logo{font-family:var(--font-d);font-size:1.5rem;font-weight:600;color:var(--text);letter-spacing:.02em}
+.g7-logo span{color:var(--accent)}
+.nav-links{display:flex;list-style:none;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text-2);font-size:.875rem;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--text);text-decoration:none}
+.nav-links a.active{color:var(--accent-muted)}
+.lang-toggle{display:flex;border:1px solid var(--border-mid);border-radius:6px;overflow:hidden}
+.lang-btn{background:none;border:none;color:var(--text-2);padding:.3rem .7rem;font-size:.8rem;font-weight:600;cursor:pointer;font-family:var(--font-b);transition:background .2s,color .2s}
+.lang-btn.active{background:var(--accent-dim);color:var(--accent-muted)}
+.lang-btn:hover:not(.active){background:rgba(140,180,255,0.07);color:var(--text)}
+.hero{background:linear-gradient(160deg, #0D1E37 0%, #112445 60%, #0D1E37 100%);padding:5rem 2rem 4rem;text-align:center;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-block;background:var(--accent-dim);border:1px solid rgba(0,212,180,0.25);color:var(--accent-muted);font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .9rem;border-radius:20px;margin-bottom:1.5rem}
+.hero h1{font-family:var(--font-d);font-size:3.4rem;font-weight:600;line-height:1.1;color:var(--text);margin-bottom:1.25rem}
+.hero h1 em{color:var(--accent-muted);font-style:normal}
+.hero-sub{color:var(--text-2);font-size:1.1rem;max-width:640px;margin:0 auto 2.5rem}
+.section{max-width:1100px;margin:0 auto;padding:4rem 2rem}
+.section-label{font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
+.section-title{font-family:var(--font-d);font-size:2.2rem;font-weight:600;color:var(--text);margin-bottom:1rem;line-height:1.2}
+.section-lead{color:var(--text-2);font-size:1rem;max-width:640px;margin-bottom:3rem}
+.agents-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1rem}
+.agent-card{background:var(--surface);border:1px solid var(--border-mid);border-radius:16px;padding:2rem;transition:border-color .3s,box-shadow .3s;position:relative;overflow:hidden}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent-muted));opacity:0;transition:opacity .3s}
+.agent-card:hover{border-color:rgba(0,212,180,0.3);box-shadow:0 8px 32px rgba(0,212,180,0.08)}
+.agent-card:hover::before{opacity:1}
+.agent-num{font-family:var(--font-d);font-size:1rem;font-weight:600;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem}
+.agent-name{font-family:var(--font-d);font-size:1.9rem;font-weight:600;color:var(--text);line-height:1.15;margin-bottom:.75rem}
+.agent-tagline{color:var(--text-2);font-size:.9rem;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.agent-regs{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem}
+.reg-tag{background:var(--accent-dim);border:1px solid rgba(0,212,180,0.2);color:var(--accent-muted);font-size:.75rem;font-weight:600;padding:.25rem .6rem;border-radius:5px;letter-spacing:.04em}
+.agent-features{list-style:none;padding:0;margin-bottom:1.5rem}
+.agent-features li{color:var(--text-2);font-size:.875rem;padding:.4rem 0;padding-left:1.4rem;position:relative;border-bottom:1px solid var(--border)}
+.agent-features li:last-child{border-bottom:none}
+.agent-features li::before{content:'\2192';position:absolute;left:0;color:var(--accent);font-size:.8rem}
+.agent-pilot{font-size:.8rem;color:var(--text-dim);margin-top:.5rem}
+.agent-pilot strong{color:var(--warn)}
+.platform-box{background:var(--bg-alt);border:1px solid var(--border-mid);border-radius:16px;padding:2.5rem;margin-top:3rem;display:grid;grid-template-columns:1.5fr 1fr;gap:3rem;align-items:center}
+.platform-title{font-family:var(--font-d);font-size:1.8rem;font-weight:600;color:var(--text);margin-bottom:.75rem}
+.platform-desc{color:var(--text-2);font-size:.9rem;margin-bottom:1.25rem}
+.platform-modules{list-style:none;padding:0}
+.platform-modules li{color:var(--text-2);font-size:.85rem;padding:.35rem 0;padding-left:1.3rem;position:relative}
+.platform-modules li::before{content:'\25C6';position:absolute;left:0;color:var(--accent);font-size:.5rem;top:.6rem}
+.platform-pillars{display:flex;flex-direction:column;gap:1rem}
+.pillar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem}
+.pillar-icon{font-size:1.1rem;margin-bottom:.3rem}
+.pillar-name{font-weight:600;font-size:.85rem;color:var(--text);margin-bottom:.2rem}
+.pillar-desc{font-size:.8rem;color:var(--text-dim)}
+.how-section{background:var(--bg-alt);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:4rem 2rem}
+.how-inner{max-width:1100px;margin:0 auto}
+.steps-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-top:2rem;position:relative}
+.step{text-align:center;position:relative}
+.step-num{width:36px;height:36px;border-radius:50%;background:var(--accent-dim);border:1px solid rgba(0,212,180,0.3);color:var(--accent-muted);font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem}
+.step-label{font-weight:600;font-size:.85rem;color:var(--text);margin-bottom:.35rem}
+.step-desc{font-size:.78rem;color:var(--text-dim)}
+.human-review{background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:1.25rem 1.5rem;display:flex;gap:1rem;align-items:flex-start;margin:3rem 0 0}
+.hr-icon{font-size:1.4rem;flex-shrink:0;margin-top:.1rem}
+.hr-text strong{color:var(--warn);display:block;font-size:.9rem;margin-bottom:.25rem}
+.hr-text p{color:var(--text-2);font-size:.85rem;margin:0}
+.cta-section{max-width:1100px;margin:0 auto;padding:5rem 2rem}
+.cta-box{background:linear-gradient(135deg,var(--surface) 0%,var(--surface-hi) 100%);border:1px solid var(--border-mid);border-radius:20px;padding:3.5rem;text-align:center}
+.cta-title{font-family:var(--font-d);font-size:2.4rem;font-weight:600;color:var(--text);margin-bottom:.75rem}
+.cta-sub{color:var(--text-2);font-size:1rem;max-width:520px;margin:0 auto 2rem}
+.cta-btn{display:inline-block;background:var(--accent);color:#0D1E37;font-weight:700;font-size:.95rem;padding:.9rem 2.2rem;border-radius:8px;transition:background .2s,transform .15s;text-decoration:none;letter-spacing:.02em}
+.cta-btn:hover{background:var(--accent-muted);transform:translateY(-1px);text-decoration:none;color:#0D1E37}
+.cta-note{color:var(--text-dim);font-size:.8rem;margin-top:1rem}
+footer{background:var(--bg-alt);border-top:1px solid var(--border);padding:2rem}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.g7-footer-copy{color:var(--text-dim);font-size:.8rem}
+.g7-footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+.g7-footer-links a{color:var(--text-dim);font-size:.8rem;transition:color .2s}
+.g7-footer-links a:hover{color:var(--accent-muted);text-decoration:none}
+@media(max-width:900px){
+  .agents-grid{grid-template-columns:1fr}
+  .platform-box{grid-template-columns:1fr}
+  .steps-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .hero h1{font-size:2.2rem}
+  .nav-links{gap:.8rem}
+  .cta-box{padding:2rem}
+  .cta-title{font-size:1.8rem}
+  .steps-grid{grid-template-columns:1fr}
+  .footer-inner{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<nav class="g7-nav" aria-label="Primary navigation">
+  <div class="nav-inner">
+    <a href="/" class="g7-logo" aria-label="Gamma7 forside">Gamma<span>7</span></a>
+    <ul class="nav-links" role="list">
+      <li><a href="/#services" data-da="Ydelser" data-en="Services">Ydelser</a></li>
+      <li><a href="/agents.html" class="active" data-da="AI-agenter" data-en="AI Agents">AI-agenter</a></li>
+      <li><a href="/#about" data-da="Om" data-en="About">Om</a></li>
+    </ul>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button class="lang-btn active" data-lang="da" aria-pressed="true" onclick="setLang('da')">DA</button>
+      <button class="lang-btn" data-lang="en" aria-pressed="false" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<div data-lang-block="da">
+<section class="hero">
+  <div class="hero-inner">
+    <span class="hero-badge">Generativ AI &middot; Revision &amp; Compliance</span>
+    <h1>To AI-agenter.<br><em>&Eacute;n compliance-motor.</em></h1>
+    <p class="hero-sub">Gamma7 bygger specialiserede AI-agenter til leverand&oslash;rstyring og IT-revision &mdash; med pr&aelig;cis evidensekstraktion og menneskelig godkendelse i hvert trin.</p>
+  </div>
+</section>
+<div class="section">
+  <p class="section-label">Vores produkter</p>
+  <h2 class="section-title">To agenter til regulatorisk kompleksitet</h2>
+  <p class="section-lead">Gamma7's AI-agenter er bygget til finansvirksomheder, betalingsinstitutter og kompleksitetsudsatte SMV'er, der skal h&aring;ndtere DORA, GDPR, ISO 27001 og tilsvarende krav.</p>
+  <div class="agents-grid">
+    <article class="agent-card">
+      <div class="agent-num">Agent 2</div>
+      <h3 class="agent-name">Supplier Assurance</h3>
+      <p class="agent-tagline">Automatiseret kontraktvurdering mod regulatoriske krav &mdash; fra upload til gap-rapport p&aring; minutter.</p>
+      <div class="agent-regs"><span class="reg-tag">DORA Art. 30</span><span class="reg-tag">GDPR Art. 28</span><span class="reg-tag">AML</span><span class="reg-tag">AI Act</span><span class="reg-tag">ISO 27001</span></div>
+      <ul class="agent-features">
+        <li>Upload leverand&oslash;rkontrakt (PDF / DOCX)</li>
+        <li>Automatisk ekstraktion af klausuler og beviselementer</li>
+        <li>Gap-analyse mod DORA Art. 30 og GDPR Art. 28 krav</li>
+        <li>Prioriterede remediationsopgaver med kildehenvisninger</li>
+        <li>Afstemning mod virksomhedens leverand&oslash;rregister</li>
+        <li>Menneskelig godkendelse inden rapport frigives</li>
+      </ul>
+      <p class="agent-pilot"><strong>Pilot:</strong> DKK 15.000&ndash;30.000 &middot; Banker, betalingsinstitutter, fintechs</p>
+    </article>
+    <article class="agent-card">
+      <div class="agent-num">Agent 4</div>
+      <h3 class="agent-name">Audit Intelligence</h3>
+      <p class="agent-tagline">Fra risikovurdering til evidensbaseret revisionsrapport &mdash; struktureret efter ISACA, IIA og COSO.</p>
+      <div class="agent-regs"><span class="reg-tag">ISO 27001</span><span class="reg-tag">DS 484</span><span class="reg-tag">ISAE 3402</span><span class="reg-tag">IIA Standards</span><span class="reg-tag">COSO</span></div>
+      <ul class="agent-features">
+        <li>Audit universe med risikoprioriterede revisionsobjekter</li>
+        <li>3&times;3 risk matrix (Likelihood &times; Impact, ISACA/IIA/COSO)</li>
+        <li>Revisionsplaner og -programmer med kontroltest</li>
+        <li>Automatiseret evidensindsamling og versionering</li>
+        <li>ISAE 3402-skabeloner og applikationsaudit-support</li>
+        <li>Revisors godkendelse af hvert trin &mdash; ingen blind automatik</li>
+      </ul>
+      <p class="agent-pilot"><strong>M&aring;lgruppe:</strong> Intern revision, IT-revisorer, compliance-chefer</p>
+    </article>
+  </div>
+  <div class="platform-box">
+    <div>
+      <p class="section-label">F&aelig;lles fundament</p>
+      <h3 class="platform-title">Gamma7 Evidence &amp; Compliance Engine</h3>
+      <p class="platform-desc">Begge agenter bygger p&aring; &eacute;n modul&aelig;r motor, der h&aring;ndterer dokumentindl&aelig;sning, evidensekstraktion, versionerede kravbiblioteker og revisionsspor &mdash; genbrugelig p&aring; tv&aelig;rs af regulatoriske frameworks.</p>
+      <ul class="platform-modules">
+        <li>Versionerede kravbiblioteker (DORA, GDPR, ISO 27001, DS 484)</li>
+        <li>Evidensekstraktion med kildehenvisning til paragraf-niveau</li>
+        <li>Revisionsspor med tidsstempler og brugergodkendelser</li>
+        <li>Workflow med eskalation og menneskelig kontrol</li>
+        <li>Rapportgenerering klar til eksport og arkivering</li>
+      </ul>
+    </div>
+    <div class="platform-pillars">
+      <div class="pillar"><div class="pillar-icon">&#128269;</div><div class="pillar-name">Pr&aelig;cis ekstraktion</div><div class="pillar-desc">Precision 100 % &middot; Recall 91 % p&aring; holdout-s&aelig;t</div></div>
+      <div class="pillar"><div class="pillar-icon">&#128274;</div><div class="pillar-name">Lokalt eller privat cloud</div><div class="pillar-desc">Data forlader ikke din infrastruktur uden samtykke</div></div>
+      <div class="pillar"><div class="pillar-icon">&#128100;</div><div class="pillar-name">Human-in-the-loop</div><div class="pillar-desc">Ingen AI-output frigives uden revisorens godkendelse</div></div>
+      <div class="pillar"><div class="pillar-icon">&#128203;</div><div class="pillar-name">Revisionsspor</div><div class="pillar-desc">Fuldt dokumenteret sporbarhed til tilsyn og certificering</div></div>
+    </div>
+  </div>
+</div>
+<section class="how-section">
+  <div class="how-inner">
+    <p class="section-label">Workflow</p>
+    <h2 class="section-title">Fra dokument til godkendt rapport</h2>
+    <div class="steps-grid">
+      <div class="step"><div class="step-num">1</div><div class="step-label">Upload</div><div class="step-desc">Kontrakt eller revisionsobjekt leveres til agenten</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-label">Ekstraktion</div><div class="step-desc">Evidens og klausuler udtr&aelig;kkes med kildehenvisning</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-label">Vurdering</div><div class="step-desc">Gap-analyse eller risikovurdering mod kravbibliotek</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-label">Gennemgang</div><div class="step-desc">Revisor eller compliance-ansvarlig godkender resultater</div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-label">Rapport</div><div class="step-desc">Eksport&eacute;r til arkivering, styregruppe eller tilsyn</div></div>
+    </div>
+    <div class="human-review">
+      <div class="hr-icon">&#9888;&#65039;</div>
+      <div class="hr-text"><strong>Human-in-the-loop &mdash; altid</strong><p>AI-forslag overskriver aldrig automatisk eksisterende vurderinger. Ethvert output kr&aelig;ver godkendelse fra en kvalificeret revisor eller compliance-ansvarlig, inden det frigives eller arkiveres.</p></div>
+    </div>
+  </div>
+</section>
+<section class="cta-section">
+  <div class="cta-box">
+    <h2 class="cta-title">Book en pilot-demo</h2>
+    <p class="cta-sub">Se Supplier Assurance eller Audit Intelligence i aktion med et realistisk scenarie fra din branche. M&oslash;det er gratis og uforpligtende &mdash; 30 minutter.</p>
+    <a href="https://calendly.com/gamma7/online-meeting" class="cta-btn" target="_blank" rel="noopener noreferrer">Book gratis demo &#8594;</a>
+    <p class="cta-note">Eller skriv til <a href="mailto:info@gamma7.io" style="color:var(--text-dim)">info@gamma7.io</a></p>
+  </div>
+</section>
+</div>
+
+<div data-lang-block="en" style="display:none">
+<section class="hero">
+  <div class="hero-inner">
+    <span class="hero-badge">Generative AI &middot; Audit &amp; Compliance</span>
+    <h1>Two AI agents.<br><em>One compliance engine.</em></h1>
+    <p class="hero-sub">Gamma7 builds specialised AI agents for supplier management and IT audit &mdash; with precise evidence extraction and human approval at every step.</p>
+  </div>
+</section>
+<div class="section">
+  <p class="section-label">Our products</p>
+  <h2 class="section-title">Two agents for regulatory complexity</h2>
+  <p class="section-lead">Gamma7's AI agents are built for financial institutions, payment service providers and compliance-exposed SMEs navigating DORA, GDPR, ISO 27001 and equivalent requirements.</p>
+  <div class="agents-grid">
+    <article class="agent-card">
+      <div class="agent-num">Agent 2</div>
+      <h3 class="agent-name">Supplier Assurance</h3>
+      <p class="agent-tagline">Automated contract assessment against regulatory requirements &mdash; from upload to gap report in minutes.</p>
+      <div class="agent-regs"><span class="reg-tag">DORA Art. 30</span><span class="reg-tag">GDPR Art. 28</span><span class="reg-tag">AML</span><span class="reg-tag">AI Act</span><span class="reg-tag">ISO 27001</span></div>
+      <ul class="agent-features">
+        <li>Upload supplier contract (PDF / DOCX)</li>
+        <li>Automatic extraction of clauses and evidence elements</li>
+        <li>Gap analysis against DORA Art. 30 and GDPR Art. 28 requirements</li>
+        <li>Prioritised remediation tasks with source references</li>
+        <li>Reconciliation against your supplier register</li>
+        <li>Human approval before report is released</li>
+      </ul>
+      <p class="agent-pilot"><strong>Pilot:</strong> DKK 15,000&ndash;30,000 &middot; Banks, payment institutions, fintechs</p>
+    </article>
+    <article class="agent-card">
+      <div class="agent-num">Agent 4</div>
+      <h3 class="agent-name">Audit Intelligence</h3>
+      <p class="agent-tagline">From risk assessment to evidence-based audit report &mdash; structured according to ISACA, IIA and COSO.</p>
+      <div class="agent-regs"><span class="reg-tag">ISO 27001</span><span class="reg-tag">DS 484</span><span class="reg-tag">ISAE 3402</span><span class="reg-tag">IIA Standards</span><span class="reg-tag">COSO</span></div>
+      <ul class="agent-features">
+        <li>Audit universe with risk-prioritised audit objects</li>
+        <li>3&times;3 risk matrix (Likelihood &times; Impact, ISACA/IIA/COSO)</li>
+        <li>Audit plans and programmes with control testing</li>
+        <li>Automated evidence collection and versioning</li>
+        <li>ISAE 3402 templates and application audit support</li>
+        <li>Auditor approval at each step &mdash; no blind automation</li>
+      </ul>
+      <p class="agent-pilot"><strong>Target:</strong> Internal audit, IT auditors, compliance officers</p>
+    </article>
+  </div>
+  <div class="platform-box">
+    <div>
+      <p class="section-label">Shared foundation</p>
+      <h3 class="platform-title">Gamma7 Evidence &amp; Compliance Engine</h3>
+      <p class="platform-desc">Both agents are built on a single modular engine handling document ingestion, evidence extraction, versioned requirement libraries and audit trails &mdash; reusable across regulatory frameworks.</p>
+      <ul class="platform-modules">
+        <li>Versioned requirement libraries (DORA, GDPR, ISO 27001, DS 484)</li>
+        <li>Evidence extraction with source reference to paragraph level</li>
+        <li>Audit trail with timestamps and user approvals</li>
+        <li>Workflow with escalation and human oversight</li>
+        <li>Report generation ready for export and archiving</li>
+      </ul>
+    </div>
+    <div class="platform-pillars">
+      <div class="pillar"><div class="pillar-icon">&#128269;</div><div class="pillar-name">Precise extraction</div><div class="pillar-desc">Precision 100% &middot; Recall 91% on holdout set</div></div>
+      <div class="pillar"><div class="pillar-icon">&#128274;</div><div class="pillar-name">On-premise or private cloud</div><div class="pillar-desc">Data does not leave your infrastructure without consent</div></div>
+      <div class="pillar"><div class="pillar-icon">&#128100;</div><div class="pillar-name">Human-in-the-loop</div><div class="pillar-desc">No AI output is released without auditor approval</div></div>
+      <div class="pillar"><div class="pillar-icon">&#128203;</div><div class="pillar-name">Audit trail</div><div class="pillar-desc">Full documented traceability for supervisory and certification purposes</div></div>
+    </div>
+  </div>
+</div>
+<section class="how-section">
+  <div class="how-inner">
+    <p class="section-label">Workflow</p>
+    <h2 class="section-title">From document to approved report</h2>
+    <div class="steps-grid">
+      <div class="step"><div class="step-num">1</div><div class="step-label">Upload</div><div class="step-desc">Contract or audit object delivered to the agent</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-label">Extraction</div><div class="step-desc">Evidence and clauses extracted with source references</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-label">Assessment</div><div class="step-desc">Gap analysis or risk assessment against requirement library</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-label">Review</div><div class="step-desc">Auditor or compliance officer approves findings</div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-label">Report</div><div class="step-desc">Export for archiving, board or supervisory authority</div></div>
+    </div>
+    <div class="human-review">
+      <div class="hr-icon">&#9888;&#65039;</div>
+      <div class="hr-text"><strong>Human-in-the-loop &mdash; always</strong><p>AI suggestions never automatically overwrite existing assessments. Every output requires approval from a qualified auditor or compliance officer before it is released or archived.</p></div>
+    </div>
+  </div>
+</section>
+<section class="cta-section">
+  <div class="cta-box">
+    <h2 class="cta-title">Book a pilot demo</h2>
+    <p class="cta-sub">See Supplier Assurance or Audit Intelligence in action with a realistic scenario from your industry. Free and no obligation &mdash; 30 minutes.</p>
+    <a href="https://calendly.com/gamma7/online-meeting" class="cta-btn" target="_blank" rel="noopener noreferrer">Book free demo &#8594;</a>
+    <p class="cta-note">Or write to <a href="mailto:info@gamma7.io" style="color:var(--text-dim)">info@gamma7.io</a></p>
+  </div>
+</section>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div><span class="g7-footer-copy">Gamma7 &middot; CVR 44378329 &middot; c/o Flexum Coworking, Lyngbyvej 83A, 2100 K&oslash;benhavn &Oslash;</span></div>
+    <nav class="g7-footer-links" aria-label="Sidelinks">
+      <a href="/agents.html" data-da="AI-agenter" data-en="AI Agents">AI-agenter</a>
+      <a href="/privacy.html" data-da="Privatlivspolitik" data-en="Privacy Policy">Privatlivspolitik</a>
+      <a href="/disclaimer.html" data-da="Vilk&aring;r" data-en="Terms">Vilk&aring;r</a>
+      <a href="mailto:info@gamma7.io">info@gamma7.io</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+function setLang(l) {
+  l = l === 'en' ? 'en' : 'da';
+  document.documentElement.lang = l;
+  document.documentElement.setAttribute('data-lang', l);
+  document.querySelectorAll('[data-da],[data-en]').forEach(function(el) {
+    if (el.tagName === 'TITLE') { el.textContent = l === 'da' ? el.dataset.da : el.dataset.en; return; }
+    var val = l === 'da' ? el.dataset.da : el.dataset.en;
+    if (val !== undefined) el.textContent = val;
+  });
+  document.querySelectorAll('[data-lang-block]').forEach(function(el) {
+    el.style.display = el.getAttribute('data-lang-block') === l ? '' : 'none';
+  });
+  document.querySelectorAll('.lang-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.lang === l);
+    b.setAttribute('aria-pressed', String(b.dataset.lang === l));
+  });
+  try { localStorage.setItem('g7lang', l); } catch(e) {}
+}
+(function() {
+  var lang = 'da';
+  try { lang = localStorage.getItem('g7lang') || 'da'; } catch(e) {}
+  setLang(lang);
+})();
+</script>
+</body>
+</html>

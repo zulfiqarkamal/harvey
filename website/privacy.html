@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="da" data-lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-da="Gamma7 | Privatlivspolitik" data-en="Gamma7 | Privacy Policy">Gamma7 | Privatlivspolitik</title>
+<meta name="description" content="Gamma7 privatlivspolitik og GDPR-oplysninger / Gamma7 privacy policy and GDPR information">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0D1E37; --bg-alt: #112445; --surface: #172D52; --surface-hi: #1D3A6A;
+  --border: rgba(140,180,255,0.10); --border-mid: rgba(140,180,255,0.18);
+  --accent: #00D4B4; --accent-dim: rgba(0,212,180,0.13); --accent-glow: rgba(0,212,180,0.28);
+  --accent-muted: #4AE8CC; --warn: #F59E0B; --crit: #EF4444;
+  --text: #EDF3FF; --text-2: #8DB4D6; --text-dim: #5A87AD;
+  --font-d: 'Cormorant', Georgia, serif; --font-b: 'Inter', -apple-system, sans-serif;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:16px;line-height:1.7;min-height:100vh}
+a{color:var(--accent-muted);text-decoration:none}
+a:hover{text-decoration:underline;color:var(--accent)}
+
+/* NAV */
+nav.g7-nav{position:sticky;top:0;z-index:100;background:rgba(13,30,55,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;gap:1.5rem}
+.g7-logo{font-family:var(--font-d);font-size:1.5rem;font-weight:600;color:var(--text);letter-spacing:.02em}
+.g7-logo span{color:var(--accent)}
+.nav-links{display:flex;list-style:none;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--text-2);font-size:.875rem;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--text);text-decoration:none}
+.lang-toggle{display:flex;border:1px solid var(--border-mid);border-radius:6px;overflow:hidden}
+.lang-btn{background:none;border:none;color:var(--text-2);padding:.3rem .7rem;font-size:.8rem;font-weight:600;cursor:pointer;font-family:var(--font-b);transition:background .2s,color .2s}
+.lang-btn.active{background:var(--accent-dim);color:var(--accent-muted)}
+.lang-btn:hover:not(.active){background:rgba(140,180,255,0.07);color:var(--text)}
+
+/* CONTENT */
+.page-content{max-width:820px;margin:0 auto;padding:4rem 2rem 6rem}
+h1.page-title{font-family:var(--font-d);font-size:2.8rem;font-weight:600;color:var(--text);margin-bottom:.5rem;line-height:1.15}
+.page-meta{color:var(--text-dim);font-size:.875rem;margin-bottom:3rem;border-bottom:1px solid var(--border);padding-bottom:1.5rem}
+h2{font-family:var(--font-d);font-size:1.6rem;font-weight:600;color:var(--accent-muted);margin:2.5rem 0 .75rem}
+h3{font-family:var(--font-b);font-size:1rem;font-weight:600;color:var(--text);margin:1.5rem 0 .4rem}
+p{color:var(--text-2);margin-bottom:1rem}
+ul,ol{color:var(--text-2);padding-left:1.5rem;margin-bottom:1rem}
+li{margin-bottom:.4rem}
+.info-box{background:var(--surface);border:1px solid var(--border-mid);border-radius:10px;padding:1.25rem 1.5rem;margin:1.5rem 0}
+.info-box p{margin-bottom:0}
+.info-box strong{color:var(--text)}
+table{width:100%;border-collapse:collapse;margin:1rem 0}
+th{text-align:left;color:var(--text);font-weight:600;font-size:.85rem;padding:.6rem .8rem;background:var(--surface);border:1px solid var(--border-mid)}
+td{color:var(--text-2);font-size:.875rem;padding:.6rem .8rem;border:1px solid var(--border);vertical-align:top}
+tr:nth-child(even) td{background:rgba(23,45,82,0.4)}
+
+/* FOOTER */
+footer{background:var(--bg-alt);border-top:1px solid var(--border);padding:2rem}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.g7-footer-copy{color:var(--text-dim);font-size:.8rem}
+.g7-footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+.g7-footer-links a{color:var(--text-dim);font-size:.8rem;transition:color .2s}
+.g7-footer-links a:hover{color:var(--accent-muted);text-decoration:none}
+
+@media(max-width:640px){
+  .nav-links{gap:.8rem}
+  h1.page-title{font-size:2rem}
+  .page-content{padding:2.5rem 1.25rem 4rem}
+  .footer-inner{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<nav class="g7-nav" aria-label="Primary navigation">
+  <div class="nav-inner">
+    <a href="/" class="g7-logo" aria-label="Gamma7 forside">Gamma<span>7</span></a>
+    <ul class="nav-links" role="list">
+      <li><a href="/#services" data-da="Ydelser" data-en="Services">Ydelser</a></li>
+      <li><a href="/agents.html" data-da="AI-agenter" data-en="AI Agents">AI-agenter</a></li>
+      <li><a href="/#about" data-da="Om" data-en="About">Om</a></li>
+    </ul>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button class="lang-btn active" data-lang="da" aria-pressed="true" onclick="setLang('da')">DA</button>
+      <button class="lang-btn" data-lang="en" aria-pressed="false" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<main class="page-content">
+
+  <!-- DANISH VERSION -->
+  <div data-lang-block="da">
+    <h1 class="page-title">Privatlivspolitik</h1>
+    <p class="page-meta">Opdateret: November 2026 &nbsp;&middot;&nbsp; Gamma7, CVR 44378329</p>
+
+    <h2>1. Dataansvarlig</h2>
+    <div class="info-box">
+      <p><strong>Gamma7</strong><br>
+      CVR-nummer: 44378329<br>
+      c/o Flexum Coworking, Lyngbyvej 83A, 2100 K&oslash;benhavn &Oslash;, Danmark<br>
+      E-mail: <a href="mailto:info@gamma7.io">info@gamma7.io</a></p>
+    </div>
+    <p>Gamma7 er dataansvarlig for behandlingen af de personoplysninger, som vi indsamler om dig i forbindelse med vores ydelser og kommunikation.</p>
+
+    <h2>2. Hvilke oplysninger behandler vi?</h2>
+    <p>Vi behandler personoplysninger, som du selv afgiver til os, samt oplysninger der indsamles automatisk ved brug af vores hjemmeside og digitale tjenester.</p>
+    <h3>Kontaktoplysninger</h3>
+    <ul>
+      <li>Navn, e-mailadresse, telefonnummer</li>
+      <li>Virksomhedsnavn og stilling</li>
+      <li>Indhold af beskeder og foresp&oslash;rgsler</li>
+    </ul>
+    <h3>Automatisk indsamlede data</h3>
+    <ul>
+      <li>IP-adresse og browsertype</li>
+      <li>Sider du bes&oslash;ger, og tidspunkt for bes&oslash;g</li>
+      <li>Sprogvalg (gemt i browserens localStorage)</li>
+    </ul>
+    <h3>Vurderingsdata (self-assessment)</h3>
+    <ul>
+      <li>Svar p&aring; compliance-sp&oslash;rgeskemaer (NIS2, GDPR, DORA, AI Act, CRA)</li>
+      <li>Branche og virksomhedsst&oslash;rrelse, som du selv angiver</li>
+    </ul>
+
+    <h2>3. Form&aring;l og retsgrundlag</h2>
+    <table>
+      <tr><th>Form&aring;l</th><th>Retsgrundlag (GDPR)</th></tr>
+      <tr><td>Besvarelse af henvendelser og levering af r&aring;dgivning</td><td>Art. 6(1)(b) &mdash; opfyldelse af aftale / pr&aelig;-kontraktuelle foranstaltninger</td></tr>
+      <tr><td>Udsendelse af vurderingsresultater og rapporter</td><td>Art. 6(1)(b) &mdash; opfyldelse af aftale</td></tr>
+      <tr><td>Markedsf&oslash;ring og nyhedsbrev (ved samtykke)</td><td>Art. 6(1)(a) &mdash; samtykke</td></tr>
+      <tr><td>Opfyldelse af juridiske forpligtelser (bogf&oslash;ring m.v.)</td><td>Art. 6(1)(c) &mdash; retlig forpligtelse</td></tr>
+      <tr><td>Forbedring af vores ydelser og website</td><td>Art. 6(1)(f) &mdash; legitim interesse</td></tr>
+    </table>
+
+    <h2>4. Modtagere og databehandlere</h2>
+    <p>Vi deler ikke dine personoplysninger med tredjeparter til markedsf&oslash;ring uden dit samtykke. Vi anvender f&oslash;lgende kategorier af databehandlere:</p>
+    <ul>
+      <li><strong>E-mail og kommunikation:</strong> Spacemail (Spaceship) &mdash; behandling inden for EU/E&Oslash;S</li>
+      <li><strong>Automatisering og workflow:</strong> n8n (europ&aelig;isk hosting)</li>
+      <li><strong>Websitehosting:</strong> Netlify &mdash; USA (standardkontraktbestemmelser, SCCs, anvendes)</li>
+      <li><strong>Kalender- og m&oslash;debooking:</strong> Calendly &mdash; USA (SCCs anvendes)</li>
+    </ul>
+    <p>Alle databehandleraftaler er indg&aring;et i overensstemmelse med GDPR artikel 28.</p>
+
+    <h2>5. Overf&oslash;rsel til tredjelande</h2>
+    <p>Visse af vores leverand&oslash;rer befinder sig i USA. Overf&oslash;rsler til disse sker i overensstemmelse med Europa-Kommissionens standardkontraktbestemmelser (SCC) og/eller andre passende garantier efter GDPR kapitel V.</p>
+
+    <h2>6. Opbevaringsperiode</h2>
+    <ul>
+      <li><strong>Kontakthenvendelser:</strong> op til 3 &aring;r efter seneste kontakt</li>
+      <li><strong>Vurderingsresultater:</strong> op til 2 &aring;r, medmindre du anmoder om sletning</li>
+      <li><strong>Regnskabsmateriale:</strong> 5 &aring;r fra udgangen af det regnskabs&aring;r, materialet vedr&oslash;rer (bogf&oslash;ringsloven)</li>
+      <li><strong>Samtykkeregistrering:</strong> opbevares, s&aring; l&aelig;nge behandlingen finder sted, plus 2 &aring;r</li>
+    </ul>
+
+    <h2>7. Dine rettigheder</h2>
+    <p>Du har f&oslash;lgende rettigheder efter databeskyttelsesforordningen:</p>
+    <ul>
+      <li><strong>Indsigtsret (art. 15):</strong> Du har ret til at f&aring; bekr&aelig;ftet, om vi behandler dine personoplysninger, og i givet fald adgang til dem.</li>
+      <li><strong>Berigtigelse (art. 16):</strong> Du kan f&aring; urigtige oplysninger rettet.</li>
+      <li><strong>Sletning (art. 17):</strong> Du kan i visse tilf&aelig;lde kr&aelig;ve dine oplysninger slettet.</li>
+      <li><strong>Begr&aelig;nsning (art. 18):</strong> Du kan anmode om begr&aelig;nsning af behandlingen.</li>
+      <li><strong>Dataportabilitet (art. 20):</strong> Du kan modtage dine oplysninger i et struktureret, maskinl&aelig;sbart format.</li>
+      <li><strong>Indsigelse (art. 21):</strong> Du kan g&oslash;re indsigelse mod behandling, der er baseret p&aring; legitim interesse.</li>
+      <li><strong>Tilbagekaldelse af samtykke:</strong> Samtykke kan til enhver tid tilbagekaldes uden at det ber&oslash;rer behandlingens lovlighed inden tilbagekaldelsen.</li>
+    </ul>
+    <p>For at ud&oslash;ve dine rettigheder, kontakt os p&aring; <a href="mailto:info@gamma7.io">info@gamma7.io</a>. Vi besvarer henvendelser inden for 30 dage.</p>
+
+    <h2>8. Klage til Datatilsynet</h2>
+    <p>Du har ret til at indgive klage til <a href="https://www.datatilsynet.dk" target="_blank" rel="noopener noreferrer">Datatilsynet</a>, Carl Jacobsens Vej 35, 2500 Valby, tlf. 33 19 32 00.</p>
+
+    <h2>9. Cookies og localStorage</h2>
+    <p>Gamma7's website anvender ikke sporings-cookies fra tredjeparter. Vi gemmer udelukkende dit sprogvalg (dansk/engelsk) i browserens <code>localStorage</code> under n&oslash;glen <code>g7lang</code>. Denne information forlader ikke din browser og sendes ikke til vores servere.</p>
+    <p>Hvis vi fremover indf&oslash;rer analysecookies, vil du blive informeret herom og bedt om samtykke, inden de s&aelig;ttes.</p>
+
+    <h2>10. Sikkerhed</h2>
+    <p>Vi tr&aelig;ffer passende tekniske og organisatoriske sikkerhedsforanstaltninger for at beskytte dine personoplysninger mod uautoriseret adgang, &aelig;ndring, videregivelse eller sletning, herunder krypteret datatransmission (HTTPS) og adgangskontrol.</p>
+
+    <h2>11. &AElig;ndringer til denne politik</h2>
+    <p>Vi forbeholder os ret til at opdatere denne privatlivspolitik. &AElig;ndringer vil blive offentliggjort p&aring; denne side med angivelse af datoen for seneste opdatering. V&aelig;sentlige &aelig;ndringer vil blive kommunikeret via e-mail til ber&oslash;rte registrerede.</p>
+  </div>
+
+  <!-- ENGLISH VERSION -->
+  <div data-lang-block="en" style="display:none">
+    <h1 class="page-title">Privacy Policy</h1>
+    <p class="page-meta">Updated: November 2026 &nbsp;&middot;&nbsp; Gamma7, CVR 44378329</p>
+
+    <h2>1. Data Controller</h2>
+    <div class="info-box">
+      <p><strong>Gamma7</strong><br>
+      CVR (Danish company reg.): 44378329<br>
+      c/o Flexum Coworking, Lyngbyvej 83A, 2100 Copenhagen &Oslash;, Denmark<br>
+      Email: <a href="mailto:info@gamma7.io">info@gamma7.io</a></p>
+    </div>
+    <p>Gamma7 is the data controller for the processing of personal data we collect about you in connection with our services and communications.</p>
+
+    <h2>2. What data do we process?</h2>
+    <p>We process personal data you provide to us directly, as well as data collected automatically when you use our website and digital services.</p>
+    <h3>Contact information</h3>
+    <ul>
+      <li>Name, email address, phone number</li>
+      <li>Company name and job title</li>
+      <li>Content of messages and enquiries</li>
+    </ul>
+    <h3>Automatically collected data</h3>
+    <ul>
+      <li>IP address and browser type</li>
+      <li>Pages visited and time of visit</li>
+      <li>Language preference (stored in browser localStorage)</li>
+    </ul>
+    <h3>Assessment data (self-assessment)</h3>
+    <ul>
+      <li>Responses to compliance questionnaires (NIS2, GDPR, DORA, AI Act, CRA)</li>
+      <li>Industry and company size you self-report</li>
+    </ul>
+
+    <h2>3. Purposes and legal basis</h2>
+    <table>
+      <tr><th>Purpose</th><th>Legal basis (GDPR)</th></tr>
+      <tr><td>Responding to enquiries and providing advisory services</td><td>Art. 6(1)(b) &mdash; performance of a contract / pre-contractual measures</td></tr>
+      <tr><td>Sending assessment results and reports</td><td>Art. 6(1)(b) &mdash; performance of a contract</td></tr>
+      <tr><td>Marketing and newsletter (with consent)</td><td>Art. 6(1)(a) &mdash; consent</td></tr>
+      <tr><td>Compliance with legal obligations (accounting etc.)</td><td>Art. 6(1)(c) &mdash; legal obligation</td></tr>
+      <tr><td>Improving our services and website</td><td>Art. 6(1)(f) &mdash; legitimate interest</td></tr>
+    </table>
+
+    <h2>4. Recipients and processors</h2>
+    <p>We do not share your personal data with third parties for marketing without your consent. We use the following categories of data processors:</p>
+    <ul>
+      <li><strong>Email and communication:</strong> Spacemail (Spaceship) &mdash; processing within the EU/EEA</li>
+      <li><strong>Automation and workflow:</strong> n8n (European hosting)</li>
+      <li><strong>Website hosting:</strong> Netlify &mdash; USA (Standard Contractual Clauses, SCCs, applied)</li>
+      <li><strong>Calendar and meeting booking:</strong> Calendly &mdash; USA (SCCs applied)</li>
+    </ul>
+    <p>All data processing agreements comply with GDPR Article 28.</p>
+
+    <h2>5. Transfers to third countries</h2>
+    <p>Some of our suppliers are located in the USA. Transfers to these are carried out in accordance with the European Commission's Standard Contractual Clauses (SCCs) and/or other appropriate safeguards under GDPR Chapter V.</p>
+
+    <h2>6. Retention periods</h2>
+    <ul>
+      <li><strong>Contact enquiries:</strong> up to 3 years after last contact</li>
+      <li><strong>Assessment results:</strong> up to 2 years, unless you request deletion</li>
+      <li><strong>Accounting records:</strong> 5 years from the end of the financial year (Danish Bookkeeping Act)</li>
+      <li><strong>Consent records:</strong> retained for the duration of processing plus 2 years</li>
+    </ul>
+
+    <h2>7. Your rights</h2>
+    <p>You have the following rights under the GDPR:</p>
+    <ul>
+      <li><strong>Right of access (Art. 15):</strong> You have the right to know whether we process your personal data, and if so, to access it.</li>
+      <li><strong>Rectification (Art. 16):</strong> You may have inaccurate data corrected.</li>
+      <li><strong>Erasure (Art. 17):</strong> In certain circumstances you may require your data to be deleted.</li>
+      <li><strong>Restriction (Art. 18):</strong> You may request restriction of processing.</li>
+      <li><strong>Data portability (Art. 20):</strong> You may receive your data in a structured, machine-readable format.</li>
+      <li><strong>Objection (Art. 21):</strong> You may object to processing based on legitimate interest.</li>
+      <li><strong>Withdrawal of consent:</strong> Consent may be withdrawn at any time without affecting the lawfulness of processing prior to withdrawal.</li>
+    </ul>
+    <p>To exercise your rights, contact us at <a href="mailto:info@gamma7.io">info@gamma7.io</a>. We respond to requests within 30 days.</p>
+
+    <h2>8. Supervisory authority</h2>
+    <p>You have the right to lodge a complaint with the Danish Data Protection Agency (<a href="https://www.datatilsynet.dk" target="_blank" rel="noopener noreferrer">Datatilsynet</a>), Carl Jacobsens Vej 35, 2500 Valby, Denmark.</p>
+
+    <h2>9. Cookies and localStorage</h2>
+    <p>Gamma7's website does not use third-party tracking cookies. We only store your language preference (Danish/English) in the browser's <code>localStorage</code> under the key <code>g7lang</code>. This information does not leave your browser and is not sent to our servers.</p>
+    <p>Should we introduce analytics cookies in the future, you will be informed and asked for consent before they are set.</p>
+
+    <h2>10. Security</h2>
+    <p>We implement appropriate technical and organisational security measures to protect your personal data against unauthorised access, alteration, disclosure or deletion, including encrypted data transmission (HTTPS) and access controls.</p>
+
+    <h2>11. Changes to this policy</h2>
+    <p>We reserve the right to update this privacy policy. Changes will be published on this page with the date of the latest update. Material changes will be communicated by email to affected data subjects.</p>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <span class="g7-footer-copy">Gamma7 &middot; CVR 44378329 &middot; c/o Flexum Coworking, Lyngbyvej 83A, 2100 K&oslash;benhavn &Oslash;</span>
+    </div>
+    <nav class="g7-footer-links" aria-label="Sidelinks">
+      <a href="/agents.html" data-da="AI-agenter" data-en="AI Agents">AI-agenter</a>
+      <a href="/privacy.html" data-da="Privatlivspolitik" data-en="Privacy Policy">Privatlivspolitik</a>
+      <a href="/disclaimer.html" data-da="Vilk&aring;r" data-en="Terms">Vilk&aring;r</a>
+      <a href="mailto:info@gamma7.io">info@gamma7.io</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+function setLang(l) {
+  l = l === 'en' ? 'en' : 'da';
+  document.documentElement.lang = l;
+  document.documentElement.setAttribute('data-lang', l);
+  var titleEl = document.querySelector('title');
+  if (titleEl && titleEl.dataset.da && titleEl.dataset.en) {
+    titleEl.textContent = l === 'da' ? titleEl.dataset.da : titleEl.dataset.en;
+  }
+  document.querySelectorAll('[data-da],[data-en]').forEach(function(el) {
+    if (el.tagName === 'TITLE') {
+      el.textContent = l === 'da' ? el.dataset.da : el.dataset.en;
+      return;
+    }
+    var val = l === 'da' ? el.dataset.da : el.dataset.en;
+    if (val !== undefined) el.textContent = val;
+  });
+  document.querySelectorAll('[data-lang-block]').forEach(function(el) {
+    el.style.display = el.getAttribute('data-lang-block') === l ? '' : 'none';
+  });
+  document.querySelectorAll('.lang-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.lang === l);
+    b.setAttribute('aria-pressed', String(b.dataset.lang === l));
+  });
+  try { localStorage.setItem('g7lang', l); } catch(e) {}
+}
+(function() {
+  var lang = 'da';
+  try { lang = localStorage.getItem('g7lang') || 'da'; } catch(e) {}
+  setLang(lang);
+})();
+</script>
+</body>
+</html>
