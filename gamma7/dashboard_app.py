@@ -1127,19 +1127,6 @@ async function loadBoardReport() {
   </div>`;
 
   container.innerHTML = `
-    <div class="summary-cards" style="margin-bottom:24px">
-      <div class="card"><div class="label">Total Controls Tested</div><div class="value">${wpData.tested_count||0} / ${wpData.total_controls||0}</div></div>
-      <div class="card"><div class="label">Exceptions</div><div class="value ${(wpData.exception_count||0)>0?'yellow':''}">${wpData.exception_count||0}</div></div>
-      <div class="card"><div class="label">Open Findings</div><div class="value ${openFindings.length>0?'red':''}">${openFindings.length}</div></div>
-      <div class="card"><div class="label">Closed Findings</div><div class="value green">${closedFindings.length}</div></div>
-      <div class="card"><div class="label">Register Gaps</div><div class="value ${(recon.register_only||0)>0?'red':''}">${recon.register_only||0}</div></div>
-    </div>
-    ${sec1}${sec2}${sec3}${sec4}${sec5}${sec6}
-  `;
-  showLFAP('Q1', document.querySelector('.lfap-tab'));
-}
-
-  container.innerHTML = `
     <!-- Executive summary cards -->
     <div class="summary-cards" style="margin-bottom:24px">
       <div class="card"><div class="label">Total Controls Tested</div><div class="value">${wpData.tested_count||0} / ${wpData.total_controls||0}</div></div>
@@ -1251,6 +1238,7 @@ async function loadBoardReport() {
       </div>
     </div>
   `;
+  showLFAP('Q1', document.querySelector('.lfap-tab'));
 }
 
 async function loadOverview() {
