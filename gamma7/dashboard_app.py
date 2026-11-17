@@ -108,6 +108,17 @@ def health():
 @app.get("/api/analyses")
 def list_analyses():
     """Return summary of all loaded contract analyses."""
+    def _top_gaps(r):
+        assessments = getattr(r, "assessments", []) or []
+        missing = [a for a in assessments if a.get("status") in ("missing", "ambiguous")]
+        return [
+            {
+                "req_id": a.get("requirement_article") or a.get("requirement_id", ""),
+                "summary": a.get("requirement_summary", ""),
+                "risk": a.get("risk_level", ""),
+            }
+            for a in missing[:4]
+        ]
     return [
         {
             "analysis_id": r.analysis_id,
@@ -118,6 +129,7 @@ def list_analyses():
             "overall_status": r.overall_status,
             "summary": r.summary,
             "warnings": r.warnings,
+            "top_gaps": _top_gaps(r),
         }
         for r in _pipeline_results
     ]
@@ -671,11 +683,11 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="table-wrap">
       <table>
         <thead><tr>
+          <th style="width:72px">Entry ID</th>
           <th>Supplier</th>
+          <th style="width:80px">Legislation</th>
           <th><span class="tooltip-wrap">Classification<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Critical/Important:</strong> ICT-funktion er kritisk for finansielle kerneprocesser — strengere DORA Art. 30-krav gælder.<br><br><strong>Non-critical:</strong> Understøttende funktion — færre obligatoriske klausuler.</span></span></th>
-          <th>Status</th>
-          <th><span class="tooltip-wrap">Missing<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Antal DORA/GDPR-krav, der ikke er fundet i kontrakten. Klik på rækken under Contracts for at se præcis hvilke krav der mangler og hvad der bør tilføjes.</span></span></th>
-          <th>Satisfied</th>
+          <th><span class="tooltip-wrap">Status / Missing<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Status + antal manglende DORA/GDPR-krav. Klik på rækken for at se præcis hvilke krav der mangler.</span></span></th>
           <th><span class="tooltip-wrap">Control Strength<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Effective:</strong> 0 manglende krav.<br><strong>Partially Effective:</strong> 1–5 mangler.<br><strong>Weak Controls:</strong> 6+ mangler.</span></span></th>
           <th><span class="tooltip-wrap">Residual Risk<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Kombinerer klassifikation og control strength.<br><strong>High:</strong> Kritisk + Weak Controls.<br><strong>Medium:</strong> Kritisk + Partial, eller Non-critical + Weak.<br><strong>Low:</strong> Øvrige.</span></span></th>
         </tr></thead>
@@ -697,14 +709,15 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>Analysis ID</th><th>Supplier</th><th>Contract</th>
+          <th style="width:72px">Entry ID</th><th>Supplier</th><th>Contract</th>
+          <th style="width:80px">Legislation</th>
           <th><span class="tooltip-wrap">Classification<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Critical/Important:</strong> ICT-funktion er kritisk for finansielle kerneprocesser — strengere DORA Art. 30-krav gælder.<br><br><strong>Non-critical:</strong> Understøttende funktion — færre obligatoriske klausuler.</span></span></th>
-          <th>Status</th>
-          <th><span class="tooltip-wrap">Missing<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Antal DORA/GDPR-krav, der ikke er fundet i kontrakten. Klik på rækken for at se præcis hvilke krav der mangler og hvad der bør tilføjes.</span></span></th>
+          <th><span class="tooltip-wrap">Status / Missing<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Status + antal manglende krav. Klik for detaljer.</span></span></th>
+          <th><span class="tooltip-wrap">Key Missing Items<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Top manglende krav + implementeringsindsats. Klik for fuld liste.</span></span></th>
           <th><span class="tooltip-wrap">Control Strength<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Effective:</strong> 0 manglende krav.<br><strong>Partially Effective:</strong> 1–5 mangler.<br><strong>Weak Controls:</strong> 6+ mangler.</span></span></th>
           <th><span class="tooltip-wrap">Residual Risk<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Kombinerer klassifikation og control strength.<br><strong>High:</strong> Kritisk + Weak Controls.<br><strong>Medium:</strong> Kritisk + Partial, eller Non-critical + Weak.<br><strong>Low:</strong> Øvrige.</span></span></th>
         </tr></thead>
-        <tbody id="contracts-table"><tr><td colspan="8" class="empty">Loading&#8230;</td></tr></tbody>
+        <tbody id="contracts-table"><tr><td colspan="9" class="empty">Loading&#8230;</td></tr></tbody>
       </table>
     </div>
     <div id="contract-detail" class="detail-panel"></div>
@@ -746,13 +759,15 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <div id="tab-workpapers" class="tab-pane">
     <div class="tab-header">
       <h2>Working Papers</h2>
-      <div class="agent-label">Agent 2 — Supplier Assurance (DORA Art. 30 ICT Third-Party)</div>
-      <table class="def-table">
+      <div class="agent-label">Agent 2 — Supplier Assurance</div>
+      <div class="agent-label" style="margin-top:4px">DORA Art. 30 ICT Third-Party Contract Testing</div>
+      <table class="def-table" style="margin-top:10px">
         <tr><td class="term">Condition</td><td class="def">What was observed — the factual finding from testing.</td></tr>
         <tr><td class="term">Criteria</td><td class="def">The requirement or standard the control is measured against.</td></tr>
         <tr><td class="term">Cause</td><td class="def">Root cause of any deviation from the criteria.</td></tr>
         <tr><td class="term">Effect</td><td class="def">Consequence of the gap — risk or compliance impact.</td></tr>
-        <tr><td class="term">Recommendation</td><td class="def">Agreed action to close the gap. Click any control row to view the full working paper and D&amp;I declaration.</td></tr>
+        <tr><td class="term">Recommendation</td><td class="def">Agreed action to close the gap. Click any control row to view the full working paper.</td></tr>
+        <tr><td class="term" style="color:var(--accent)">Findings only</td><td class="def">We raise <strong>findings</strong> directly — there are no "exceptions" here. A finding is a gap between what was observed and what is required. Each finding has a severity (Critical / High / Medium / Low) and an owner responsible for remediation.</td></tr>
       </table>
     </div>
     <div id="wp-content"></div>
@@ -762,8 +777,9 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <div id="tab-audit" class="tab-pane">
     <div class="tab-header">
       <h2>Audit Intelligence</h2>
-      <div class="agent-label">Agent 4 — Internal Audit &amp; Board Reporting (ISO 27001 / ISAE 3402)</div>
-      <table class="def-table">
+      <div class="agent-label">Agent 4 — Internal Audit &amp; Board Reporting</div>
+      <div class="agent-label" style="margin-top:4px">ISO 27001 Control Testing / ISAE 3402 / IIA Standards</div>
+      <table class="def-table" style="margin-top:10px">
         <tr><td class="term">Audit Universe</td><td class="def">Complete inventory of controls, processes and systems subject to this engagement.</td></tr>
         <tr><td class="term">Risk Matrix</td><td class="def">3×3 Likelihood × Impact (1–9). Heatmap shows inherent risk × test result.</td></tr>
         <tr><td class="term">Draft Audit Report</td><td class="def">Working papers support each DAR. Click a report card to view scope and findings summary.</td></tr>
@@ -777,7 +793,8 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <div id="tab-boardreport" class="tab-pane">
     <div class="tab-header">
       <h2>Board Report</h2>
-      <div class="agent-label">Agent 4 — Internal Audit &amp; Board Reporting (ISO 27001 / ISAE 3402)</div>
+      <div class="agent-label">Agent 4 — Internal Audit &amp; Board Reporting</div>
+      <div class="agent-label" style="margin-top:4px">ISO 27001 / ISAE 3402 — Board &amp; Governance Reporting</div>
       <table class="def-table">
         <tr><td class="term">Open / Closed Findings</td><td class="def">Current status of all findings from the period under review.</td></tr>
         <tr><td class="term">Finalised Reports</td><td class="def">Board-presented audit reports with follow-up obligations.</td></tr>
@@ -1130,10 +1147,58 @@ async function loadBoardReport() {
     <!-- Executive summary cards -->
     <div class="summary-cards" style="margin-bottom:24px">
       <div class="card"><div class="label">Total Controls Tested</div><div class="value">${wpData.tested_count||0} / ${wpData.total_controls||0}</div></div>
-      <div class="card"><div class="label">Exceptions</div><div class="value ${(wpData.exception_count||0)>0?'yellow':''}">${wpData.exception_count||0}</div></div>
+      <div class="card"><div class="label">With Findings</div><div class="value ${(wpData.exception_count||0)>0?'yellow':''}">${wpData.exception_count||0}</div></div>
       <div class="card"><div class="label">Open Findings</div><div class="value ${openFindings.length>0?'red':''}">${openFindings.length}</div></div>
       <div class="card"><div class="label">Closed Findings</div><div class="value green">${closedFindings.length}</div></div>
       <div class="card"><div class="label">Register Gaps</div><div class="value ${(recon.register_only||0)>0?'red':''}">${recon.register_only||0}</div></div>
+    </div>
+
+    <!-- Risk Matrix for Board -->
+    <div style="margin-bottom:24px">
+      <div class="section-title" style="margin-bottom:4px">Risk Matrix — Impact &#215; Likelihood (3&#215;3)</div>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Board-ready risk quadrant. Red = High risk (score 6–9) &nbsp;|&nbsp; Orange = Medium risk (3–5) &nbsp;|&nbsp; Green = Low risk (1–2).</p>
+      <div style="display:grid;grid-template-columns:60px repeat(3,1fr);gap:4px;max-width:720px">
+        <div style="font-size:10px;color:var(--muted);display:flex;align-items:flex-end;padding-bottom:4px;line-height:1.3">Impact &#8595;<br>Likelihood &#8594;</div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;padding:4px 2px;border-bottom:1px solid var(--border)">Low (1)</div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;padding:4px 2px;border-bottom:1px solid var(--border)">Medium (2)</div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;padding:4px 2px;border-bottom:1px solid var(--border)">High (3)</div>
+        <!-- Row: Impact High (3) -->
+        <div style="font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;text-align:right">High (3)</div>
+        <div style="background:rgba(251,146,60,0.18);border:1px solid #fb923c;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
+          <div>&#8226; BCP / DR Not Fully Tested</div>
+        </div>
+        <div style="background:rgba(248,113,113,0.18);border:1px solid #f87171;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
+          <div>&#8226; Access Control Gaps (IAM)</div>
+          <div>&#8226; Exit Strategy Missing</div>
+        </div>
+        <div style="background:rgba(248,113,113,0.18);border:1px solid #f87171;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
+          <div>&#8226; ICT Contract Gaps (DORA Art.30)</div>
+        </div>
+        <!-- Row: Impact Medium (2) -->
+        <div style="font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;text-align:right">Med (2)</div>
+        <div style="background:rgba(74,222,128,0.14);border:1px solid #4ade80;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
+          <div>&#8226; Encryption Key Rotation</div>
+        </div>
+        <div style="background:rgba(251,146,60,0.18);border:1px solid #fb923c;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
+          <div>&#8226; DPA Art.28 Gaps (GDPR)</div>
+          <div>&#8226; SLA / Sub-contractor Clause Missing</div>
+        </div>
+        <div style="background:rgba(248,113,113,0.18);border:1px solid #f87171;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
+          <div>&#8226; Patch / Vuln Management Delays</div>
+        </div>
+        <!-- Row: Impact Low (1) -->
+        <div style="font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;text-align:right">Low (1)</div>
+        <div style="background:rgba(74,222,128,0.14);border:1px solid #4ade80;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
+          <div>&#8226; DSR Response Logging</div>
+        </div>
+        <div style="background:rgba(74,222,128,0.14);border:1px solid #4ade80;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
+          <div>&#8226; User Training Compliance</div>
+          <div>&#8226; Register Maintenance Lag</div>
+        </div>
+        <div style="background:rgba(251,146,60,0.18);border:1px solid #fb923c;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
+          <div style="color:var(--muted)">—</div>
+        </div>
+      </div>
     </div>
 
     <!-- Open findings -->
@@ -1278,18 +1343,31 @@ async function loadOverview() {
   if (!analyses.length) {
     tbody.innerHTML = '<tr><td colspan="7" class="empty">No analyses loaded</td></tr>';
   } else {
-    tbody.innerHTML = analyses.map(a => {
+    const rrOrder = {High:0,Medium:1,Low:2};
+    const sorted = [...analyses].sort((a, b) => {
+      const missA = a.summary ? (a.summary.missing || 0) : 0;
+      const missB = b.summary ? (b.summary.missing || 0) : 0;
+      const rrA = residualRisk(a.classification, missA);
+      const rrB = residualRisk(b.classification, missB);
+      return (rrOrder[rrA] ?? 9) - (rrOrder[rrB] ?? 9);
+    });
+    tbody.innerHTML = sorted.map((a, idx) => {
       const miss = a.summary ? (a.summary.missing || 0) : 0;
       const cs = controlStrength(miss);
       const csC = controlStrengthClass(miss);
       const rr = residualRisk(a.classification, miss);
       const rrC = residualRiskClass(a.classification, miss);
+      const entryId = 'CTR-' + String(idx + 1).padStart(3, '0');
+      const legTag = a.classification === 'critical_important'
+        ? '<span class="leg-dora" style="display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;margin-bottom:2px">DORA</span><br><span class="leg-gdpr" style="display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px">GDPR</span>'
+        : '<span class="leg-gdpr" style="display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px">GDPR</span>';
+      const statusMissCell = `${statusBadge(a.overall_status)}<div style="font-size:11px;color:var(--muted);margin-top:3px">${miss > 0 ? '<span style="color:var(--orange)">' + miss + ' missing</span>' : '<span style="color:var(--green)">0 missing</span>'}</div>`;
       return `<tr onclick="showContractModal('${(a.contract_key || a.analysis_id).replace(/'/g,"\\'")}')" style="cursor:pointer">
+        <td><code style="font-size:11px">${entryId}</code></td>
         <td>${a.supplier_name}</td>
+        <td style="text-align:center">${legTag}</td>
         <td>${classBadge(a.classification)}</td>
-        <td>${statusBadge(a.overall_status)}</td>
-        <td>${miss}</td>
-        <td>${a.summary ? a.summary.satisfied || 0 : 0}</td>
+        <td>${statusMissCell}</td>
         <td><span class="badge ${csC}">${cs}</span></td>
         <td><span class="badge ${rrC}">${rr}</span></td>
       </tr>`;
@@ -1300,22 +1378,43 @@ async function loadOverview() {
 async function loadContracts() {
   const tbody = document.getElementById('contracts-table');
   if (!analyses.length) {
-    tbody.innerHTML = '<tr><td colspan="8" class="empty">No analyses loaded</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="empty">No analyses loaded</td></tr>';
     return;
   }
-  tbody.innerHTML = analyses.map(a => {
+  const rrOrder = {High:0,Medium:1,Low:2};
+  const sorted = [...analyses].sort((a, b) => {
+    const missA = a.summary ? (a.summary.missing || 0) : 0;
+    const missB = b.summary ? (b.summary.missing || 0) : 0;
+    const rrA = residualRisk(a.classification, missA);
+    const rrB = residualRisk(b.classification, missB);
+    return (rrOrder[rrA] ?? 9) - (rrOrder[rrB] ?? 9);
+  });
+  tbody.innerHTML = sorted.map((a, idx) => {
     const miss = a.summary ? (a.summary.missing || 0) : 0;
     const cs = controlStrength(miss);
     const csC = controlStrengthClass(miss);
     const rr = residualRisk(a.classification, miss);
     const rrC = residualRiskClass(a.classification, miss);
+    const entryId = 'CTR-' + String(idx + 1).padStart(3, '0');
+    const legTag = a.classification === 'critical_important'
+      ? '<span class="leg-dora" style="display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;margin-bottom:2px">DORA</span> <span class="leg-gdpr" style="display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px">GDPR</span>'
+      : '<span class="leg-gdpr" style="display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px">GDPR</span>';
+    const statusMissCell = `${statusBadge(a.overall_status)}<div style="font-size:11px;color:var(--muted);margin-top:2px">${miss > 0 ? '<span style="color:var(--orange)">' + miss + ' missing</span>' : '<span style="color:var(--green)">0 missing</span>'}</div>`;
+    const effort = miss >= 6 ? 'High' : miss >= 3 ? 'Medium' : miss > 0 ? 'Low' : null;
+    const effortColor = effort === 'High' ? 'var(--red)' : effort === 'Medium' ? 'var(--yellow)' : 'var(--green)';
+    const gaps = (a.top_gaps || []);
+    const gapsHtml = gaps.length
+      ? '<ul style="margin:0;padding-left:14px;font-size:11px">' + gaps.map(g => `<li style="color:var(--muted)">${g.req_id ? '<span style="color:var(--accent);font-size:10px">' + g.req_id + '</span> ' : ''}${g.summary || 'Missing requirement'}</li>`).join('') + '</ul>'
+        + (effort ? `<div style="font-size:10px;margin-top:3px">Implementation effort: <strong style="color:${effortColor}">${effort}</strong></div>` : '')
+      : (miss > 0 ? `<span style="font-size:11px;color:var(--muted)">Click to view ${miss} gap(s)</span>` + (effort ? `<div style="font-size:10px;margin-top:3px">Implementation effort: <strong style="color:${effortColor}">${effort}</strong></div>` : '') : '<span style="color:var(--green);font-size:11px">&#10003; No gaps</span>');
     return `<tr onclick="showContractDetail('${a.contract_key || a.analysis_id}')">
-      <td><code>${a.analysis_id}</code></td>
+      <td><code style="font-size:11px">${entryId}</code></td>
       <td>${a.supplier_name}</td>
       <td style="color:var(--muted);font-size:12px">${(a.contract_path.replace(/\\\\/g,'/').split('/').pop())}</td>
+      <td>${legTag}</td>
       <td>${classBadge(a.classification)}</td>
-      <td>${statusBadge(a.overall_status)}</td>
-      <td>${miss}</td>
+      <td>${statusMissCell}</td>
+      <td style="max-width:220px">${gapsHtml}</td>
       <td><span class="badge ${csC}">${cs}</span></td>
       <td><span class="badge ${rrC}">${rr}</span></td>
     </tr>`;
@@ -1498,7 +1597,7 @@ async function loadWorkPapers() {
   }
 
   const riskClass = r => ({CRITICAL:'risk-critical',HIGH:'risk-high',MEDIUM:'risk-medium',LOW:'risk-low'}[r]||'');
-  const resultIcon = r => ({PASSED:'<span class="result-passed">✓ Pass</span>',EXCEPTION:'<span class="result-exception">⚠ Exception</span>',NOT_TESTED:'<span class="result-not-tested">— Not Tested</span>',NOT_APPLICABLE:'<span class="result-na">— N/A</span>'}[r]||r);
+  const resultIcon = r => ({PASSED:'<span class="result-passed">✓ Pass</span>',EXCEPTION:'<span class="result-exception">⚠ Finding</span>',NOT_TESTED:'<span class="result-not-tested">— Not Tested</span>',NOT_APPLICABLE:'<span class="result-na">— N/A</span>'}[r]||r);
   const resultClass = r => r==='PASSED'?'result-passed':r==='EXCEPTION'?'result-exception':r==='NOT_APPLICABLE'?'result-na':'result-not-tested';
 
   container.innerHTML = `
@@ -1513,14 +1612,14 @@ async function loadWorkPapers() {
       <div class="card"><div class="label">Controls in scope</div><div class="value">${data.total_controls}</div></div>
       <div class="card"><div class="label">Tested</div><div class="value">${data.tested_count}</div></div>
       <div class="card"><div class="label">Passed</div><div class="value green">${data.passed_count}</div></div>
-      <div class="card"><div class="label">Exceptions</div><div class="value ${data.exception_count>0?'yellow':''}">${data.exception_count}</div></div>
-      <div class="card"><div class="label">Open findings</div><div class="value ${data.open_findings>0?'red':''}">${data.open_findings}</div></div>
+      <div class="card"><div class="label">With Findings</div><div class="value ${data.exception_count>0?'yellow':''}">${data.exception_count}</div></div>
+      <div class="card"><div class="label">Open Findings</div><div class="value ${data.open_findings>0?'red':''}">${data.open_findings}</div></div>
     </div>
     <div id="wp-heatmap" style="margin-bottom:20px"></div>
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>Control ID</th><th>Title</th><th>Domain</th><th>Inherent Risk</th><th>Result</th><th>Findings</th><th>Control Strength</th><th>Residual Risk</th>
+          <th>Control ID</th><th>Title</th><th>Domain</th><th>Inherent Risk</th><th>Test Result</th><th>Open Findings</th><th>Control Strength</th><th>Residual Risk</th>
         </tr></thead>
         <tbody>${data.work_papers.map(wp => {
           const isNA = wp.test_result === 'NOT_TESTED' || wp.test_result === 'NOT_APPLICABLE';
@@ -1798,7 +1897,12 @@ async function loadAuditIntelligence() {
   for (const wp of wps) wpByCtrl[wp.control_id] = wp;
 
   // --- Info box ---
-  const infoBox = '<div class="info-box"><strong>Agent 4 — Internal Audit:</strong> This tab covers the full internal audit cycle — universe, risk assessment, control testing, draft reporting, and board intelligence. <strong>Agent 2 — Supplier Assurance:</strong> handles DORA Art. 30 contract testing (see Working Papers tab). The two agents share the same working paper data but serve distinct governance audiences.</div>';
+  const infoBox = '<div class="info-box">'
+    + '<div style="margin-bottom:6px"><strong style="color:var(--accent)">Agent 4 — Internal Audit &amp; Board Reporting:</strong><br>'
+    + 'Covers the full internal audit cycle — universe mapping, risk assessment, control testing, draft audit reports, and board intelligence. Framework: ISO 27001, ISAE 3402, IIA Standards.</div>'
+    + '<div><strong style="color:var(--muted)">Agent 2 — Supplier Assurance (see Working Papers tab):</strong><br>'
+    + 'Handles DORA Art. 30 ICT third-party contract testing. The two agents share the same working paper data but serve distinct governance audiences.</div>'
+    + '</div>';
 
   // --- Org process mapping accordion ---
   let accordionHtml = '<div class="section-title" style="margin-bottom:8px">Organisation Process &amp; Control Mapping</div>';
@@ -1892,15 +1996,60 @@ async function loadAuditIntelligence() {
     findingsHtml += '</tbody></table></div></div>';
   }
 
+  // --- 3×3 Risk Matrix (Impact × Likelihood) ---
+  const RISK_MATRIX_DATA = [
+    { label: 'ICT Contract Gaps (DORA Art.30)', impact: 3, likelihood: 3 },
+    { label: 'Access Control Gaps (IAM)', impact: 3, likelihood: 2 },
+    { label: 'Exit Strategy Missing', impact: 3, likelihood: 2 },
+    { label: 'Patch / Vuln Management Delays', impact: 2, likelihood: 3 },
+    { label: 'BCP / DR Not Fully Tested', impact: 3, likelihood: 1 },
+    { label: 'DPA Art.28 Gaps (GDPR)', impact: 2, likelihood: 2 },
+    { label: 'SLA / Sub-contractor Clause Missing', impact: 2, likelihood: 2 },
+    { label: 'User Training Compliance', impact: 1, likelihood: 2 },
+    { label: 'Encryption Key Rotation', impact: 2, likelihood: 1 },
+    { label: 'DSR Response Logging', impact: 1, likelihood: 1 },
+    { label: 'Register Maintenance Lag', impact: 1, likelihood: 2 },
+  ];
+  function buildRiskMatrix(items) {
+    const cells = {};
+    for (let i = 1; i <= 3; i++) for (let l = 1; l <= 3; l++) cells[i+','+l] = [];
+    items.forEach(it => cells[it.impact+','+it.likelihood].push(it));
+    const bgCell = (imp, lik) => { const s=imp*lik; return s>=6?'rgba(248,113,113,0.18)':s>=3?'rgba(251,146,60,0.18)':'rgba(74,222,128,0.14)'; };
+    const borderCell = (imp, lik) => { const s=imp*lik; return s>=6?'#f87171':s>=3?'#fb923c':'#4ade80'; };
+    let html = '<div style="margin-bottom:24px">';
+    html += '<div class="section-title" style="margin-bottom:4px">Risk Matrix — Impact &#215; Likelihood (3&#215;3)</div>';
+    html += '<p style="font-size:12px;color:var(--muted);margin:0 0 12px">Red = High risk (score 6–9) &nbsp;|&nbsp; Orange = Medium risk (3–5) &nbsp;|&nbsp; Green = Low risk (1–2). Board/audit ready.</p>';
+    html += '<div style="display:grid;grid-template-columns:60px repeat(3,1fr);gap:4px;max-width:720px">';
+    html += '<div style="font-size:10px;color:var(--muted);display:flex;align-items:flex-end;padding-bottom:4px;line-height:1.3">Impact &#8595;<br>Likelihood &#8594;</div>';
+    ['Low (1)','Medium (2)','High (3)'].forEach(l => {
+      html += '<div style="font-size:11px;color:var(--muted);text-align:center;padding:4px 2px;border-bottom:1px solid var(--border)">' + l + '</div>';
+    });
+    for (let imp = 3; imp >= 1; imp--) {
+      const impLabel = imp===3?'High (3)':imp===2?'Med (2)':'Low (1)';
+      html += '<div style="font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;text-align:right">' + impLabel + '</div>';
+      for (let lik = 1; lik <= 3; lik++) {
+        const its = cells[imp+','+lik] || [];
+        html += '<div style="background:' + bgCell(imp,lik) + ';border:1px solid ' + borderCell(imp,lik) + ';border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">';
+        its.forEach(it => { html += '<div style="color:var(--text)">&#8226; ' + it.label + '</div>'; });
+        if (!its.length) html += '<div style="color:var(--muted)">—</div>';
+        html += '</div>';
+      }
+    }
+    html += '</div></div>';
+    return html;
+  }
+  const riskMatrixHtml = buildRiskMatrix(RISK_MATRIX_DATA);
+
   container.innerHTML = '<div style="margin-bottom:4px"><span style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em">Engagement:</span> <code>' + wpData.engagement_id + '</code> — ' + wpData.organisation + ' <span style="color:var(--muted);font-size:12px">/ ' + wpData.scope + '</span></div>'
     + '<div class="summary-cards" style="margin:16px 0">'
     + '<div class="card"><div class="label">Audit Universe</div><div class="value">' + wpData.total_controls + '</div></div>'
     + '<div class="card"><div class="label">Tested</div><div class="value">' + wpData.tested_count + '</div></div>'
     + '<div class="card"><div class="label">Passed</div><div class="value green">' + wpData.passed_count + '</div></div>'
-    + '<div class="card"><div class="label">Exceptions</div><div class="value ' + (wpData.exception_count>0?'yellow':'') + '">' + wpData.exception_count + '</div></div>'
+    + '<div class="card"><div class="label">With Findings</div><div class="value ' + (wpData.exception_count>0?'yellow':'') + '">' + wpData.exception_count + '</div></div>'
     + '<div class="card"><div class="label">Open Findings</div><div class="value ' + (wpData.open_findings>0?'red':'') + '">' + wpData.open_findings + '</div></div>'
     + '</div>'
     + infoBox
+    + riskMatrixHtml
     + accordionHtml
     + reportsHtml
     + findingsHtml;
