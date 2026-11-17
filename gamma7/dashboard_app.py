@@ -645,13 +645,13 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="logo-sub">Audit &amp; Compliance</div>
   </div>
   <nav class="sidebar-nav">
-    <button class="nav-item nav-overview active" onclick="showTab(\\'overview\\',this)">Overview</button>
-    <button class="nav-item nav-contracts" onclick="showTab(\\'contracts\\',this)">Contracts</button>
-    <button class="nav-item nav-register" onclick="showTab(\\'register\\',this)">ICT Register</button>
-    <button class="nav-item nav-reconciliation" onclick="showTab(\\'reconciliation\\',this)">Reconciliation</button>
-    <button class="nav-item nav-workpapers" onclick="showTab(\\'workpapers\\',this)">Working Papers</button>
-    <button class="nav-item nav-audit" onclick="showTab(\\'audit\\',this)">Audit Intelligence</button>
-    <button class="nav-item nav-boardreport" onclick="showTab(\\'boardreport\\',this)">Board Report</button>
+    <button class="nav-item nav-overview active" onclick="showTab('overview',this)">Overview</button>
+    <button class="nav-item nav-contracts" onclick="showTab('contracts',this)">Contracts</button>
+    <button class="nav-item nav-register" onclick="showTab('register',this)">ICT Register</button>
+    <button class="nav-item nav-reconciliation" onclick="showTab('reconciliation',this)">Reconciliation</button>
+    <button class="nav-item nav-workpapers" onclick="showTab('workpapers',this)">Working Papers</button>
+    <button class="nav-item nav-audit" onclick="showTab('audit',this)">Audit Intelligence</button>
+    <button class="nav-item nav-boardreport" onclick="showTab('boardreport',this)">Board Report</button>
   </nav>
   <div class="sidebar-footer">
     <div class="advisory-badge">&#9888; Advisory — Human review required before regulatory use</div>
