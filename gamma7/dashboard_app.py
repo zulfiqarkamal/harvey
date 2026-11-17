@@ -347,20 +347,20 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f8fafc;
-    --surface: #ffffff;
-    --surface2: #f1f5f9;
-    --border: #e2e8f0;
-    --border-hover: #cbd5e1;
-    --text: #0f172a;
-    --secondary: #475569;
-    --muted: #94a3b8;
+    --bg: #09090f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #25253a;
+    --border-hover: #35355a;
+    --text: #e2e8f0;
+    --secondary: #94a3b8;
+    --muted: #64748b;
     --accent: #7c3aed;
-    --green: #16a34a;
-    --yellow: #d97706;
-    --red: #dc2626;
-    --orange: #ea580c;
-    --critical: #9333ea;
+    --green: #4ade80;
+    --yellow: #eab308;
+    --red: #f87171;
+    --orange: #fb923c;
+    --critical: #c084fc;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     font-size: 14px;
     line-height: 1.5;
@@ -384,8 +384,8 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     width: 100%; text-align: left; border-left: 2px solid transparent;
     transition: color 0.12s, background 0.12s, border-color 0.12s; margin-bottom: 2px;
   }
-  .nav-item:hover { color: var(--text); background: rgba(0,0,0,0.04); }
-  .nav-item.active { color: var(--text); border-left-color: var(--accent); background: rgba(124,58,237,0.06); }
+  .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+  .nav-item.active { color: var(--text); border-left-color: var(--accent); background: rgba(124,58,237,0.12); }
   /* per-section accent colours */
   .nav-overview.active    { color: #7c3aed; border-left-color: #7c3aed; background: rgba(124,58,237,0.06); }
   .nav-contracts.active   { color: #2563eb; border-left-color: #2563eb; background: rgba(37,99,235,0.06); }
@@ -590,7 +590,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.09); border-color: var(--border-hover); }
   .nav-item { transition: color 0.15s, background 0.15s, border-color 0.15s; }
   .table-wrap { box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-  tr:hover td { background: rgba(0,0,0,0.018); }
+  tr:hover td { background: rgba(255,255,255,0.03); }
   .modal-box { box-shadow: 0 20px 60px rgba(0,0,0,0.18); }
   button, [role=button] { transition: background 0.15s, color 0.15s, transform 0.1s, box-shadow 0.15s; }
   .tab-pane.active { animation: fade-in 0.18s ease; }
@@ -618,7 +618,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
       white-space: nowrap; padding: 12px 14px; border-left: none;
       border-bottom: 2px solid transparent; border-radius: 0;
     }
-    .nav-item:hover { background: rgba(0,0,0,0.04); }
+    .nav-item:hover { background: rgba(255,255,255,0.05); }
     .nav-overview.active    { border-bottom-color: #7c3aed; border-left-color: transparent; }
     .nav-contracts.active   { border-bottom-color: #2563eb; border-left-color: transparent; }
     .nav-register.active    { border-bottom-color: #0d9488; border-left-color: transparent; }
@@ -645,13 +645,13 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="logo-sub">Audit &amp; Compliance</div>
   </div>
   <nav class="sidebar-nav">
-    <button class="nav-item nav-overview active" onclick="showTab(\\'overview\\')">Overview</button>
-    <button class="nav-item nav-contracts" onclick="showTab(\\'contracts\\')">Contracts</button>
-    <button class="nav-item nav-register" onclick="showTab(\\'register\\')">ICT Register</button>
-    <button class="nav-item nav-reconciliation" onclick="showTab(\\'reconciliation\\')">Reconciliation</button>
-    <button class="nav-item nav-workpapers" onclick="showTab(\\'workpapers\\')">Working Papers</button>
-    <button class="nav-item nav-audit" onclick="showTab(\\'audit\\')">Audit Intelligence</button>
-    <button class="nav-item nav-boardreport" onclick="showTab(\\'boardreport\\')">Board Report</button>
+    <button class="nav-item nav-overview active" onclick="showTab(\\'overview\\',this)">Overview</button>
+    <button class="nav-item nav-contracts" onclick="showTab(\\'contracts\\',this)">Contracts</button>
+    <button class="nav-item nav-register" onclick="showTab(\\'register\\',this)">ICT Register</button>
+    <button class="nav-item nav-reconciliation" onclick="showTab(\\'reconciliation\\',this)">Reconciliation</button>
+    <button class="nav-item nav-workpapers" onclick="showTab(\\'workpapers\\',this)">Working Papers</button>
+    <button class="nav-item nav-audit" onclick="showTab(\\'audit\\',this)">Audit Intelligence</button>
+    <button class="nav-item nav-boardreport" onclick="showTab(\\'boardreport\\',this)">Board Report</button>
   </nav>
   <div class="sidebar-footer">
     <div class="advisory-badge">&#9888; Advisory — Human review required before regulatory use</div>
@@ -812,11 +812,11 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
 let analyses = [];
 let registerEntries = [];
 
-function showTab(name) {
+function showTab(name, el) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
+  if (el) el.classList.add('active');
 }
 
 function statusBadge(status) {
