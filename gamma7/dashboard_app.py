@@ -1152,6 +1152,12 @@ async function loadBoardReport() {
       <div class="card"><div class="label">Closed Findings</div><div class="value green">${closedFindings.length}</div></div>
       <div class="card"><div class="label">Register Gaps</div><div class="value ${(recon.register_only||0)>0?'red':''}">${recon.register_only||0}</div></div>
     </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px;font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:8px 14px;background:var(--surface)">
+      <span style="font-weight:600;color:var(--text);margin-right:4px">Definitions:</span>
+      <span><strong style="color:var(--text)">Control Strength:</strong> Effective (0 findings) &nbsp;·&nbsp; Partially Effective (1–5) &nbsp;·&nbsp; Weak Controls (6+)</span>
+      <span style="border-left:1px solid var(--border);padding-left:12px"><strong style="color:var(--text)">Residual Risk:</strong> Inherent risk score adjusted by control strength</span>
+      <span style="border-left:1px solid var(--border);padding-left:12px"><strong style="color:var(--text)">Risk Matrix:</strong> <span style="color:var(--red)">■</span> High (6–9) &nbsp; <span style="color:var(--orange)">■</span> Medium (3–5) &nbsp; <span style="color:var(--green)">■</span> Low (1–2)</span>
+    </div>
 
     <!-- Risk Matrix for Board -->
     <div style="margin-bottom:24px">
@@ -1656,6 +1662,12 @@ async function loadWorkPapers() {
       <div class="card"><div class="label">With Findings</div><div class="value ${data.exception_count>0?'yellow':''}">${data.exception_count}</div></div>
       <div class="card"><div class="label">Open Findings</div><div class="value ${data.open_findings>0?'red':''}">${data.open_findings}</div></div>
     </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:8px 14px;background:var(--surface)">
+      <span style="font-weight:600;color:var(--text);margin-right:4px">Definitions:</span>
+      <span><strong style="color:var(--text)">Control Strength:</strong> Effective (0 findings) &nbsp;·&nbsp; Partially Effective (1–5) &nbsp;·&nbsp; Weak Controls (6+)</span>
+      <span style="border-left:1px solid var(--border);padding-left:12px"><strong style="color:var(--text)">Residual Risk:</strong> Inherent risk adjusted by control strength</span>
+      <span style="border-left:1px solid var(--border);padding-left:12px"><strong style="color:var(--text)">Heatmap:</strong> <span style="color:var(--green)">●</span> Passed &nbsp; <span style="color:var(--red)">●</span> Finding &nbsp; <span style="color:var(--muted)">●</span> Not Tested / N/A</span>
+    </div>
     <div id="wp-heatmap" style="margin-bottom:20px"></div>
     <div class="table-wrap">
       <table>
@@ -1697,7 +1709,7 @@ async function loadHeatmap() {
   if (hm.message) return;
 
   const riskColors = {CRITICAL:'#c0392b',HIGH:'#e67e22',MEDIUM:'#f1c40f',LOW:'#27ae60'};
-  const colLabels = {PASSED:'Passed',EXCEPTION:'Exception',NOT_TESTED:'Not Tested',NOT_APPLICABLE:'N/A'};
+  const colLabels = {PASSED:'Passed',EXCEPTION:'Finding',NOT_TESTED:'Not Tested',NOT_APPLICABLE:'N/A'};
   const colColors = {PASSED:'#27ae60',EXCEPTION:'#c0392b',NOT_TESTED:'#95a5a6',NOT_APPLICABLE:'#bdc3c7'};
 
   let hdr = `<th style="font-size:11px;padding:6px 10px;text-align:left;color:var(--muted);border-bottom:1px solid var(--border)">InherentRisk \\ Result</th>`;
@@ -1737,7 +1749,7 @@ async function loadHeatmap() {
         <tbody>${rows}</tbody>
       </table>
     </div>
-    <p style="font-size:11px;color:var(--muted);margin-top:6px">${hm.total} controls total. Red cells = exceptions on high/critical controls requiring immediate attention.</p>
+    <p style="font-size:11px;color:var(--muted);margin-top:6px">${hm.total} controls total. Red cells = findings on high/critical controls requiring immediate attention.</p>
   `;
 }
 
@@ -1829,7 +1841,7 @@ async function showWPDetail(controlId) {
         ${resultLine}
         ${csLine}
         ${rrLine}
-        ${hasFindings ? '<p style="margin:4px 0 4px;font-size:12px;color:var(--orange)">&#8594; Exceptions refer to the findings noted below.</p>' : ''}
+        ${hasFindings ? '<p style="margin:4px 0 4px;font-size:12px;color:var(--orange)">&#8594; Refer to findings noted below.</p>' : ''}
       </div>
     </div>
 
