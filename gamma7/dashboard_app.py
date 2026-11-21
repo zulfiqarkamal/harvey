@@ -353,7 +353,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gamma7 — Supplier Assurance</title>
+<title>Gamma7 — Audit &amp; Compliance Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -367,7 +367,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     --text: #e2e8f0;
     --secondary: #94a3b8;
     --muted: #64748b;
-    --accent: #7c3aed;
+    --accent: #00C4A7;
     --green: #4ade80;
     --yellow: #eab308;
     --red: #f87171;
@@ -397,9 +397,9 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     transition: color 0.12s, background 0.12s, border-color 0.12s; margin-bottom: 2px;
   }
   .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-  .nav-item.active { color: var(--text); border-left-color: var(--accent); background: rgba(124,58,237,0.12); }
+  .nav-item.active { color: var(--text); border-left-color: var(--accent); background: rgba(0,196,167,0.10); }
   /* per-section accent colours */
-  .nav-overview.active    { color: #7c3aed; border-left-color: #7c3aed; background: rgba(124,58,237,0.06); }
+  .nav-overview.active    { color: #00C4A7; border-left-color: #00C4A7; background: rgba(0,196,167,0.06); }
   .nav-contracts.active   { color: #2563eb; border-left-color: #2563eb; background: rgba(37,99,235,0.06); }
   .nav-register.active    { color: #0d9488; border-left-color: #0d9488; background: rgba(13,148,136,0.06); }
   .nav-reconciliation.active { color: #d97706; border-left-color: #d97706; background: rgba(217,119,6,0.06); }
@@ -407,7 +407,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   .nav-audit.active       { color: #e11d48; border-left-color: #e11d48; background: rgba(225,29,72,0.06); }
   .nav-boardreport.active { color: #6366f1; border-left-color: #6366f1; background: rgba(99,102,241,0.06); }
   /* section colour dots shown even when inactive */
-  .nav-overview::before    { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:8px; background:#7c3aed; opacity:0.5; flex-shrink:0; }
+  .nav-overview::before    { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:8px; background:#00C4A7; opacity:0.5; flex-shrink:0; }
   .nav-contracts::before   { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:8px; background:#2563eb; opacity:0.5; flex-shrink:0; }
   .nav-register::before    { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:8px; background:#0d9488; opacity:0.5; flex-shrink:0; }
   .nav-reconciliation::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:8px; background:#d97706; opacity:0.5; flex-shrink:0; }
@@ -423,6 +423,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   .nav-boardreport.active::before { opacity:1; }
   .sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); flex-shrink: 0; }
   .advisory-badge { font-size: 10px; color: var(--orange); background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.25); padding: 4px 8px; border-radius: 4px; line-height: 1.4; }
+  .nav-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; padding: 12px 14px 4px; opacity: 0.7; }
   .content-area { margin-left: 220px; flex: 1; min-width: 0; }
   main { padding: 28px 32px; max-width: 1180px; }
 
@@ -489,8 +490,8 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   .finding-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
   .five-c { font-size: 12px; color: var(--muted); line-height: 1.6; }
   .five-c strong { color: var(--text); }
-  .btn { background: #7c3aed; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-block; }
-  .btn:hover { background: #6d28d9; }
+  .btn { background: var(--accent); color: #0D1E37; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; text-decoration: none; display: inline-block; }
+  .btn:hover { background: #00dfc0; }
 
   /* Tooltip */
   .tooltip-wrap { position: relative; display: inline-flex; align-items: center; gap: 4px; cursor: default; }
@@ -565,7 +566,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   .result-passed { color: var(--green); font-weight: 600; }
   .result-exception { color: var(--orange); font-weight: 600; }
   .result-na { color: var(--muted); }
-  .info-box { background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.25); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; line-height: 1.7; }
+  .info-box { background: rgba(0,196,167,0.07); border: 1px solid rgba(0,196,167,0.25); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; line-height: 1.7; }
   .info-box strong { color: var(--accent); }
   .def-table { width: 100%; border-collapse: collapse; margin: 10px 0 0; font-size: 13px; }
   .def-table td { padding: 5px 8px; vertical-align: top; }
@@ -587,7 +588,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   .badge-na { background: var(--surface2); color: var(--muted); }
   .lfap-tabs { display: flex; gap: 4px; margin-bottom: 14px; flex-wrap: wrap; }
   .lfap-tab { padding: 5px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
-  .lfap-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .lfap-tab.active { background: var(--accent); color: #0D1E37; border-color: var(--accent); font-weight: 600; }
   .dar-modal-content { padding: 4px 0; }
   /* Custom scrollbar */
   ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -631,7 +632,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
       border-bottom: 2px solid transparent; border-radius: 0;
     }
     .nav-item:hover { background: rgba(255,255,255,0.05); }
-    .nav-overview.active    { border-bottom-color: #7c3aed; border-left-color: transparent; }
+    .nav-overview.active    { border-bottom-color: #00C4A7; border-left-color: transparent; }
     .nav-contracts.active   { border-bottom-color: #2563eb; border-left-color: transparent; }
     .nav-register.active    { border-bottom-color: #0d9488; border-left-color: transparent; }
     .nav-reconciliation.active { border-bottom-color: #d97706; border-left-color: transparent; }
@@ -658,11 +659,13 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   </div>
   <nav class="sidebar-nav">
     <button class="nav-item nav-overview active" onclick="showTab('overview',this)">Overview</button>
+    <div class="nav-section-label">Supplier Assurance</div>
     <button class="nav-item nav-contracts" onclick="showTab('contracts',this)">Contracts</button>
     <button class="nav-item nav-register" onclick="showTab('register',this)">ICT Register</button>
     <button class="nav-item nav-reconciliation" onclick="showTab('reconciliation',this)">Reconciliation</button>
     <button class="nav-item nav-workpapers" onclick="showTab('workpapers',this)">Working Papers</button>
-    <button class="nav-item nav-audit" onclick="showTab('audit',this)">Audit Intelligence</button>
+    <div class="nav-section-label">Audit Intelligence</div>
+    <button class="nav-item nav-audit" onclick="showTab('audit',this)">Audit Reports</button>
     <button class="nav-item nav-boardreport" onclick="showTab('boardreport',this)">Board Report</button>
   </nav>
   <div class="sidebar-footer">
@@ -673,6 +676,20 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
 <main>
   <!-- Overview tab -->
   <div id="tab-overview" class="tab-pane active">
+    <div class="tab-header">
+      <h2>Platform Overview</h2>
+      <p>Two AI agents — unified audit &amp; compliance platform. Each agent runs independently; results require human review before regulatory use.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px">
+      <div style="background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.2);border-radius:10px;padding:16px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#60a5fa;font-weight:600;margin-bottom:6px">Agent 2 — Supplier Assurance</div>
+        <div style="font-size:13px;color:var(--secondary);line-height:1.6">Contract gap analysis against DORA Art. 30 &amp; GDPR Art. 28. ICT register, reconciliation and working papers.</div>
+      </div>
+      <div style="background:rgba(225,29,72,0.07);border:1px solid rgba(225,29,72,0.2);border-radius:10px;padding:16px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#fb7185;font-weight:600;margin-bottom:6px">Agent 4 — Audit Intelligence</div>
+        <div style="font-size:13px;color:var(--secondary);line-height:1.6">Internal audit planning, ISO 27001 control testing, risk matrix (3×3), ISAE 3402 and board reporting.</div>
+      </div>
+    </div>
     <div class="summary-cards" id="summary-cards">
       <div class="card"><div class="label">Contracts</div><div class="value" id="stat-total">&#8212;</div></div>
       <div class="card"><div class="label"><span class="tooltip-wrap">Gaps Found<span class="tooltip-icon">ⓘ</span><span class="tooltip-box" style="width:240px">Contracts where at least one DORA Art. 30 or GDPR Art. 28 requirement is missing or ambiguous. Click a row in the table below for the specific gaps.</span></span></div><div class="value yellow" id="stat-gaps">&#8212;</div></div>
@@ -1112,7 +1129,7 @@ async function loadBoardReport() {
         <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--green);font-weight:600;margin-bottom:6px">Control Improvements</div>
         <div style="font-size:13px;line-height:1.6">NNS-NET-2021-003 contract schedule fully remediated. DORA Art. 30(2)(a)–(c) now met across all critical ICT providers.</div>
       </div>
-      <div style="background:rgba(124,106,255,0.07);border:1px solid rgba(124,106,255,0.2);border-radius:8px;padding:14px">
+      <div style="background:rgba(0,196,167,0.07);border:1px solid rgba(0,196,167,0.2);border-radius:8px;padding:14px">
         <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:600;margin-bottom:6px">Risk Reductions</div>
         <div style="font-size:13px;line-height:1.6">Residual risk on AU01 (Identity &amp; Access) reduced from MEDIUM to LOW following access review remediation and quarterly re-certification rollout.</div>
       </div>
