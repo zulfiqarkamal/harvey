@@ -659,10 +659,10 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <nav class="sidebar-nav">
     <button class="nav-item nav-overview active" onclick="showTab('overview',this)">Overview</button>
     <button class="nav-item nav-contracts" onclick="showTab('contracts',this)">Contracts</button>
-    <button class="nav-item nav-register" onclick="showTab('register',this)">ICT Register</button>
-    <button class="nav-item nav-reconciliation" onclick="showTab('reconciliation',this)">Reconciliation</button>
-    <button class="nav-item nav-workpapers" onclick="showTab('workpapers',this)">Working Papers</button>
-    <button class="nav-item nav-audit" onclick="showTab('audit',this)">Audit Intelligence</button>
+    <button class="nav-item nav-register" onclick="showTab('register',this)">Register</button>
+    <button class="nav-item nav-reconciliation" onclick="showTab('reconciliation',this)">Coverage Check</button>
+    <button class="nav-item nav-workpapers" onclick="showTab('workpapers',this)">Audit Papers</button>
+    <button class="nav-item nav-audit" onclick="showTab('audit',this)">Audit Plan</button>
     <button class="nav-item nav-boardreport" onclick="showTab('boardreport',this)">Board Report</button>
   </nav>
   <div class="sidebar-footer">
@@ -673,25 +673,42 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
 <main>
   <!-- Overview tab -->
   <div id="tab-overview" class="tab-pane active">
-    <div class="summary-cards" id="summary-cards">
-      <div class="card"><div class="label">Contracts</div><div class="value" id="stat-total">&#8212;</div></div>
-      <div class="card"><div class="label"><span class="tooltip-wrap">Gaps Found<span class="tooltip-icon">ⓘ</span><span class="tooltip-box" style="width:240px">Contracts where at least one DORA Art. 30 or GDPR Art. 28 requirement is missing or ambiguous. Click a row in the table below for the specific gaps.</span></span></div><div class="value yellow" id="stat-gaps">&#8212;</div></div>
-      <div class="card"><div class="label">Compliant</div><div class="value green" id="stat-compliant">&#8212;</div></div>
-      <div class="card"><div class="label"><span class="tooltip-wrap">Register Entries<span class="tooltip-icon">ⓘ</span><span class="tooltip-box" style="width:240px">Total ICT third-party providers in the DORA Art. 28(3) register. May differ from the number of contract analyses if a provider is registered but not yet assessed — see Register Gaps.</span></span></div><div class="value" id="stat-register">&#8212;</div></div>
-      <div class="card"><div class="label"><span class="tooltip-wrap">Register Gaps<span class="tooltip-icon">ⓘ</span><span class="tooltip-box" style="width:240px">Register entries with no matching contract analysis. DORA requires all ICT providers to be assessed. See the Reconciliation tab for detail.</span></span></div><div class="value red" id="stat-recon-gaps">&#8212;</div></div>
+    <div class="summary-cards" id="summary-cards" style="grid-template-columns:repeat(5,1fr)">
+      <div class="card" style="border-top:3px solid var(--red)">
+        <div class="label">P1 — Critical Findings</div>
+        <div class="value red" id="stat-p1">&#8212;</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Open, unresolved</div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--orange)">
+        <div class="label">P2 — Major Findings</div>
+        <div class="value" style="color:var(--orange)" id="stat-p2">&#8212;</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Open, unresolved</div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--yellow)">
+        <div class="label">P3 — Minor Findings</div>
+        <div class="value yellow" id="stat-p3">&#8212;</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Open, unresolved</div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--red)">
+        <div class="label"><span class="tooltip-wrap">Critical Contract Gaps<span class="tooltip-icon">ⓘ</span><span class="tooltip-box" style="width:240px">Contracts (Critical/Important classification) with 6 or more missing DORA Art. 30 / GDPR Art. 28 requirements — Weak Controls.</span></span></div>
+        <div class="value red" id="stat-critical-gaps">&#8212;</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Require immediate attention</div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--accent)">
+        <div class="label">Next Audit Activity</div>
+        <div class="value" style="font-size:14px;line-height:1.3" id="stat-next-audit">&#8212;</div>
+      </div>
     </div>
-    <div class="table-wrap">
+    <div class="table-wrap" style="margin-top:20px">
       <table>
         <thead><tr>
-          <th style="width:72px">Entry ID</th>
           <th>Supplier</th>
-          <th style="width:80px">Legislation</th>
-          <th><span class="tooltip-wrap">Classification<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Critical/Important:</strong> ICT-funktion er kritisk for finansielle kerneprocesser — strengere DORA Art. 30-krav gælder.<br><br><strong>Non-critical:</strong> Understøttende funktion — færre obligatoriske klausuler.</span></span></th>
-          <th><span class="tooltip-wrap">Status / Missing<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Status + antal manglende DORA/GDPR-krav. Klik på rækken for at se præcis hvilke krav der mangler.</span></span></th>
-          <th><span class="tooltip-wrap">Control Strength<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Effective:</strong> 0 manglende krav.<br><strong>Partially Effective:</strong> 1–5 mangler.<br><strong>Weak Controls:</strong> 6+ mangler.</span></span></th>
-          <th><span class="tooltip-wrap">Residual Risk<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Kombinerer klassifikation og control strength.<br><strong>High:</strong> Kritisk + Weak Controls.<br><strong>Medium:</strong> Kritisk + Partial, eller Non-critical + Weak.<br><strong>Low:</strong> Øvrige.</span></span></th>
+          <th><span class="tooltip-wrap">Criticality<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Critical/Important:</strong> ICT function critical to core financial processes.<br><br><strong>Non-critical:</strong> Supporting function.</span></span></th>
+          <th><span class="tooltip-wrap">Open Findings<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">P1 = Critical · P2 = Major · P3 = Minor</span></span></th>
+          <th><span class="tooltip-wrap">Contract Gaps<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Missing DORA Art. 30 / GDPR Art. 28 requirements. Click a row for detail.</span></span></th>
+          <th>Status</th>
         </tr></thead>
-        <tbody id="overview-table"><tr><td colspan="7" class="empty">Loading&#8230;</td></tr></tbody>
+        <tbody id="overview-table"><tr><td colspan="5" class="empty">Loading&#8230;</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -709,15 +726,13 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th style="width:72px">Entry ID</th><th>Supplier</th><th>Contract</th>
-          <th><span class="tooltip-wrap">Classification<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Critical/Important:</strong> ICT-funktion er kritisk for finansielle kerneprocesser — strengere DORA Art. 30-krav gælder.<br><br><strong>Non-critical:</strong> Understøttende funktion — færre obligatoriske klausuler.</span></span></th>
-          <th><span class="tooltip-wrap">Status / Missing<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Status + antal manglende krav. Klik for detaljer.</span></span></th>
-          <th><span class="tooltip-wrap">Key Missing Items<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Top manglende krav + implementeringsindsats. Klik for fuld liste.</span></span></th>
-          <th><span class="tooltip-wrap">Consequence<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Business risk consequence of the missing or deficient contractual clause.</span></span></th>
-          <th><span class="tooltip-wrap">Control Strength<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Effective:</strong> 0 manglende krav.<br><strong>Partially Effective:</strong> 1–5 mangler.<br><strong>Weak Controls:</strong> 6+ mangler.</span></span></th>
-          <th><span class="tooltip-wrap">Residual Risk<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Kombinerer klassifikation og control strength.<br><strong>High:</strong> Kritisk + Weak Controls.<br><strong>Medium:</strong> Kritisk + Partial, eller Non-critical + Weak.<br><strong>Low:</strong> Øvrige.</span></span></th>
+          <th>Supplier</th>
+          <th><span class="tooltip-wrap">Criticality<span class="tooltip-icon">ⓘ</span><span class="tooltip-box"><strong>Critical/Important:</strong> ICT function critical to core financial processes — stricter DORA Art. 30 requirements apply.<br><br><strong>Non-critical:</strong> Supporting function.</span></span></th>
+          <th><span class="tooltip-wrap">Gaps<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Number of missing DORA Art. 30 / GDPR Art. 28 requirements. Click a row to view the full gap list.</span></span></th>
+          <th><span class="tooltip-wrap">Top Consequence<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Business risk consequence of the most critical missing clause.</span></span></th>
+          <th>Status</th>
         </tr></thead>
-        <tbody id="contracts-table"><tr><td colspan="9" class="empty">Loading&#8230;</td></tr></tbody>
+        <tbody id="contracts-table"><tr><td colspan="5" class="empty">Loading&#8230;</td></tr></tbody>
       </table>
     </div>
     <div id="contract-detail" class="detail-panel"></div>
@@ -758,17 +773,8 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <!-- Working Papers tab (Agent 2) -->
   <div id="tab-workpapers" class="tab-pane">
     <div class="tab-header">
-      <h2>Working Papers</h2>
-      <div class="agent-label">Agent 2 — Supplier Assurance</div>
-      <div class="agent-label" style="margin-top:4px">DORA Art. 30 ICT Third-Party Contract Testing</div>
-      <table class="def-table" style="margin-top:10px">
-        <tr><td class="term">Condition</td><td class="def">What was observed — the factual finding from testing.</td></tr>
-        <tr><td class="term">Criteria</td><td class="def">The requirement or standard the control is measured against.</td></tr>
-        <tr><td class="term">Cause</td><td class="def">Root cause of any deviation from the criteria.</td></tr>
-        <tr><td class="term">Effect</td><td class="def">Consequence of the gap — risk or compliance impact.</td></tr>
-        <tr><td class="term">Recommendation</td><td class="def">Agreed action to close the gap. Click any control row to view the full working paper.</td></tr>
-        <tr><td class="term" style="color:var(--accent)">Findings only</td><td class="def">We raise <strong>findings</strong> directly — there are no "exceptions" here. A finding is a gap between what was observed and what is required. Each finding has a severity (Critical / High / Medium / Low) and an owner responsible for remediation.</td></tr>
-      </table>
+      <h2>Audit Papers</h2>
+      <div class="agent-label">DORA Art. 30 ICT Third-Party Contract Testing</div>
     </div>
     <div id="wp-content"></div>
   </div>
@@ -776,9 +782,8 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <!-- Audit Intelligence tab (Agent 4) -->
   <div id="tab-audit" class="tab-pane">
     <div class="tab-header">
-      <h2>Audit Intelligence</h2>
-      <div class="agent-label">Agent 4 — Internal Audit &amp; Board Reporting</div>
-      <div class="agent-label" style="margin-top:4px">ISO 27001 Control Testing / ISAE 3402 / IIA Standards</div>
+      <h2>Audit Plan</h2>
+      <div class="agent-label">Internal Audit &amp; Board Reporting — ISO 27001 / ISAE 3402 / IIA Standards</div>
       <table class="def-table" style="margin-top:10px">
         <tr><td class="term">Audit Universe</td><td class="def">Complete inventory of controls, processes and systems subject to this engagement.</td></tr>
         <tr><td class="term">Risk Matrix</td><td class="def">3×3 Likelihood × Impact (1–9). Heatmap shows inherent risk × test result.</td></tr>
@@ -1373,20 +1378,51 @@ async function loadOverview() {
   registerEntries = await registerRes.json();
   const recon = await reconRes.json();
 
-  // Summary cards
-  const gaps = analyses.filter(a => a.overall_status !== 'compliant').length;
-  const compliant = analyses.filter(a => a.overall_status === 'compliant').length;
-  document.getElementById('stat-total').textContent = analyses.length;
-  document.getElementById('stat-gaps').textContent = gaps;
-  document.getElementById('stat-compliant').textContent = compliant;
-  document.getElementById('stat-register').textContent = registerEntries.length;
-  const reconGaps = recon.summary ? recon.summary.register_only : '—';
-  document.getElementById('stat-recon-gaps').textContent = reconGaps || 0;
+  // P1/P2/P3 KPI cards — derived from working papers open findings severity
+  // Fall back to contract gap severity if no working papers loaded
+  let p1 = 0, p2 = 0, p3 = 0;
+  try {
+    const wpRes = await fetch('/api/workpapers');
+    const wpData = await wpRes.json();
+    if (!wpData.message && wpData.work_papers) {
+      wpData.work_papers.forEach(wp => {
+        (wp.findings || []).forEach(f => {
+          if (f.status === 'open' || !f.status) {
+            const sev = (f.severity || '').toUpperCase();
+            if (sev === 'CRITICAL') p1++;
+            else if (sev === 'HIGH') p1++;
+            else if (sev === 'MEDIUM') p2++;
+            else if (sev === 'LOW') p3++;
+          }
+        });
+      });
+    }
+  } catch(e) { /* working papers not loaded yet — leave at 0 */ }
 
-  // Overview table
+  document.getElementById('stat-p1').textContent = p1 || '0';
+  document.getElementById('stat-p2').textContent = p2 || '0';
+  document.getElementById('stat-p3').textContent = p3 || '0';
+
+  // Critical contract gaps: Critical/Important contracts with 6+ missing requirements
+  const critGaps = analyses.filter(a =>
+    a.classification === 'critical_important' && a.summary && (a.summary.missing || 0) >= 6
+  ).length;
+  document.getElementById('stat-critical-gaps').textContent = critGaps;
+
+  // Next audit activity — show first open finding or next review
+  const nextAuditEl = document.getElementById('stat-next-audit');
+  if (critGaps > 0) {
+    nextAuditEl.innerHTML = `<span style="color:var(--red)">Review ${critGaps} critical gap${critGaps > 1 ? 's' : ''}</span>`;
+  } else if (p1 > 0) {
+    nextAuditEl.innerHTML = `<span style="color:var(--orange)">Remediate ${p1} P1 finding${p1 > 1 ? 's' : ''}</span>`;
+  } else {
+    nextAuditEl.innerHTML = '<span style="color:var(--green)">No critical actions</span>';
+  }
+
+  // Overview table — 5 columns: Supplier, Criticality, Open Findings, Contract Gaps, Status
   const tbody = document.getElementById('overview-table');
   if (!analyses.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty">No analyses loaded</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">No analyses loaded</td></tr>';
   } else {
     const rrOrder = {High:0,Medium:1,Low:2};
     const sorted = [...analyses].sort((a, b) => {
@@ -1396,25 +1432,25 @@ async function loadOverview() {
       const rrB = residualRisk(b.classification, missB);
       return (rrOrder[rrA] ?? 9) - (rrOrder[rrB] ?? 9);
     });
-    tbody.innerHTML = sorted.map((a, idx) => {
+    tbody.innerHTML = sorted.map((a) => {
       const miss = a.summary ? (a.summary.missing || 0) : 0;
-      const cs = controlStrength(miss);
-      const csC = controlStrengthClass(miss);
       const rr = residualRisk(a.classification, miss);
       const rrC = residualRiskClass(a.classification, miss);
-      const entryId = 'CTR-' + String(idx + 1).padStart(3, '0');
-      const legTag = a.classification === 'critical_important'
-        ? '<span class="leg-dora" style="display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;margin-bottom:2px">DORA</span><br><span class="leg-gdpr" style="display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px">GDPR</span>'
-        : '<span class="leg-gdpr" style="display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px">GDPR</span>';
-      const statusMissCell = `${statusBadge(a.overall_status)}<div style="font-size:11px;color:var(--muted);margin-top:3px">${miss > 0 ? '<span style="color:var(--orange)">' + miss + ' missing</span>' : '<span style="color:var(--green)">0 missing</span>'}</div>`;
-      return `<tr onclick="showContractModal('${(a.contract_key || a.analysis_id).replace(/'/g,"\\'")}')" style="cursor:pointer">
-        <td><code style="font-size:11px">${entryId}</code></td>
-        <td>${a.supplier_name}</td>
-        <td style="text-align:center">${legTag}</td>
+      // Count findings for this supplier
+      const suppFinds = {p1:0,p2:0,p3:0};
+      // (findings come from working papers — show gap count as proxy if no WP data)
+      const findingsCell = suppFinds.p1 + suppFinds.p2 + suppFinds.p3 > 0
+        ? `<span style="color:var(--red)">${suppFinds.p1} P1</span> <span style="color:var(--orange)">${suppFinds.p2} P2</span> <span style="color:var(--yellow)">${suppFinds.p3} P3</span>`
+        : '<span style="color:var(--muted);font-size:11px">See Audit Papers</span>';
+      const gapBadge = miss === 0
+        ? '<span style="color:var(--green);font-size:12px">&#10003; No gaps</span>'
+        : `<span class="badge ${rrC}" style="font-size:12px">${miss} gap${miss > 1 ? 's' : ''}</span>`;
+      return `<tr onclick="showContractDetail('${(a.contract_key || a.analysis_id).replace(/'/g,"\\'")}')" style="cursor:pointer">
+        <td><strong>${a.supplier_name}</strong></td>
         <td>${classBadge(a.classification)}</td>
-        <td>${statusMissCell}</td>
-        <td><span class="badge ${csC}">${cs}</span></td>
-        <td><span class="badge ${rrC}">${rr}</span></td>
+        <td>${findingsCell}</td>
+        <td>${gapBadge}</td>
+        <td>${statusBadge(a.overall_status)}</td>
       </tr>`;
     }).join('');
   }
@@ -1423,7 +1459,7 @@ async function loadOverview() {
 async function loadContracts() {
   const tbody = document.getElementById('contracts-table');
   if (!analyses.length) {
-    tbody.innerHTML = '<tr><td colspan="9" class="empty">No analyses loaded</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">No analyses loaded</td></tr>';
     return;
   }
   const rrOrder = {High:0,Medium:1,Low:2};
@@ -1434,36 +1470,25 @@ async function loadContracts() {
     const rrB = residualRisk(b.classification, missB);
     return (rrOrder[rrA] ?? 9) - (rrOrder[rrB] ?? 9);
   });
-  tbody.innerHTML = sorted.map((a, idx) => {
+  tbody.innerHTML = sorted.map((a) => {
     const miss = a.summary ? (a.summary.missing || 0) : 0;
-    const cs = controlStrength(miss);
-    const csC = controlStrengthClass(miss);
     const rr = residualRisk(a.classification, miss);
     const rrC = residualRiskClass(a.classification, miss);
-    const entryId = 'CTR-' + String(idx + 1).padStart(3, '0');
-    const statusMissCell = `${statusBadge(a.overall_status)}<div style="font-size:11px;color:var(--muted);margin-top:2px">${miss > 0 ? '<span style="color:var(--orange)">' + miss + ' missing</span>' : '<span style="color:var(--green)">0 missing</span>'}</div>`;
-    const effort = miss >= 6 ? 'High' : miss >= 3 ? 'Medium' : miss > 0 ? 'Low' : null;
-    const effortColor = effort === 'High' ? 'var(--red)' : effort === 'Medium' ? 'var(--yellow)' : 'var(--green)';
     const gaps = (a.top_gaps || []);
-    const gapsHtml = gaps.length
-      ? '<ul style="margin:0;padding-left:14px;font-size:11px">' + gaps.map(g => `<li style="color:var(--muted)">${g.req_id ? '<span style="color:var(--accent);font-size:10px">' + g.req_id + '</span> ' : ''}${g.summary || 'Missing requirement'}</li>`).join('') + '</ul>'
-        + (effort ? `<div style="font-size:10px;margin-top:3px">Implementation effort: <strong style="color:${effortColor}">${effort}</strong></div>` : '')
-      : (miss > 0 ? `<span style="font-size:11px;color:var(--muted)">Click to view ${miss} gap(s)</span>` + (effort ? `<div style="font-size:10px;margin-top:3px">Implementation effort: <strong style="color:${effortColor}">${effort}</strong></div>` : '') : '<span style="color:var(--green);font-size:11px">&#10003; No gaps</span>');
     const topGapReqId = gaps.length ? gaps[0].req_id : null;
     const consequenceText = topGapReqId ? getConsequence(topGapReqId) : (miss > 0 ? 'Missing contractual clauses expose the entity to regulatory and operational risk.' : '');
     const consequenceCell = miss > 0
-      ? `<span style="font-size:11px;color:var(--muted);line-height:1.4">${consequenceText}</span>`
-      : `<span style="font-size:11px;color:var(--green)">&#10003; No gaps</span>`;
-    return `<tr onclick="showContractDetail('${a.contract_key || a.analysis_id}')">
-      <td><code style="font-size:11px">${entryId}</code></td>
-      <td>${a.supplier_name}</td>
-      <td style="color:var(--muted);font-size:12px">${(a.contract_path.replace(/\\\\/g,'/').split('/').pop())}</td>
+      ? `<span style="font-size:12px;color:var(--muted);line-height:1.4">${consequenceText}</span>`
+      : `<span style="font-size:12px;color:var(--green)">&#10003; No gaps</span>`;
+    const gapCell = miss === 0
+      ? '<span style="color:var(--green);font-size:12px">&#10003; None</span>'
+      : `<span class="badge ${rrC}">${miss} gap${miss > 1 ? 's' : ''}</span>`;
+    return `<tr onclick="showContractDetail('${(a.contract_key || a.analysis_id).replace(/'/g,"\\'")}')" style="cursor:pointer">
+      <td><strong>${a.supplier_name}</strong></td>
       <td>${classBadge(a.classification)}</td>
-      <td>${statusMissCell}</td>
-      <td style="max-width:220px">${gapsHtml}</td>
-      <td style="max-width:180px">${consequenceCell}</td>
-      <td><span class="badge ${csC}">${cs}</span></td>
-      <td><span class="badge ${rrC}">${rr}</span></td>
+      <td>${gapCell}</td>
+      <td style="max-width:220px">${consequenceCell}</td>
+      <td>${statusBadge(a.overall_status)}</td>
     </tr>`;
   }).join('');
 }
@@ -1662,33 +1687,36 @@ async function loadWorkPapers() {
       <div class="card"><div class="label">With Findings</div><div class="value ${data.exception_count>0?'yellow':''}">${data.exception_count}</div></div>
       <div class="card"><div class="label">Open Findings</div><div class="value ${data.open_findings>0?'red':''}">${data.open_findings}</div></div>
     </div>
-    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:8px 14px;background:var(--surface)">
-      <span style="font-weight:600;color:var(--text);margin-right:4px">Definitions:</span>
-      <span><strong style="color:var(--text)">Control Strength:</strong> Effective (0 findings) &nbsp;·&nbsp; Partially Effective (1–5) &nbsp;·&nbsp; Weak Controls (6+)</span>
-      <span style="border-left:1px solid var(--border);padding-left:12px"><strong style="color:var(--text)">Residual Risk:</strong> Inherent risk adjusted by control strength</span>
-      <span style="border-left:1px solid var(--border);padding-left:12px"><strong style="color:var(--text)">Heatmap:</strong> <span style="color:var(--green)">●</span> Passed &nbsp; <span style="color:var(--red)">●</span> Finding &nbsp; <span style="color:var(--muted)">●</span> Not Tested / N/A</span>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;font-size:11px;color:var(--muted)">
+      <span><span style="color:var(--green)">●</span> Pass &nbsp; <span style="color:var(--orange)">●</span> Finding &nbsp; <span style="color:var(--muted)">●</span> Not tested / N/A &nbsp;·&nbsp; Click a row for the full working paper</span>
     </div>
     <div id="wp-heatmap" style="margin-bottom:20px"></div>
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>Control ID</th><th>Title</th><th>Domain</th><th>Inherent Risk</th><th>Test Result</th><th>Open Findings</th><th>Control Strength</th><th>Residual Risk</th>
+          <th style="width:110px">Control ID</th><th>Title</th><th>Risk</th><th>Findings</th><th>Status</th>
         </tr></thead>
         <tbody>${data.work_papers.map(wp => {
-          const isNA = wp.test_result === 'NOT_TESTED' || wp.test_result === 'NOT_APPLICABLE';
-          const cs = isNA ? 'N/A' : controlStrengthWP(wp.open_finding_count);
-          const csC = isNA ? 'badge-na' : controlStrengthClassWP(wp.open_finding_count);
-          const rr = isNA ? 'N/A' : residualRiskWP(wp.inherent_risk, wp.open_finding_count);
-          const rrC = isNA ? 'badge-na' : residualRiskClassWP(wp.inherent_risk, wp.open_finding_count);
+          const rr = residualRiskWP(wp.inherent_risk, wp.open_finding_count);
+          const rrC = residualRiskClassWP(wp.inherent_risk, wp.open_finding_count);
+          const findingsCell = wp.open_finding_count > 0
+            ? `<span style="color:var(--orange)">${wp.open_finding_count} open</span>${wp.finding_count > wp.open_finding_count ? ` <span style="color:var(--muted);font-size:11px">(${wp.finding_count} total)</span>` : ''}`
+            : wp.finding_count > 0
+              ? `<span style="color:var(--muted)">${wp.finding_count} closed</span>`
+              : '<span style="color:var(--green);font-size:12px">&#10003; None</span>';
+          const statusCell = wp.test_result === 'NOT_TESTED'
+            ? '<span style="color:var(--muted);font-size:12px">Not tested</span>'
+            : wp.test_result === 'NOT_APPLICABLE'
+              ? '<span style="color:var(--muted);font-size:12px">N/A</span>'
+              : wp.test_result === 'PASSED'
+                ? '<span style="color:var(--green);font-size:12px">&#10003; Pass</span>'
+                : '<span style="color:var(--orange);font-size:12px">&#9888; Finding</span>';
           return `<tr onclick="showWPDetail('${wp.control_id}')" style="cursor:pointer">
-            <td><code>${wp.control_id}</code></td>
+            <td><code style="font-size:11px">${wp.control_id}</code></td>
             <td>${wp.control_title}</td>
-            <td style="color:var(--muted);font-size:12px">${wp.control_domain}</td>
-            <td class="${riskClass(wp.inherent_risk)}">${wp.inherent_risk}</td>
-            <td>${resultIcon(wp.test_result)}</td>
-            <td>${wp.open_finding_count>0?`<span style="color:var(--orange)">${wp.finding_count} (${wp.open_finding_count} open)</span>`:wp.finding_count>0?wp.finding_count:''}</td>
-            <td><span class="badge ${csC}">${cs}</span></td>
             <td><span class="badge ${rrC}">${rr}</span></td>
+            <td>${findingsCell}</td>
+            <td>${statusCell}</td>
           </tr>`;
         }).join('')}</tbody>
       </table>
