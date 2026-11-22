@@ -2545,38 +2545,101 @@ def _load_results_from_dir(results_dir: pathlib.Path) -> list[PipelineResult]:
 
 
 def _load_demo_results() -> tuple[list[PipelineResult], list[RegisterEntry]]:
-    """Load all 5 synthetic contracts and the sample register for demo mode."""
+    """Return instant hardcoded demo data — no pipeline calls, no AI spend."""
     contracts_dir = pathlib.Path(__file__).parent / "synthetic_contracts"
-    register_path = contracts_dir / "register_sample.yaml"
 
-    contract_specs = [
-        {"path": "contract_01_cloudhost.md", "supplier": "NordCloud Hosting A/S",
-         "classification": "critical_important", "contract_id": "NBS-ICT-2023-0047"},
-        {"path": "contract_02_payment.md", "supplier": "PayLink Technologies Ltd",
-         "classification": "critical_important", "contract_id": "FIN-PP-2022-091"},
-        {"path": "contract_03_legacy.md", "supplier": "DataCenter DK ApS",
-         "classification": "critical_important", "contract_id": "KAP-IT-2018-003"},
-        {"path": "contract_04_saas.md", "supplier": "ComplianceTools International BV",
-         "classification": "non_critical", "contract_id": "CT-SAAS-2024-0012"},
-        {"path": "contract_05_good.md", "supplier": "SecureVault Nordic A/S",
-         "classification": "critical_important", "contract_id": "NBI-ICT-2024-DOR-001"},
+    _DEMO_ASSESSMENTS_GAPS = [
+        {"requirement_id": "ART30-1", "requirement_article": "DORA Art. 30(1)", "requirement_summary": "Written contract required", "status": "missing", "risk_level": "High", "gap_detail": "No formal SLA or written agreement found."},
+        {"requirement_id": "ART30-2a", "requirement_article": "DORA Art. 30(2)(a)", "requirement_summary": "Service description", "status": "partial", "risk_level": "Medium", "gap_detail": "Service description present but lacks measurable SLAs."},
+        {"requirement_id": "ART30-2b", "requirement_article": "DORA Art. 30(2)(b)", "requirement_summary": "Locations of data processing", "status": "missing", "risk_level": "High", "gap_detail": "Data processing locations not specified."},
+        {"requirement_id": "ART30-2c", "requirement_article": "DORA Art. 30(2)(c)", "requirement_summary": "Availability provisions", "status": "missing", "risk_level": "High", "gap_detail": "No uptime/availability SLA present."},
+        {"requirement_id": "ART30-3", "requirement_article": "DORA Art. 30(3)", "requirement_summary": "Audit rights", "status": "missing", "risk_level": "High", "gap_detail": "Contract does not grant audit rights to the financial entity."},
+        {"requirement_id": "ART30-4", "requirement_article": "DORA Art. 30(4)", "requirement_summary": "Sub-contracting provisions", "status": "missing", "risk_level": "Medium", "gap_detail": "Sub-contracting chain not disclosed."},
+        {"requirement_id": "GDPR28-3c", "requirement_article": "GDPR Art. 28(3)(c)", "requirement_summary": "Security measures", "status": "partial", "risk_level": "Medium", "gap_detail": "Generic security language; no specific technical measures."},
+        {"requirement_id": "GDPR28-3h", "requirement_article": "GDPR Art. 28(3)(h)", "requirement_summary": "Deletion/return of data", "status": "missing", "risk_level": "Medium", "gap_detail": "No data return or deletion obligation on termination."},
     ]
 
-    pipeline = SupplierAssurancePipeline()
-    results = []
-    for spec in contract_specs:
-        contract_path = contracts_dir / spec["path"]
-        if not contract_path.exists():
-            continue
-        r = pipeline.run(
-            contract_path=contract_path,
-            supplier_name=spec["supplier"],
-            customer_name="Demo Customer",
-            classification=spec["classification"],
-            contract_id=spec["contract_id"],
-        )
-        results.append(r)
+    _DEMO_ASSESSMENTS_PARTIAL = [
+        {"requirement_id": "ART30-1", "requirement_article": "DORA Art. 30(1)", "requirement_summary": "Written contract required", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
+        {"requirement_id": "ART30-2a", "requirement_article": "DORA Art. 30(2)(a)", "requirement_summary": "Service description", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
+        {"requirement_id": "ART30-2b", "requirement_article": "DORA Art. 30(2)(b)", "requirement_summary": "Locations of data processing", "status": "partial", "risk_level": "Medium", "gap_detail": "EU processing stated but specific countries not listed."},
+        {"requirement_id": "ART30-2c", "requirement_article": "DORA Art. 30(2)(c)", "requirement_summary": "Availability provisions", "status": "partial", "risk_level": "Medium", "gap_detail": "99.5% uptime stated but no degraded service compensation."},
+        {"requirement_id": "ART30-3", "requirement_article": "DORA Art. 30(3)", "requirement_summary": "Audit rights", "status": "missing", "risk_level": "High", "gap_detail": "Audit rights not explicitly granted."},
+        {"requirement_id": "GDPR28-3c", "requirement_article": "GDPR Art. 28(3)(c)", "requirement_summary": "Security measures", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
+        {"requirement_id": "GDPR28-3h", "requirement_article": "GDPR Art. 28(3)(h)", "requirement_summary": "Deletion/return of data", "status": "partial", "risk_level": "Medium", "gap_detail": "Deletion on request stated; retention schedule absent."},
+    ]
 
+    _DEMO_ASSESSMENTS_COMPLIANT = [
+        {"requirement_id": "ART30-1", "requirement_article": "DORA Art. 30(1)", "requirement_summary": "Written contract required", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
+        {"requirement_id": "ART30-2a", "requirement_article": "DORA Art. 30(2)(a)", "requirement_summary": "Service description", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
+        {"requirement_id": "ART30-2b", "requirement_article": "DORA Art. 30(2)(b)", "requirement_summary": "Locations of data processing", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
+        {"requirement_id": "ART30-2c", "requirement_article": "DORA Art. 30(2)(c)", "requirement_summary": "Availability provisions", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
+        {"requirement_id": "ART30-3", "requirement_article": "DORA Art. 30(3)", "requirement_summary": "Audit rights", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
+        {"requirement_id": "ART30-4", "requirement_article": "DORA Art. 30(4)", "requirement_summary": "Sub-contracting provisions", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
+        {"requirement_id": "GDPR28-3c", "requirement_article": "GDPR Art. 28(3)(c)", "requirement_summary": "Security measures", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
+        {"requirement_id": "GDPR28-3h", "requirement_article": "GDPR Art. 28(3)(h)", "requirement_summary": "Deletion/return of data", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
+    ]
+
+    specs = [
+        {
+            "analysis_id": "demo-001", "path": str(contracts_dir / "contract_01_cloudhost.md"),
+            "supplier": "NordCloud Hosting A/S", "classification": "critical_important",
+            "status": "gaps_found",
+            "summary": {"total": 12, "compliant": 4, "partial": 2, "missing": 6, "not_applicable": 0},
+            "assessments": _DEMO_ASSESSMENTS_GAPS,
+            "warnings": [],
+        },
+        {
+            "analysis_id": "demo-002", "path": str(contracts_dir / "contract_02_payment.md"),
+            "supplier": "PayLink Technologies Ltd", "classification": "critical_important",
+            "status": "gaps_found",
+            "summary": {"total": 12, "compliant": 5, "partial": 4, "missing": 3, "not_applicable": 0},
+            "assessments": _DEMO_ASSESSMENTS_PARTIAL,
+            "warnings": [],
+        },
+        {
+            "analysis_id": "demo-003", "path": str(contracts_dir / "contract_03_legacy.md"),
+            "supplier": "DataCenter DK ApS", "classification": "critical_important",
+            "status": "gaps_found",
+            "summary": {"total": 12, "compliant": 2, "partial": 3, "missing": 7, "not_applicable": 0},
+            "assessments": _DEMO_ASSESSMENTS_GAPS,
+            "warnings": ["Contract predates DORA — full re-negotiation recommended."],
+        },
+        {
+            "analysis_id": "demo-004", "path": str(contracts_dir / "contract_04_saas.md"),
+            "supplier": "ComplianceTools International BV", "classification": "non_critical",
+            "status": "gaps_found",
+            "summary": {"total": 8, "compliant": 5, "partial": 2, "missing": 1, "not_applicable": 2},
+            "assessments": _DEMO_ASSESSMENTS_PARTIAL,
+            "warnings": [],
+        },
+        {
+            "analysis_id": "demo-005", "path": str(contracts_dir / "contract_05_good.md"),
+            "supplier": "SecureVault Nordic A/S", "classification": "critical_important",
+            "status": "compliant",
+            "summary": {"total": 12, "compliant": 12, "partial": 0, "missing": 0, "not_applicable": 0},
+            "assessments": _DEMO_ASSESSMENTS_COMPLIANT,
+            "warnings": [],
+        },
+    ]
+
+    results = [
+        PipelineResult(
+            analysis_id=s["analysis_id"],
+            contract_path=s["path"],
+            supplier_name=s["supplier"],
+            classification=s["classification"],
+            overall_status=s["status"],
+            summary=s["summary"],
+            output_paths={},
+            markdown_report="",
+            warnings=s["warnings"],
+            assessments=s["assessments"],
+        )
+        for s in specs
+    ]
+
+    register_path = contracts_dir / "register_sample.yaml"
     register = load_register(register_path) if register_path.exists() else []
     return results, register
 
