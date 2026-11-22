@@ -341,7 +341,13 @@ def get_risk_heatmap():
 @app.get("/", response_class=HTMLResponse)
 def dashboard():
     """Serve the main dashboard HTML."""
-    return HTMLResponse(content=_DASHBOARD_HTML)
+    return HTMLResponse(
+        content=_DASHBOARD_HTML,
+        headers={
+            "Cache-Control": "no-store, no-cache, must-revalidate",
+            "Pragma": "no-cache",
+        },
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -704,6 +710,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
         <div class="value" style="font-size:14px;line-height:1.3" id="stat-next-audit">&#8212;</div>
       </div>
     </div>
+    <div id="load-status" style="font-size:12px;color:var(--muted);margin-bottom:6px;padding:4px 8px;background:var(--surface-1);border-radius:4px;display:none"></div>
     <div class="table-wrap" style="margin-top:20px">
       <table>
         <thead><tr>
@@ -1491,8 +1498,19 @@ async function loadBoardReport() {
   showLFAP('Q1', document.querySelector('.lfap-tab'));
 }
 
+function _dbgStatus(msg) {
+  const el = document.getElementById('load-status');
+  if (el) { el.style.display='block'; el.textContent = '⏳ ' + msg; }
+  console.log('[dashboard]', msg);
+}
+function _dbgClear() {
+  const el = document.getElementById('load-status');
+  if (el) el.style.display = 'none';
+}
+
 async function loadOverview() {
   let analysisRes, registerRes, reconRes;
+  _dbgStatus('Fetching /api/analyses, /api/register, /api/reconciliation…');
   try {
     [analysisRes, registerRes, reconRes] = await Promise.all([
       fetch('/api/analyses'),
@@ -1509,6 +1527,7 @@ async function loadOverview() {
       `<tr><td colspan="7" class="empty" style="color:var(--red)">API error ${analysisRes.status} on /api/analyses</td></tr>`;
     return;
   }
+  _dbgStatus('Parsing JSON responses…');
   analyses = await analysisRes.json();
   registerEntries = await registerRes.json();
   const recon = await reconRes.json();
@@ -1558,6 +1577,7 @@ async function loadOverview() {
   }
 
   // Overview table — 5 columns: Supplier, Criticality, Open Findings, Contract Gaps, Status
+  _dbgStatus(`Rendering ${analyses.length} suppliers…`);
   const tbody = document.getElementById('overview-table');
   if (!analyses.length) {
     tbody.innerHTML = '<tr><td colspan="5" class="empty">No analyses loaded</td></tr>';
@@ -1592,6 +1612,7 @@ async function loadOverview() {
       </tr>`;
     }).join('');
   }
+  _dbgClear();
 }
 
 async function loadContracts() {
