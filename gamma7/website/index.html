@@ -1,0 +1,1245 @@
+<!DOCTYPE html><html lang="da" data-lang="da"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style rel="stylesheet" type="text/css">@charset "utf-8";
+
+:root { color-scheme: light; box-sizing: border-box; padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px); }
+
+html { scroll-padding-top: env(safe-area-inset-top,0px); }
+
+body { margin: 0px; padding: 0px; font: 14px -apple-system, BlinkMacSystemFont, sans-serif; background: rgb(19, 44, 67); color: rgb(237, 243, 255); }
+
+img { max-width: 100%; }
+
+[hidden]:not([hidden="until-found" i]) { display: none !important; }</style><style rel="stylesheet" type="text/css">@charset "utf-8";
+
+:root { --bg: #0D1E37; --bg-alt: #112445; --surface: #172D52; --surface-hi: #1D3A6A; --border: rgba(140,180,255,0.10); --border-mid: rgba(140,180,255,0.18); --accent: #00D4B4; --accent-dim: rgba(0,212,180,0.13); --accent-glow: rgba(0,212,180,0.28); --accent-muted: #4AE8CC; --warn: #F59E0B; --crit: #EF4444; --text: #EDF3FF; --text-2: #8DB4D6; --text-dim: #5A87AD; --font-d: 'Cormorant', Georgia, serif; --font-b: 'Inter', -apple-system, sans-serif; color-scheme: dark; }
+
+*, ::before, ::after { box-sizing: border-box; margin: 0px; padding: 0px; }
+
+body { background: var(--bg); color: var(--text); font-family: var(--font-b); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+.wrap { max-width: 1100px; margin: 0px auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+.eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); }
+
+a { color: inherit; }
+
+.reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.65s, transform 0.65s; }
+
+.reveal.vis { opacity: 1; transform: translateY(0px); }
+
+.reveal-up { opacity: 0; transform: translateY(20px); transition: opacity 0.5s, transform 0.5s; }
+
+.reveal-up.vis { opacity: 1; transform: translateY(0px); }
+
+.reveal-left { opacity: 0; transform: translateX(-30px); transition: opacity 0.6s, transform 0.6s; }
+
+.reveal-left.vis { opacity: 1; transform: translateX(0px); }
+
+.reveal-right { opacity: 0; transform: translateX(30px); transition: opacity 0.6s, transform 0.6s; }
+
+.reveal-right.vis { opacity: 1; transform: translateX(0px); }
+
+.stagger > * { opacity: 0; transform: translateY(22px); transition: opacity 0.5s, transform 0.5s; }
+
+.stagger.vis > :nth-child(1) { transition-delay: 0s; opacity: 1; transform: none; }
+
+.stagger.vis > :nth-child(2) { transition-delay: 0.08s; opacity: 1; transform: none; }
+
+.stagger.vis > :nth-child(3) { transition-delay: 0.16s; opacity: 1; transform: none; }
+
+.stagger.vis > :nth-child(4) { transition-delay: 0.24s; opacity: 1; transform: none; }
+
+.stagger.vis > :nth-child(5) { transition-delay: 0.32s; opacity: 1; transform: none; }
+
+.stagger.vis > :nth-child(6) { transition-delay: 0.4s; opacity: 1; transform: none; }
+
+body::before { content: ""; position: fixed; inset: 0px 0px auto; height: env(safe-area-inset-top, 0px); z-index: 101; background: rgba(13, 30, 55, 0.97); }
+
+nav { position: fixed; top: env(safe-area-inset-top, 0px); left: 0px; right: 0px; z-index: 100; background: rgba(13, 30, 55, 0.88); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); transition: background 0.3s; }
+
+.nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 60px; max-width: 1100px; margin: 0px auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+.logo { display: flex; align-items: center; gap: 9px; text-decoration: none; color: var(--text); flex-shrink: 0; }
+
+.logo-mark { width: 28px; height: 28px; background: var(--accent); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: rgb(13, 30, 55); flex-shrink: 0; animation: 3s ease-in-out 0s infinite normal none running logo-breathe; }
+
+@keyframes logo-breathe { 
+  0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+  50% { box-shadow: 0 0 12px 4px var(--accent-glow); }
+}
+
+.logo-text { font-size: 13px; font-weight: 600; letter-spacing: 0.1em; }
+
+.nav-links { display: flex; gap: 24px; list-style: none; align-items: center; }
+
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+}
+
+.nav-links a { font-size: 13px; font-weight: 500; color: var(--text-2); text-decoration: none; transition: color 0.2s; }
+
+.nav-links a:hover { color: var(--text); }
+
+.nav-assess { font-size: 12px; font-weight: 600; border: 1px solid rgba(0, 201, 167, 0.3); border-radius: 20px; padding: 4px 12px; color: var(--accent) !important; transition: background 0.2s, border-color 0.2s !important; }
+
+.nav-assess:hover { background: var(--accent-dim); border-color: var(--accent) !important; }
+
+.btn-p { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: rgb(13, 30, 55); background: var(--accent); border-width: medium; border-style: none; border-color: currentcolor; border-image: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; text-decoration: none; transition: opacity 0.15s, transform 0.1s, box-shadow 0.2s; white-space: nowrap; }
+
+.btn-p:hover { opacity: 0.86; box-shadow: 0 0 20px var(--accent-glow); }
+
+.btn-p:active { transform: scale(0.98); }
+
+.btn-g { display: inline-flex; align-items: center; gap: 5px; font-size: 14px; font-weight: 500; color: var(--text); background: transparent; border: 1px solid var(--border-mid); border-radius: 6px; padding: 10px 20px; cursor: pointer; text-decoration: none; transition: border-color 0.2s, background 0.2s; }
+
+.btn-g:hover { border-color: var(--accent); background: var(--accent-dim); }
+
+.hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-top: calc(env(safe-area-inset-top, 0px) + 100px); padding-bottom: 80px; position: relative; overflow: hidden; }
+
+#hero-canvas { position: absolute; inset: 0px; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+
+.hero-grid { position: absolute; inset: 0px; background-image: linear-gradient(rgba(0, 201, 167, 0.027) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 201, 167, 0.027) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(85% 70% at 50% 0%, black 30%, transparent 100%); z-index: 0; }
+
+.hero-glow { position: absolute; top: -15%; left: 50%; transform: translateX(-50%); width: 800px; height: 600px; pointer-events: none; z-index: 0; background: radial-gradient(rgba(0, 201, 167, 0.08) 0%, transparent 65%); animation: 5s ease-in-out 0s infinite normal none running glow-breathe; }
+
+@keyframes glow-breathe { 
+  0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.6; transform: translateX(-50%) scale(1.08); }
+}
+
+.orb { position: absolute; border-radius: 50%; filter: blur(70px); pointer-events: none; z-index: 0; }
+
+.orb-1 { width: 350px; height: 350px; top: 10%; right: -80px; background: rgba(0, 201, 167, 0.06); animation: 9s ease-in-out 0s infinite normal none running float-orb; }
+
+.orb-2 { width: 250px; height: 250px; bottom: 15%; left: -50px; background: rgba(0, 100, 255, 0.05); animation: 11s ease-in-out 0s infinite reverse none running float-orb; }
+
+@keyframes float-orb { 
+  0%, 100% { transform: translateY(0px) scale(1); }
+  33% { transform: translateY(-25px) scale(1.04); }
+  66% { transform: translateY(10px) scale(0.97); }
+}
+
+.hero-body-wrap { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: start; }
+
+@media (max-width: 820px) {
+  .hero-body-wrap { grid-template-columns: 1fr; }
+  .signal-widget { display: none; }
+}
+
+.hero-h1 { font-family: var(--font-d); font-size: clamp(2.9rem, 6.5vw, 5.2rem); font-weight: 500; line-height: 1.07; letter-spacing: -0.01em; text-wrap: balance; margin-block: 18px 22px; }
+
+.hero-h1 em { font-style: italic; color: var(--accent); }
+
+.hero-p { font-size: 17px; color: var(--text-2); max-width: 540px; margin-bottom: 34px; line-height: 1.65; }
+
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
+
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.pill { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: var(--text-2); background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; transition: border-color 0.2s, color 0.2s; }
+
+.pill:hover { border-color: var(--border-mid); color: var(--text); }
+
+.pill::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; animation: 2.5s ease-in-out 0s infinite normal none running dot-pulse; }
+
+@keyframes dot-pulse { 
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.signal-widget { background: var(--surface); border: 1px solid var(--border-mid); border-radius: 12px; padding: 22px; width: 230px; flex-shrink: 0; position: relative; overflow: hidden; box-shadow: rgba(0, 0, 0, 0.4) 0px 20px 60px; }
+
+.signal-widget::before { content: ""; position: absolute; top: 0px; left: 0px; right: 0px; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); animation: 3s linear 0s infinite normal none running scan; }
+
+@keyframes scan { 
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.sw-head { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
+
+.sw-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; animation: 2s ease-in-out 0s infinite normal none running sw-dot-pulse; }
+
+@keyframes sw-dot-pulse { 
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--accent-glow); }
+  50% { opacity: 0.7; box-shadow: transparent 0px 0px 0px 5px; }
+}
+
+.sw-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; }
+
+.sw-value { font-family: var(--font-d); font-size: 1.9rem; font-weight: 600; color: var(--text); line-height: 1; margin-bottom: 4px; }
+
+.sw-trend { font-size: 12px; color: var(--accent); font-weight: 500; margin-bottom: 20px; }
+
+.sw-steps { display: flex; flex-direction: column; gap: 9px; }
+
+.sw-step { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-2); }
+
+.sw-num { font-size: 10px; font-weight: 700; color: var(--accent-muted); font-variant-numeric: tabular-nums; letter-spacing: 0.05em; flex-shrink: 0; }
+
+.sw-bar { flex: 1 1 0%; height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+
+.sw-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 1.5s; }
+
+section { padding-block: 90px; }
+
+section.alt { background: var(--bg-alt); }
+
+.sec-hd { margin-bottom: 52px; }
+
+.sec-hd h2 { font-family: var(--font-d); font-size: clamp(2rem, 4.5vw, 3.2rem); font-weight: 500; line-height: 1.12; text-wrap: balance; margin-block: 10px 0px; }
+
+.sec-hd h2 em { font-style: italic; color: var(--accent); }
+
+.sec-hd p { color: var(--text-2); font-size: 16px; max-width: 580px; margin-top: 14px; line-height: 1.65; }
+
+.sa-section { background: var(--bg); position: relative; overflow: hidden; }
+
+.sa-section::before { content: ""; position: absolute; inset: 0px; background: radial-gradient(70% 60%, rgba(0, 201, 167, 0.043) 0%, transparent 70%); pointer-events: none; }
+
+.sa-section::after { content: ""; position: absolute; left: 0px; right: 0px; bottom: 0px; height: 1px; background: linear-gradient(90deg, transparent, var(--border-mid), transparent); }
+
+.sa-heading-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 48px; }
+
+.sa-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-bottom: 44px; }
+
+.sa-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 26px 22px; display: flex; flex-direction: column; gap: 12px; cursor: pointer; text-decoration: none; transition: border-color 0.25s, background 0.25s, transform 0.2s, box-shadow 0.25s; position: relative; overflow: hidden; }
+
+.sa-card::before { content: ""; position: absolute; top: 0px; left: 0px; right: 0px; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-muted)); transform: scaleX(0); transform-origin: left center; transition: transform 0.3s; }
+
+.sa-card:hover { border-color: rgba(0, 201, 167, 0.35); background: var(--surface-hi); transform: translateY(-4px); box-shadow: rgba(0, 0, 0, 0.35) 0px 16px 40px, rgba(0, 201, 167, 0.15) 0px 0px 0px 1px; }
+
+.sa-card:hover::before { transform: scaleX(1); }
+
+.sa-icon { width: 38px; height: 38px; border-radius: 9px; background: var(--accent-dim); border: 1px solid rgba(0, 201, 167, 0.2); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+
+.sa-card-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-muted); }
+
+.sa-card-name { font-family: var(--font-d); font-size: 1.15rem; font-weight: 600; color: var(--text); line-height: 1.25; }
+
+.sa-card-desc { font-size: 13px; color: var(--text-2); line-height: 1.55; flex: 1 1 0%; }
+
+.sa-card-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+.sa-card-time { font-size: 11px; color: var(--text-dim); font-weight: 500; }
+
+.sa-card-go { font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 0.03em; transition: letter-spacing 0.2s; }
+
+.sa-card:hover .sa-card-go { letter-spacing: 0.08em; }
+
+.sa-cta-row { text-align: center; }
+
+.sa-cta-row p { font-size: 12px; color: var(--text-dim); margin-top: 14px; }
+
+.btn-sa { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: var(--accent); background: var(--accent-dim); border: 1px solid rgba(0, 201, 167, 0.3); border-radius: 8px; padding: 14px 30px; cursor: pointer; text-decoration: none; transition: background 0.2s, border-color 0.2s, box-shadow 0.2s; }
+
+.btn-sa:hover { background: rgba(0, 201, 167, 0.18); border-color: var(--accent); box-shadow: 0 0 24px var(--accent-glow); }
+
+.svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+
+.svc-card { background: var(--surface); padding: 30px 28px; display: flex; flex-direction: column; gap: 14px; transition: background 0.2s, transform 0.2s; }
+
+.svc-card:hover { background: var(--surface-hi); }
+
+.svc-num { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-muted); font-variant-numeric: tabular-nums; }
+
+.svc-title { font-family: var(--font-d); font-size: 1.35rem; font-weight: 600; line-height: 1.2; color: var(--text); }
+
+.svc-desc { font-size: 14px; color: var(--text-2); line-height: 1.6; flex: 1 1 0%; }
+
+.svc-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+
+.svc-list li { font-size: 13px; color: var(--text-dim); display: flex; align-items: flex-start; gap: 7px; }
+
+.svc-list li::before { content: "→"; color: var(--accent); font-size: 11px; flex-shrink: 0; margin-top: 2px; }
+
+.svc-cta { font-size: 13px; font-weight: 600; color: var(--accent); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-top: 2px; transition: gap 0.2s; }
+
+.svc-cta:hover { gap: 8px; }
+
+.fw-section { text-align: center; }
+
+.fw-tags { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 32px; }
+
+.fw-tag { font-size: 12px; font-weight: 600; letter-spacing: 0.07em; color: var(--text-2); background: var(--surface); border: 1px solid var(--border-mid); border-radius: 4px; padding: 6px 14px; transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.15s; }
+
+.fw-tag:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); transform: translateY(-2px); }
+
+.risk-ex { display: grid; grid-template-columns: 270px 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; min-height: 360px; }
+
+@media (max-width: 680px) {
+  .risk-ex { grid-template-columns: 1fr; }
+}
+
+.risk-list { background: var(--surface); display: flex; flex-direction: column; }
+
+.risk-item { display: flex; align-items: center; gap: 10px; padding: 15px 18px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.15s; position: relative; outline: none; }
+
+.risk-item:last-child { border-bottom-width: medium; border-bottom-style: none; border-bottom-color: currentcolor; }
+
+.risk-item:hover { background: var(--surface-hi); }
+
+.risk-item.on { background: var(--surface-hi); }
+
+.risk-item.on::before { content: ""; position: absolute; left: 0px; top: 0px; bottom: 0px; width: 3px; background: var(--accent); border-radius: 0px 2px 2px 0px; }
+
+.ri-num { font-size: 10px; font-weight: 700; color: var(--text-dim); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+
+.ri-name { font-size: 13px; font-weight: 500; color: var(--text-2); flex: 1 1 0%; min-width: 0px; }
+
+.risk-item.on .ri-name { color: var(--text); }
+
+.risk-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; border-radius: 3px; padding: 2px 6px; flex-shrink: 0; }
+
+.b-crit { background: rgba(239, 68, 68, 0.14); color: rgb(239, 68, 68); }
+
+.b-high { background: rgba(245, 158, 11, 0.14); color: rgb(245, 158, 11); }
+
+.b-elev { background: rgba(0, 201, 167, 0.12); color: var(--accent-muted); }
+
+.risk-panel { background: var(--bg); padding: 32px; display: flex; flex-direction: column; gap: 18px; }
+
+.rp-cat { display: flex; align-items: center; gap: 10px; }
+
+.rp-h3 { font-family: var(--font-d); font-size: 1.65rem; font-weight: 600; line-height: 1.2; color: var(--text); text-wrap: balance; }
+
+.rp-body { font-size: 15px; color: var(--text-2); line-height: 1.65; }
+
+.rp-metrics { display: flex; gap: 24px; flex-wrap: wrap; }
+
+.rp-metric { display: flex; flex-direction: column; gap: 4px; }
+
+.rp-mlabel { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+
+.rp-mval { font-size: 13px; font-weight: 600; color: var(--text-2); }
+
+.rp-svc { font-size: 12px; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; line-height: 1.5; }
+
+.rp-svc strong { color: var(--text-2); font-weight: 500; display: block; margin-bottom: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+.rp-link { font-size: 13px; font-weight: 600; color: var(--accent); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: gap 0.2s; margin-top: auto; }
+
+.rp-link:hover { gap: 8px; }
+
+.asmts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+
+.asmt-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 26px; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
+
+.asmt-card:hover { border-color: var(--border-mid); background: var(--surface-hi); transform: translateY(-3px); }
+
+.asmt-track { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-muted); }
+
+.asmt-name { font-family: var(--font-d); font-size: 1.2rem; font-weight: 600; color: var(--text); line-height: 1.2; }
+
+.asmt-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; flex: 1 1 0%; }
+
+.asmt-cta { font-size: 12px; font-weight: 600; color: var(--accent); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-top: 2px; transition: gap 0.2s; }
+
+.asmt-cta:hover { gap: 8px; }
+
+.appr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+
+.appr-step { background: var(--surface); padding: 30px 26px; display: flex; flex-direction: column; gap: 12px; transition: background 0.2s; }
+
+.appr-step:hover { background: var(--surface-hi); }
+
+.appr-idx { width: 36px; height: 36px; border-radius: 50%; background: var(--accent-dim); border: 1px solid rgba(0, 201, 167, 0.22); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+
+.appr-title { font-family: var(--font-d); font-size: 1.3rem; font-weight: 600; color: var(--text); }
+
+.appr-desc { font-size: 14px; color: var(--text-2); line-height: 1.6; }
+
+.about-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 60px; align-items: center; }
+
+@media (max-width: 700px) {
+  .about-grid { grid-template-columns: 1fr; gap: 36px; }
+}
+
+.stat-row { display: flex; align-items: center; gap: 18px; background: var(--surface-hi); border-radius: 10px; padding: 20px 22px; margin-bottom: 14px; transition: transform 0.2s; }
+
+.stat-row:hover { transform: translateX(4px); }
+
+.stat-num { font-family: var(--font-d); font-size: 3rem; font-weight: 600; color: var(--accent); line-height: 1; white-space: nowrap; }
+
+.stat-desc { font-size: 14px; color: var(--text-2); line-height: 1.4; }
+
+.cred-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.cred-badge { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border-mid); border-radius: 8px; padding: 12px 14px; transition: border-color 0.2s, background 0.2s; }
+
+.cred-badge:hover { border-color: rgba(0, 201, 167, 0.3); background: var(--surface-hi); }
+
+.cred-init { font-family: var(--font-d); font-size: 1.5rem; font-weight: 700; color: var(--accent); line-height: 1; }
+
+.cred-name { font-size: 11px; color: var(--text-dim); line-height: 1.4; max-width: 120px; }
+
+.about-body { font-size: 16px; color: var(--text-2); line-height: 1.7; }
+
+.about-quote { margin-top: 24px; padding: 18px 22px; background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0px 8px 8px 0px; font-family: var(--font-d); font-size: 1.1rem; font-style: italic; color: var(--text-2); line-height: 1.5; }
+
+.contact-band { background: var(--surface) !important; }
+
+.contact-inner { text-align: center; max-width: 580px; margin: 0px auto; }
+
+.contact-h2 { font-family: var(--font-d); font-size: clamp(2rem, 5.5vw, 3.6rem); font-weight: 500; line-height: 1.1; margin-block: 10px 18px; text-wrap: balance; }
+
+.contact-h2 em { font-style: italic; color: var(--accent); }
+
+.contact-p { font-size: 16px; color: var(--text-2); margin-bottom: 32px; line-height: 1.65; }
+
+.btn-pl { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: rgb(13, 30, 55); background: var(--accent); border-width: medium; border-style: none; border-color: currentcolor; border-image: none; border-radius: 8px; padding: 14px 28px; cursor: pointer; text-decoration: none; transition: opacity 0.15s, transform 0.1s, box-shadow 0.2s; }
+
+.btn-pl:hover { opacity: 0.86; box-shadow: 0 0 32px var(--accent-glow); }
+
+.btn-pl:active { transform: scale(0.98); }
+
+.contact-note { font-size: 12px; color: var(--text-dim); margin-top: 16px; }
+
+.contact-email { display: inline-block; font-size: 14px; color: var(--text-2); text-decoration: none; margin-top: 14px; border-bottom: 1px solid var(--border-mid); padding-bottom: 2px; transition: color 0.2s, border-color 0.2s; }
+
+.contact-email:hover { color: var(--accent); border-color: var(--accent); }
+
+footer { background: var(--bg); border-top: 1px solid var(--border); padding-block: 28px; }
+
+.footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; max-width: 1100px; margin: 0px auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+.footer-desc { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+
+.footer-links { display: flex; gap: 20px; }
+
+.footer-links a { font-size: 12px; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+
+.footer-links a:hover { color: var(--accent); }
+
+.footer-copy { font-size: 12px; color: var(--text-dim); }
+
+.g7-footer-copy { font-size: 12px; color: var(--text-dim); }
+.g7-footer-links { display: flex; gap: 20px; }
+.g7-footer-links a { font-size: 12px; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+.g7-footer-links a:hover { color: var(--accent); }
+
+html { scroll-behavior: smooth; background: rgb(19, 44, 67); }
+
+[id] { scroll-margin-top: 72px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+.lang-toggle { display: flex; align-items: center; gap: 2px; background: rgba(140, 180, 255, 0.08); border: 1px solid rgba(140, 180, 255, 0.15); border-radius: 20px; padding: 3px; flex-shrink: 0; }
+
+.lang-btn { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--text-2); background: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; border-radius: 16px; padding: 4px 10px; cursor: pointer; transition: background 0.2s, color 0.2s; font-family: var(--font-b); }
+
+.lang-btn.active { background: var(--accent); color: rgb(13, 30, 55); }
+
+.lang-btn:not(.active):hover { color: var(--text); }</style><style rel="stylesheet" type="text/css">@charset "utf-8";
+
+:root { --bg: #132c43; --bg-alt: #19364e; --surface: #21425b; --text: #f4f8fb; --text-2: #c4d4de; --text-dim: #a9bfcd; --accent: #8de0cc; --border: rgba(205,225,237,.17); --border-mid: rgba(205,225,237,.28); }
+
+html { scroll-behavior: smooth; scroll-padding-top: 100px; background: rgb(19, 44, 67); }
+
+body { font-size: 16px; background: rgb(19, 44, 67); min-height: 100vh; }
+
+.wrap { max-width: 1200px; padding-left: 32px; padding-right: 32px; }
+
+nav { color: rgb(237, 243, 255); border-bottom: 1px solid rgba(205, 225, 237, 0.18); background: rgb(13, 30, 50) !important; backdrop-filter: none !important; }
+
+nav .nav-inner { height: 82px; max-width: 1200px; padding-inline: 32px; }
+
+nav .nav-links a { color: rgb(196, 212, 222); }
+
+nav .nav-assess { border-color: rgb(58, 122, 106); color: rgb(141, 224, 204) !important; }
+
+nav .lang-btn { color: rgb(169, 191, 205); }
+
+nav .lang-btn.active { background: rgb(33, 66, 91); color: white; }
+
+nav .lang-toggle { border-color: rgb(46, 79, 99); }
+
+nav .btn-p { background: rgb(33, 66, 91); color: white; }
+
+nav .logo-img { mix-blend-mode: normal; filter: brightness(0) invert(1); height: 56px !important; }
+
+.hero { min-height: 100svh; background: radial-gradient(at 85% 45%, rgb(50, 94, 112) 0%, rgb(29, 64, 88) 34%, rgb(20, 45, 68) 72%); padding-top: 160px; padding-bottom: 100px; }
+
+.hero-body-wrap { grid-template-columns: minmax(0px, 1fr) 280px; align-items: center; gap: 70px; }
+
+.hero-h1 { font-size: clamp(3.2rem, 6vw, 5.6rem); line-height: 1.08; letter-spacing: -0.035em; max-width: 850px; text-align: left; text-wrap: balance; overflow-wrap: break-word; }
+
+.hero-body-wrap > div:first-child { text-align: left; min-width: 0px; }
+
+.hero-p { margin-left: 0px; margin-right: 0px; }
+
+.hero-ctas, .pills { justify-content: flex-start; }
+
+.hero-p { max-width: 640px; font-size: 18px; line-height: 1.85; }
+
+.hero-ctas { gap: 14px; }
+
+.btn-p, .btn-g, .btn-sa, .btn-pl { border-radius: 7px; padding: 13px 21px; transition: transform 0.2s, box-shadow 0.2s; }
+
+.btn-p:hover, .btn-sa:hover { transform: translateY(-2px); }
+
+.signal-widget { background: rgba(245, 251, 251, 0.09); border: 1px solid rgba(215, 240, 239, 0.25); box-shadow: rgba(6, 25, 39, 0.2) 0px 24px 80px; backdrop-filter: blur(12px); }
+
+.sw-label { font-size: 10px; }
+
+.pill { color: rgb(214, 232, 237); }
+
+section { padding-block: 100px; }
+
+.sec-hd { max-width: 800px; }
+
+.sec-hd h2 { font-size: clamp(2.5rem, 4.5vw, 3.8rem); }
+
+.sec-hd p { font-size: 17px; line-height: 1.85; max-width: 720px; }
+
+.svc-desc, .asmt-desc, .appr-desc, .about-body { font-size: 15px; line-height: 1.85; }
+
+.svc-card, .asmt-card { border-radius: 12px; padding: 30px; }
+
+.svc-title { font-size: 26px; }
+
+.svc-grid { gap: 18px; }
+
+.svc-list { line-height: 1.9; }
+
+#self-assess, #approach, #about { --text: #18374b; --text-2: #4c6472; --text-dim: #586e7a; --accent: #146653; --accent-dim: #e6f3ed; --border: #dbe5e4; --border-mid: #bbd0ca; --surface: #fff; --surface-hi: #eef6f2; background: rgb(246, 248, 245); color: var(--text); color-scheme: light; }
+
+#self-assess { background: linear-gradient(135deg, rgb(255, 255, 255) 20%, rgb(241, 247, 243) 100%); }
+
+#self-assess .sa-card { background: rgb(255, 255, 255); border: 1px solid rgb(220, 231, 225); border-radius: 12px; box-shadow: rgba(23, 59, 44, 0.02) 0px 8px 25px; }
+
+#self-assess .sa-card:hover { box-shadow: rgba(23, 59, 44, 0.055) 0px 18px 40px; border-color: rgb(120, 170, 152); }
+
+#self-assess .sa-card-desc { color: rgb(76, 100, 114); }
+
+#self-assess .btn-sa { background: rgb(23, 61, 77); color: rgb(255, 255, 255); border-color: rgb(23, 61, 77); }
+
+.sa-icon { filter: grayscale(1); opacity: 0.65; }
+
+.sa-cards { gap: 16px; }
+
+#approach { background: rgb(255, 255, 255); }
+
+.appr-idx { box-shadow: none; }
+
+.appr-step { border-color: rgb(217, 229, 223); }
+
+#about { background: rgb(238, 244, 239); }
+
+.cred-badge { background: rgb(255, 255, 255); border-color: rgb(213, 225, 218); }
+
+.about-quote { color: rgb(40, 87, 68); }
+
+.stat-desc { max-width: 240px; }
+
+.contact-band { background: radial-gradient(at center top, rgb(49, 89, 108), rgb(20, 45, 68)) !important; }
+
+.contact-note { color: rgb(196, 212, 222); }
+
+.contact-band .eyebrow { color: rgb(162, 233, 212); }
+
+.fw-section { background: rgb(27, 57, 79); }
+
+.fw-tag { color: rgb(212, 227, 233); }
+
+.risk-badge { white-space: nowrap; }
+
+.risk-item .risk-badge { font-size: 9px; background: rgba(215, 237, 230, 0.082); color: rgb(188, 228, 215); }
+
+.risk-ex { border-radius: 14px; overflow: hidden; }
+
+.rp-body { font-size: 16px; line-height: 1.85; }
+
+.rp-svc { margin-top: 30px; }
+
+.rp-link { margin-top: 24px; display: inline-block; }
+
+.footer-desc { max-width: 440px; }
+
+.lang-btn { min-width: 40px; min-height: 36px; cursor: pointer; }
+
+a:focus-visible, button:focus-visible, [role="button"]:focus-visible { outline: rgb(72, 165, 139) solid 3px; outline-offset: 5px; }
+
+@media (max-width: 1000px) {
+  nav .nav-links { gap: 12px; }
+  nav .nav-inner { gap: 12px; }
+  .hero-body-wrap { gap: 32px; grid-template-columns: minmax(0px, 1fr) 245px; }
+  .hero-h1 { font-size: 4.2rem; }
+}
+
+@media (max-width: 820px) {
+  .hero-body-wrap { grid-template-columns: 1fr; }
+  .hero { min-height: auto; padding-top: 142px; padding-bottom: 70px; }
+  .hero-h1 { font-size: clamp(3rem, 8vw, 4.5rem); }
+  nav .nav-links { display: none; }
+  section { padding-block: 72px; }
+  .wrap { padding-inline: 24px; }
+  .hero-p { font-size: 17px; }
+}
+
+@media (max-width: 480px) {
+  nav .nav-inner { padding-inline: 16px; gap: 8px; height: 74px; }
+  nav .btn-p { font-size: 11px; padding: 10px; }
+  nav .logo-img { height: 42px !important; }
+  .lang-toggle { gap: 0px; }
+  .lang-btn { min-width: 32px; padding: 5px; }
+  .hero-h1 { font-size: 3.25rem; }
+  .hero-ctas { align-items: stretch; flex-direction: column; }
+  .hero-ctas a { justify-content: center; }
+  .wrap { padding-inline: 20px; }
+  .sa-heading-row { align-items: stretch; }
+  .sa-heading-row .btn-sa { align-self: flex-start !important; }
+  .risk-item { gap: 8px; }
+  .risk-badge { font-size: 8px; }
+  .ri-name { font-size: 12px; }
+  .rp-cat { flex-wrap: wrap; gap: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, ::before, ::after { animation: auto ease 0s 1 normal none running none !important; transition: none !important; }
+  .reveal, .reveal-up, .reveal-left, .reveal-right, .stagger > * { opacity: 1 !important; transform: none !important; }
+}</style><style rel="stylesheet" type="text/css">@charset "utf-8";
+
+html { min-height: 100%; background-color: rgb(19, 44, 67); }
+
+body { min-height: 100vh; margin: 0px; padding: 0px; background-color: rgb(19, 44, 67); }</style>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gamma7 | Compliance &amp; IT-audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&amp;family=Inter:wght@300;400;500;600&amp;display=swap">
+
+
+
+
+
+
+</head>
+<body>
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="https://gamma7.io/#top" class="logo">
+      <img src="data:image/png;base64,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" alt="Gamma7" class="logo-img" style="height:56px;width:auto;">
+    </a>
+    <ul class="nav-links">
+      <li><a href="https://gamma7.io/#self-assess" class="nav-assess"><span data-da="Gratis vurdering" data-en="Free Assessment">Gratis vurdering</span></a></li>
+      <li><a href="https://gamma7.io/#services"><span data-da="Ydelser" data-en="Services">Ydelser</span></a></li>
+      <li><a href="https://gamma7.io/#approach"><span data-da="Tilgang" data-en="Approach">Tilgang</span></a></li>
+      <li><a href="https://gamma7.io/#about"><span data-da="Om Gamma7" data-en="Why Gamma7">Om Gamma7</span></a></li>
+      <li><a href="/agents.html"><span data-da="AI-agenter" data-en="AI Agents">AI-agenter</span></a></li>
+    </ul>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button class="lang-btn active" data-lang="da" aria-pressed="true">DA</button>
+      <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="btn-p"><span data-da="Book møde" data-en="Book a call">Book møde</span> ↗</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <canvas id="hero-canvas" aria-hidden="true" width="1905" height="100000"></canvas>
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="hero-body-wrap">
+      <div>
+        <p class="eyebrow"><span data-da="Compliance &amp; IT-audit" data-en="Compliance &amp; IT audit">Compliance &amp; IT-audit</span></p>
+        <h1 class="hero-h1"><span data-da="Fra compliance til reel " data-en="From compliance to real ">Fra compliance til reel </span><em><span data-da="modstandsdygtighed" data-en="resilience">modstandsdygtighed</span></em></h1>
+        <p class="hero-p"><span data-da="Vi hjælper jer med at forstå kravene, undersøge jeres IT og finde det, der skal forbedres. I får klare svar og en konkret plan, så I ved, hvad næste skridt er." data-en="We help you understand requirements, review your IT and identify what needs to improve. You get clear answers and a practical plan, so you know what to do next.">Vi hjælper jer med at forstå kravene, undersøge jeres IT og finde det, der skal forbedres. I får klare svar og en konkret plan, så I ved, hvad næste skridt er.</span></p>
+        <div class="hero-ctas">
+          <a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="btn-p" style="font-size:14px;padding:11px 22px;"><span data-da="Book en uforpligtende samtale ↗" data-en="Book a discovery call ↗">Book en uforpligtende samtale ↗</span></a>
+          <a href="https://gamma7.io/#self-assess" class="btn-g"><span data-da="Start et gratis compliance tjek" data-en="Start a free compliance check">Start et gratis compliance tjek</span> <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="pills">
+          <span class="pill"><span data-da="Uafhængig rådgivning" data-en="Independent advice">Uafhængig rådgivning</span></span>
+          <span class="pill"><span data-da="Erfaren rådgiver" data-en="Experienced adviser">Erfaren rådgiver</span></span>
+          <span class="pill"><span data-da="Praktiske resultater" data-en="Practical outcomes">Praktiske resultater</span></span>
+        </div>
+      </div>
+      <!-- Live signal widget -->
+      <div class="signal-widget" aria-hidden="true">
+        <div class="sw-head">
+          <div class="sw-dot"></div>
+          <span class="sw-label"><span data-da="Fra overblik til handling" data-en="From clarity to action">Fra overblik til handling</span></span>
+        </div>
+        <div class="sw-value"><span data-da="Risikooverblik" data-en="Risk clarity">Risikooverblik</span></div>
+        <div class="sw-trend"><span data-da="↑ Forbedring" data-en="↑ Improving">↑ Forbedring</span></div>
+        <div class="sw-steps">
+          <div class="sw-step">
+            <span class="sw-num">01</span>
+            <div class="sw-bar"><div class="sw-fill" style="width: 100%;" data-w="100%"></div></div>
+            <span><span data-da="Vurder" data-en="Assess">Vurder</span></span>
+          </div>
+          <div class="sw-step">
+            <span class="sw-num">02</span>
+            <div class="sw-bar"><div class="sw-fill" style="width: 62%;" data-w="62%"></div></div>
+            <span><span data-da="Prioritér" data-en="Prioritise">Prioritér</span></span>
+          </div>
+          <div class="sw-step">
+            <span class="sw-num">03</span>
+            <div class="sw-bar"><div class="sw-fill" style="width: 28%;" data-w="28%"></div></div>
+            <span><span data-da="Styrk" data-en="Strengthen">Styrk</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- SELF-ASSESSMENTS -->
+<section id="self-assess" class="sa-section">
+  <div class="wrap">
+    <div class="sa-heading-row reveal">
+      <div>
+        <p class="eyebrow"><span data-da="Gratis værktøjer" data-en="Free tools">Gratis værktøjer</span></p>
+        <h2 style="font-family:var(--font-d);font-size:clamp(2rem,4.5vw,3.2rem);font-weight:500;line-height:1.12;text-wrap:balance;margin-block:10px 0;"><span data-da="Hvor står I i dag?" data-en="Know where you stand.">Hvor står I i dag?</span> <em style="color:var(--accent);font-style:italic;"><span data-da="Tag det første skridt." data-en="Right now.">Tag det første skridt.</span></em></h2>
+        <p style="color:var(--text-2);font-size:16px;max-width:520px;margin-top:14px;line-height:1.65;"><span data-da="Få et første overblik med et gratis selvtjek. Vælg et område nedenfor, og se, hvor I kan have brug for at undersøge mere." data-en="Structured self-assessments that give you an immediate view of your compliance posture — in under 15 minutes. Free, anonymous, no registration required.">Få et første overblik med et gratis selvtjek. Vælg et område nedenfor, og se, hvor I kan have brug for at undersøge mere.</span></p>
+      </div>
+      <a href="https://gamma7.io/#compliance-checks" target="_blank" rel="noopener" class="btn-sa" style="flex-shrink:0;align-self:flex-end;"><span data-da="Start et gratis compliance tjek" data-en="Start a free compliance check">Start et gratis compliance tjek</span> <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="sa-cards stagger" id="compliance-checks">
+      <a href="https://gamma7-selfassessment.netlify.app/?utm_source=website&amp;utm_medium=card&amp;utm_campaign=nis2" target="_blank" rel="noopener" class="sa-card">
+        <div class="sa-icon">🛡️</div>
+        <span class="sa-card-label"><span data-da="Cyber · Resiliens" data-en="Cyber · Resilience">Cyber · Resiliens</span></span>
+        <span class="sa-card-name"><span data-da="NIS2 Selvevaluering" data-en="NIS2 Self-Assessment">NIS2 Selvevaluering</span></span>
+        <p class="sa-card-desc"><span data-da="Tjek jeres ansvar, IT-risici, beredskab, leverandører og adgang til systemer." data-en="Governance, risk management, incident handling, supply-chain security, access control and cyber hygiene.">Tjek jeres ansvar, IT-risici, beredskab, leverandører og adgang til systemer.</span></p>
+        <div class="sa-card-meta">
+          <span class="sa-card-time">~12 min</span>
+          <span class="sa-card-go"><span data-da="Start →" data-en="Start →">Start →</span></span>
+        </div>
+      </a>
+      <a href="https://gamma7-selfassessment.netlify.app/dora/?utm_source=website&amp;utm_medium=card&amp;utm_campaign=dora" target="_blank" rel="noopener" class="sa-card">
+        <div class="sa-icon">🏦</div>
+        <span class="sa-card-label"><span data-da="Finanssektoren" data-en="Financial Sector">Finanssektoren</span></span>
+        <span class="sa-card-name"><span data-da="DORA Modenhedscheck" data-en="DORA Maturity Check">DORA Modenhedscheck</span></span>
+        <p class="sa-card-desc"><span data-da="Få overblik over IT-risici, hændelser, beredskab og leverandøraftaler i finanssektoren." data-en="ICT risk governance, incident management, resilience testing, third-party oversight and contractual readiness.">Få overblik over IT-risici, hændelser, beredskab og leverandøraftaler i finanssektoren.</span></p>
+        <div class="sa-card-meta">
+          <span class="sa-card-time">~15 min</span>
+          <span class="sa-card-go"><span data-da="Start →" data-en="Start →">Start →</span></span>
+        </div>
+      </a>
+      <a href="https://gamma7-selfassessment.netlify.app/gdpr/?utm_source=website&amp;utm_medium=card&amp;utm_campaign=gdpr" target="_blank" rel="noopener" class="sa-card">
+        <div class="sa-icon">🔏</div>
+        <span class="sa-card-label"><span data-da="Databeskyttelse" data-en="Data Protection">Databeskyttelse</span></span>
+        <span class="sa-card-name"><span data-da="GDPR Parathedstjek" data-en="GDPR Readiness Check">GDPR Parathedstjek</span></span>
+        <p class="sa-card-desc"><span data-da="Tjek, hvordan I håndterer personoplysninger, rettigheder, databrud og aftaler med databehandlere." data-en="Legal basis, data subject rights, breach readiness, DPA obligations, processor agreements and documentation.">Tjek, hvordan I håndterer personoplysninger, rettigheder, databrud og aftaler med databehandlere.</span></p>
+        <div class="sa-card-meta">
+          <span class="sa-card-time">~10 min</span>
+          <span class="sa-card-go"><span data-da="Start →" data-en="Start →">Start →</span></span>
+        </div>
+      </a>
+      <a href="https://gamma7-selfassessment.netlify.app/ai-act/?utm_source=website&amp;utm_medium=card&amp;utm_campaign=aiact" target="_blank" rel="noopener" class="sa-card">
+        <div class="sa-icon">🤖</div>
+        <span class="sa-card-label"><span data-da="Ansvarlig AI" data-en="Responsible AI">Ansvarlig AI</span></span>
+        <span class="sa-card-name"><span data-da="AI Act: Tjek jeres brug af AI" data-en="AI Act: Check your AI use">AI Act: Tjek jeres brug af AI</span></span>
+        <p class="sa-card-desc"><span data-da="Få overblik over jeres AI-værktøjer, mulige risici og behovet for information og menneskeligt tilsyn." data-en="AI inventory, risk classification, prohibited-use exposure, transparency obligations and human oversight requirements.">Få overblik over jeres AI-værktøjer, mulige risici og behovet for information og menneskeligt tilsyn.</span></p>
+        <div class="sa-card-meta">
+          <span class="sa-card-time">~10 min</span>
+          <span class="sa-card-go"><span data-da="Start →" data-en="Start →">Start →</span></span>
+        </div>
+      </a>
+      <a href="https://gamma7-selfassessment.netlify.app/cra/?utm_source=website&amp;utm_medium=card&amp;utm_campaign=cra" target="_blank" rel="noopener" class="sa-card">
+        <div class="sa-icon">⚡</div>
+        <span class="sa-card-label"><span data-da="Produktsikkerhed" data-en="Product Security">Produktsikkerhed</span></span>
+        <span class="sa-card-name"><span data-da="CRA Parathedstjek" data-en="CRA Readiness Check">CRA Parathedstjek</span></span>
+        <p class="sa-card-desc"><span data-da="Undersøg jeres arbejde med sikkerhed og sårbarheder i produkter med digitale funktioner." data-en="Cyber Resilience Act requirements for products with digital elements — vulnerability handling, documentation and conformity.">Undersøg jeres arbejde med sikkerhed og sårbarheder i produkter med digitale funktioner.</span></p>
+        <div class="sa-card-meta">
+          <span class="sa-card-time">~8 min</span>
+          <span class="sa-card-go"><span data-da="Start →" data-en="Start →">Start →</span></span>
+        </div>
+      </a>
+    </div>
+    <div class="sa-cta-row reveal">
+      <p><span data-da="Selvtjek åbner i et separat værktøj · Et første overblik, ikke en revision" data-en="Self-checks open in a separate tool · An initial overview, not an audit">Selvtjek åbner i et separat værktøj · Et første overblik, ikke en revision</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" class="alt">
+  <div class="wrap">
+    <div class="sec-hd reveal">
+      <p class="eyebrow"><span data-da="Hvad vi gør" data-en="What we do">Hvad vi gør</span></p>
+      <h2><span data-da="Klar rådgivning. " data-en="Clear advice. ">Klar rådgivning. </span><em><span data-da="Konkrete næste skridt." data-en="Practical next steps.">Konkrete næste skridt.</span></em></h2>
+      <p><span data-da="Vi hjælper jer med at forstå reglerne og undersøge, om jeres IT og arbejdsgange fungerer som de skal. I får anbefalinger, der passer til jeres virksomhed." data-en="Focused engagements that translate complex obligations into clear decisions, proportionate controls and evidence your stakeholders can trust.">Vi hjælper jer med at forstå reglerne og undersøge, om jeres IT og arbejdsgange fungerer som de skal. I får anbefalinger, der passer til jeres virksomhed.</span></p>
+    </div>
+    <div class="svc-grid stagger">
+      <div class="svc-card">
+        <span class="svc-num">01</span>
+        <h3 class="svc-title"><span data-da="IT-audit &amp; sikkerhed" data-en="IT audit &amp; security">IT-audit &amp; sikkerhed</span></h3>
+        <p class="svc-desc"><span data-da="Vi undersøger jeres IT og sikkerhed uafhængigt. I får et klart billede af, hvad der fungerer, og hvor der er behov for forbedring." data-en="Independent reviews of governance, technology risk and control effectiveness — built for decision-makers, not just checklists.">Vi undersøger jeres IT og sikkerhed uafhængigt. I får et klart billede af, hvad der fungerer, og hvor der er behov for forbedring.</span></p>
+        <ul class="svc-list">
+          <li><span data-da="Adgangsstyring, ændringer og IT-drift" data-en="IT general controls">Adgangsstyring, ændringer og IT-drift</span></li>
+          <li><span data-da="Gennemgang af IT-sikkerhed" data-en="Cybersecurity reviews">Gennemgang af IT-sikkerhed</span></li>
+          <li><span data-da="Risici hos IT-leverandører" data-en="Third-party risk">Risici hos IT-leverandører</span></li>
+          <li><span data-da="Udformning og test af kontroller" data-en="Control design &amp; testing">Udformning og test af kontroller</span></li>
+        </ul>
+        <a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="svc-cta"><span data-da="Drøft en revision →" data-en="Discuss an audit →">Drøft en revision →</span></a>
+      </div>
+      <div class="svc-card">
+        <span class="svc-num">02</span>
+        <h3 class="svc-title"><span data-da="Find manglerne. Prioritér indsatsen." data-en="Identify gaps. Set priorities.">Find manglerne. Prioritér indsatsen.</span></h3>
+        <p class="svc-desc"><span data-da="Vi sammenholder jeres nuværende praksis med relevante krav og hjælper jer med at prioritere de vigtigste forbedringer." data-en="Know where you stand, what matters most and what to do next — with a pragmatic roadmap grounded in risk.">Vi sammenholder jeres nuværende praksis med relevante krav og hjælper jer med at prioritere de vigtigste forbedringer.</span></p>
+        <ul class="svc-list">
+          <li><span data-da="Overblik over jeres nuværende praksis" data-en="Current-state assessment">Overblik over jeres nuværende praksis</span></li>
+          <li><span data-da="Aftale om det ønskede niveau" data-en="Target maturity definition">Aftale om det ønskede niveau</span></li>
+          <li><span data-da="Prioriteret forbedringsplan" data-en="Prioritised remediation">Prioriteret forbedringsplan</span></li>
+          <li><span data-da="Klar rapportering til ledelsen" data-en="Executive reporting">Klar rapportering til ledelsen</span></li>
+        </ul>
+        <a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="svc-cta"><span data-da="Tal med os om en vurdering →" data-en="Discuss an assessment →">Tal med os om en vurdering →</span></a>
+      </div>
+      <div class="svc-card">
+        <span class="svc-num">03</span>
+        <h3 class="svc-title"><span data-da="Hold forretningen i gang" data-en="Keep your business running">Hold forretningen i gang</span></h3>
+        <p class="svc-desc"><span data-da="Kan I fortsætte, hvis et vigtigt system går ned? Vi hjælper med planer og øvelser, så I er bedre forberedt på driftsstop." data-en="Plans that work when operations do not. We design, review and test resilience capabilities for real-world disruption.">Kan I fortsætte, hvis et vigtigt system går ned? Vi hjælper med planer og øvelser, så I er bedre forberedt på driftsstop.</span></p>
+        <ul class="svc-list">
+          <li><span data-da="Planer for at fortsætte driften" data-en="Business continuity plans">Planer for at fortsætte driften</span></li>
+          <li><span data-da="Planer for at gendanne IT-systemer" data-en="Disaster recovery plans">Planer for at gendanne IT-systemer</span></li>
+          <li><span data-da="Analyse af konsekvenser ved driftsstop" data-en="Business impact analysis">Analyse af konsekvenser ved driftsstop</span></li>
+          <li><span data-da="Øvelser med realistiske hændelser" data-en="Scenario testing">Øvelser med realistiske hændelser</span></li>
+        </ul>
+        <a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="svc-cta"><span data-da="Tal om jeres beredskab →" data-en="Discuss business continuity →">Tal om jeres beredskab →</span></a>
+      </div>
+      <div class="svc-card">
+        <span class="svc-num">04</span>
+        <h3 class="svc-title"><span data-da="Compliance i praksis" data-en="Compliance in practice">Compliance i praksis</span></h3>
+        <p class="svc-desc"><span data-da="Vi hjælper jer med at afklare relevante krav og omsætte dem til ansvar, arbejdsgange og dokumentation i hverdagen." data-en="Clear, proportionate implementation support across the regulatory frameworks shaping European digital business.">Vi hjælper jer med at afklare relevante krav og omsætte dem til ansvar, arbejdsgange og dokumentation i hverdagen.</span></p>
+        <ul class="svc-list">
+          <li>DORA &amp; NIS2</li>
+          <li>GDPR &amp; AML</li>
+          <li>EU AI Act &amp; CRA</li>
+          <li><span data-da="EBA-retningslinjer" data-en="EBA guidelines">EBA-retningslinjer</span></li>
+        </ul>
+        <a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="svc-cta"><span data-da="Få hjælp til kravene →" data-en="Get help with compliance →">Få hjælp til kravene →</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI AGENTS -->
+<section id="ai-agenter" style="background:var(--bg);padding:80px 0 88px;border-top:1px solid var(--bd);">
+  <div class="wrap">
+    <div class="sec-hd reveal" style="text-align:center;margin-bottom:12px;">
+      <p class="eyebrow"><span data-da="Ny teknologi" data-en="New technology">Ny teknologi</span></p>
+      <h2><span data-da="AI-agenter til revision " data-en="AI agents for audit ">AI-agenter til revision </span><em><span data-da="og leverandørstyring" data-en="and supplier governance">og leverandørstyring</span></em></h2>
+      <p style="max-width:580px;margin:0 auto 48px;"><span data-da="To AI-assisterede agenter bygget på Gamma7's compliance-platform — med fuld sporbarhed og human review inden levering." data-en="Two AI-assisted agents built on the Gamma7 compliance platform — with full traceability and human review before delivery.">To AI-assisterede agenter bygget på Gamma7's compliance-platform — med fuld sporbarhed og human review inden levering.</span></p>
+    </div>
+    <div class="svc-grid stagger" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));max-width:860px;margin:0 auto;">
+      <div class="svc-card" style="border-top:3px solid var(--ac);">
+        <span class="svc-num" style="color:var(--ac);">AI</span>
+        <h3 class="svc-title"><span data-da="Audit Intelligence" data-en="Audit Intelligence">Audit Intelligence</span></h3>
+        <p class="svc-desc"><span data-da="Planlægger og gennemfører IT-revisioner — fra audit universe til bestyrelsesrapport. IIA 5-C working papers, findings register, 3×3 risikomatrix." data-en="Plans and executes IT audits — from audit universe to board report. IIA 5-C working papers, findings register, 3×3 risk matrix.">Planlægger og gennemfører IT-revisioner — fra audit universe til bestyrelsesrapport. IIA 5-C working papers, findings register, 3×3 risikomatrix.</span></p>
+        <ul class="svc-list">
+          <li><span data-da="Audit universe fra org-diagram" data-en="Audit universe from org chart">Audit universe fra org-diagram</span></li>
+          <li><span data-da="ISO 27001-kontrolbibliotek" data-en="ISO 27001 control library">ISO 27001-kontrolbibliotek</span></li>
+          <li><span data-da="Bestyrelsesrapport med risikoheatmap" data-en="Board report with risk heatmap">Bestyrelsesrapport med risikoheatmap</span></li>
+          <li>ISAE 3402 · ISO 27001 · DS 484</li>
+        </ul>
+        <a href="/audit-intelligence/" class="svc-cta"><span data-da="Se Audit Intelligence →" data-en="Explore Audit Intelligence →">Se Audit Intelligence →</span></a>
+      </div>
+      <div class="svc-card" style="border-top:3px solid var(--ac);">
+        <span class="svc-num" style="color:var(--ac);">AI</span>
+        <h3 class="svc-title"><span data-da="Supplier Assurance" data-en="Supplier Assurance">Supplier Assurance</span></h3>
+        <p class="svc-desc"><span data-da="Gennemgår tredjepartskontrakter mod DORA Art. 30, GDPR Art. 28 og øvrige krav. Identificerer mangler og genererer remediationsopgaver." data-en="Reviews third-party contracts against DORA Art. 30, GDPR Art. 28 and other requirements. Identifies gaps and generates remediation tasks.">Gennemgår tredjepartskontrakter mod DORA Art. 30, GDPR Art. 28 og øvrige krav. Identificerer mangler og genererer remediationsopgaver.</span></p>
+        <ul class="svc-list">
+          <li>DORA Art. 30 · GDPR Art. 28</li>
+          <li><span data-da="Automatisk gap-analyse" data-en="Automated gap analysis">Automatisk gap-analyse</span></li>
+          <li><span data-da="Sporbarhed og revisionsspor" data-en="Traceability and audit trail">Sporbarhed og revisionsspor</span></li>
+          <li><span data-da="Human review inden levering" data-en="Human review before delivery">Human review inden levering</span></li>
+        </ul>
+        <a href="/audit-intelligence/#supplier-assurance" class="svc-cta"><span data-da="Se Supplier Assurance →" data-en="Explore Supplier Assurance →">Se Supplier Assurance →</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FRAMEWORKS -->
+<section id="frameworks" class="fw-section">
+  <div class="wrap">
+    <div class="sec-hd reveal" style="text-align:center;margin-bottom:16px;">
+      <p class="eyebrow"><span data-da="Krav og standarder" data-en="Requirements &amp; standards">Krav og standarder</span></p>
+      <h2><span data-da="Vi gør komplekse krav " data-en="We make complex requirements ">Vi gør komplekse krav </span><em><span data-da="til at forstå." data-en="easier to understand.">til at forstå.</span></em></h2>
+    </div>
+    <div class="fw-tags stagger">
+      <span class="fw-tag">DORA</span>
+      <span class="fw-tag">GDPR</span>
+      <span class="fw-tag">NIS2</span>
+      <span class="fw-tag">EU AI Act</span>
+      <span class="fw-tag">CRA</span>
+      <span class="fw-tag">AML</span>
+      <span class="fw-tag">ISO 27001</span>
+      <span class="fw-tag">ISAE 3000</span>
+      <span class="fw-tag">ISAE 3402</span>
+      <span class="fw-tag"><span data-da="EBA-retningslinjer" data-en="EBA Guidelines">EBA-retningslinjer</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- RISK EXPLORER -->
+<section id="risk" class="alt">
+  <div class="wrap">
+    <div class="sec-hd reveal">
+      <p class="eyebrow"><span data-da="Forstå jeres risici" data-en="Understand your risks">Forstå jeres risici</span></p>
+      <h2><span data-da="Hvad kan udfordre " data-en="What could disrupt ">Hvad kan udfordre </span><em><span data-da="jeres virksomhed?" data-en="your business?">jeres virksomhed?</span></em></h2>
+      <p><span data-da="Hvad sker der, hvis et system svigter, en leverandør stopper, eller dokumentationen mangler? Vælg et eksempel og se, hvordan vi kan hjælpe." data-en="SMEs face growing regulatory expectations, cyber threats and supplier dependencies — often with limited specialist resources. Select a risk to explore the exposure and an appropriate review.">Hvad sker der, hvis et system svigter, en leverandør stopper, eller dokumentationen mangler? Vælg et eksempel og se, hvordan vi kan hjælpe.</span></p>
+    </div>
+    <div class="risk-ex reveal">
+      <div class="risk-list">
+        <div class="risk-item on" data-risk="0" tabindex="0" role="button" aria-pressed="true">
+          <span class="ri-num">01</span><span class="ri-name"><span data-da="Driftsstop og genopretning" data-en="Disruption &amp; recovery">Driftsstop og genopretning</span></span><span class="risk-badge b-high"><span data-da="Eksempel" data-en="Example">Eksempel</span></span>
+        </div>
+        <div class="risk-item" data-risk="1" tabindex="0" role="button" aria-pressed="false">
+          <span class="ri-num">02</span><span class="ri-name"><span data-da="Opdagelse af cyberangreb" data-en="Detecting cyber threats">Opdagelse af cyberangreb</span></span><span class="risk-badge b-crit"><span data-da="Eksempel" data-en="Example">Eksempel</span></span>
+        </div>
+        <div class="risk-item" data-risk="2" tabindex="0" role="button" aria-pressed="false">
+          <span class="ri-num">03</span><span class="ri-name"><span data-da="AI Act-krav" data-en="AI Act requirements">AI Act-krav</span></span><span class="risk-badge b-high"><span data-da="Eksempel" data-en="Example">Eksempel</span></span>
+        </div>
+        <div class="risk-item" data-risk="3" tabindex="0" role="button" aria-pressed="false">
+          <span class="ri-num">04</span><span class="ri-name"><span data-da="Afhængighed af leverandører" data-en="Supplier dependencies">Afhængighed af leverandører</span></span><span class="risk-badge b-high"><span data-da="Eksempel" data-en="Example">Eksempel</span></span>
+        </div>
+        <div class="risk-item" data-risk="4" tabindex="0" role="button" aria-pressed="false">
+          <span class="ri-num">05</span><span class="ri-name"><span data-da="Forebyggelse af hvidvask" data-en="Anti-money laundering">Forebyggelse af hvidvask</span></span><span class="risk-badge b-elev"><span data-da="Eksempel" data-en="Example">Eksempel</span></span>
+        </div>
+        <div class="risk-item" data-risk="5" tabindex="0" role="button" aria-pressed="false">
+          <span class="ri-num">06</span><span class="ri-name"><span data-da="Dokumentation til revision" data-en="Audit evidence">Dokumentation til revision</span></span><span class="risk-badge b-elev"><span data-da="Eksempel" data-en="Example">Eksempel</span></span>
+        </div>
+      </div>
+      <div class="risk-panel" id="rp" style="opacity: 1; transition: opacity 0.3s;"><div class="rp-cat"><span class="eyebrow">DRIFTSBEREDSKAB</span><span class="risk-badge b-elev">Illustrativt eksempel</span></div><h3 class="rp-h3">Kan I komme i gang igen efter et driftsstop?</h3><p class="rp-body">En plan er først nyttig, når ansvar, systemer og gendannelse er afklaret. Vi gennemgår jeres beredskab og hjælper med at teste det i praksis.</p><div class="rp-svc"><strong>Sådan kan vi hjælpe</strong>Beredskabsplaner · analyse af driftsstop · øvelser og gendannelse</div><a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="rp-link">Tal med os om jeres situation →</a></div>
+    </div>
+    <p style="font-size:11px;color:var(--text-dim);margin-top:14px;font-style:italic;"><span data-da="Eksemplerne viser mulige risici. De er ikke en vurdering af jeres virksomhed." data-en="These examples illustrate possible risks. They are not an assessment of your business.">Eksemplerne viser mulige risici. De er ikke en vurdering af jeres virksomhed.</span></p>
+  </div>
+</section>
+
+<!-- SPECIALIST ASSESSMENTS -->
+<section id="assessments">
+  <div class="wrap">
+    <div class="sec-hd reveal">
+      <p class="eyebrow"><span data-da="Specialistvurderinger" data-en="Specialist assessments">Specialistvurderinger</span></p>
+      <h2><span data-da="Få hjælp til de krav, der " data-en="Get help with the requirements that ">Få hjælp til de krav, der </span><em><span data-da="gælder for jer." data-en="apply to you.">gælder for jer.</span></em></h2>
+      <p><span data-da="Vi afklarer opgavens omfang sammen. Derefter gennemgår vi jeres arbejdsgange og dokumentation og anbefaler, hvad I bør gøre først." data-en="We agree the scope together, then review your processes and evidence and recommend what to tackle first.">Vi afklarer opgavens omfang sammen. Derefter gennemgår vi jeres arbejdsgange og dokumentation og anbefaler, hvad I bør gøre først.</span></p>
+    </div>
+    <div class="asmts-grid stagger">
+      <div class="asmt-card">
+        <span class="asmt-track"><span data-da="Cyber &amp; Resiliens" data-en="Cyber &amp; Resilience">Cyber &amp; Resiliens</span></span>
+        <h3 class="asmt-name"><span data-da="NIS2 sikkerhedsreview" data-en="NIS2 security review">NIS2 sikkerhedsreview</span></h3>
+        <p class="asmt-desc"><span data-da="Vi gennemgår jeres sikkerhedsarbejde, ansvar, håndtering af hændelser og leverandører og peger på relevante forbedringer i forhold til NIS2." data-en="Review governance, risk management, incident handling, business continuity, supply-chain security, vulnerability management, access control and cyber hygiene.">Vi gennemgår jeres sikkerhedsarbejde, ansvar, håndtering af hændelser og leverandører og peger på relevante forbedringer i forhold til NIS2.</span></p>
+        <a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="asmt-cta"><span data-da="Book et NIS2-review →" data-en="Book a NIS2 review →">Book et NIS2-review →</span></a>
+      </div>
+      <div class="asmt-card">
+        <span class="asmt-track"><span data-da="Finanssektoren" data-en="Financial Sector">Finanssektoren</span></span>
+        <h3 class="asmt-name"><span data-da="DORA modenhedsvurdering" data-en="DORA maturity assessment">DORA modenhedsvurdering</span></h3>
+        <p class="asmt-desc"><span data-da="Vi vurderer jeres arbejde med IT-risici, beredskab, test og leverandøraftaler i forhold til DORA." data-en="Assess ICT risk governance, incident management, resilience testing, third-party oversight, contractual readiness and exit planning against DORA expectations.">Vi vurderer jeres arbejde med IT-risici, beredskab, test og leverandøraftaler i forhold til DORA.</span></p>
+        <a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="asmt-cta"><span data-da="Vurdér DORA-modenhed →" data-en="Assess DORA maturity →">Vurdér DORA-modenhed →</span></a>
+      </div>
+      <div class="asmt-card">
+        <span class="asmt-track"><span data-da="Finanskriminalitet" data-en="Financial Crime">Finanskriminalitet</span></span>
+        <h3 class="asmt-name"><span data-da="AML gap-vurdering" data-en="AML gap assessment">AML gap-vurdering</span></h3>
+        <p class="asmt-desc"><span data-da="Vi gennemgår risikovurderinger, kundekendskab, overvågning og dokumentation i jeres arbejde med at forebygge hvidvask." data-en="Evaluate enterprise risk assessment, customer due diligence, transaction monitoring, sanctions controls, escalation, governance and documented evidence.">Vi gennemgår risikovurderinger, kundekendskab, overvågning og dokumentation i jeres arbejde med at forebygge hvidvask.</span></p>
+        <a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="asmt-cta"><span data-da="Gennemgå AML-huller →" data-en="Review AML gaps →">Gennemgå AML-huller →</span></a>
+      </div>
+      <div class="asmt-card">
+        <span class="asmt-track"><span data-da="Ansvarlig AI" data-en="Responsible AI">Ansvarlig AI</span></span>
+        <h3 class="asmt-name"><span data-da="AI Act gap-review" data-en="AI Act gap review">AI Act gap-review</span></h3>
+        <p class="asmt-desc"><span data-da="Vi kortlægger jeres brug af AI og hjælper med at afklare risici, ansvar og relevante krav i AI-forordningen." data-en="Build an AI inventory, classify use cases, assess prohibited and high-risk exposure, and review literacy, transparency, data, oversight and supplier controls.">Vi kortlægger jeres brug af AI og hjælper med at afklare risici, ansvar og relevante krav i AI-forordningen.</span></p>
+        <a href="https://gamma7-selfassessment.netlify.app/ai-act/?utm_source=website&amp;utm_medium=specialist&amp;utm_campaign=aiact" target="_blank" rel="noopener" class="asmt-cta"><span data-da="Start et AI Act-selvtjek →" data-en="Start AI Act check →">Start et AI Act-selvtjek →</span></a>
+      </div>
+      <div class="asmt-card">
+        <span class="asmt-track"><span data-da="Uafhængig Assurance" data-en="Independent Assurance">Uafhængig Assurance</span></span>
+        <h3 class="asmt-name"><span data-da="ISAE 3000 parathed" data-en="ISAE 3000 readiness">ISAE 3000 parathed</span></h3>
+        <p class="asmt-desc"><span data-da="Vi hjælper med at beskrive processer, organisere kontroller og samle dokumentation, før I skal have en uafhængig erklæring." data-en="Readiness, system description, control framework design and evidence preparation for assurance reporting on subject matters such as GDPR or AML controls.">Vi hjælper med at beskrive processer, organisere kontroller og samle dokumentation, før I skal have en uafhængig erklæring.</span></p>
+        <a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="asmt-cta"><span data-da="Forbered ISAE 3000 →" data-en="Prepare for ISAE 3000 →">Forbered ISAE 3000 →</span></a>
+      </div>
+      <div class="asmt-card">
+        <span class="asmt-track"><span data-da="Serviceorganisationer" data-en="Service Organisations">Serviceorganisationer</span></span>
+        <h3 class="asmt-name"><span data-da="Forberedelse til ISAE 3402" data-en="ISAE 3402 preparation">Forberedelse til ISAE 3402</span></h3>
+        <p class="asmt-desc"><span data-da="Vi hjælper servicevirksomheder med systembeskrivelse, kontrolmål og dokumentation som forberedelse til en ISAE 3402-erklæring." data-en="Scope control objectives, strengthen the system description, test evidence readiness and prepare service organisations for independent assurance.">Vi hjælper servicevirksomheder med systembeskrivelse, kontrolmål og dokumentation som forberedelse til en ISAE 3402-erklæring.</span></p>
+        <a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="asmt-cta"><span data-da="Forbered ISAE 3402 →" data-en="Prepare for ISAE 3402 →">Forbered ISAE 3402 →</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APPROACH -->
+<section id="approach" class="alt">
+  <div class="wrap">
+    <div class="sec-hd reveal">
+      <p class="eyebrow"><span data-da="Vores tilgang" data-en="Our approach">Vores tilgang</span></p>
+      <h2><span data-da="Fra første samtale " data-en="From our first conversation ">Fra første samtale </span><em><span data-da="til en klar plan." data-en="to a clear plan.">til en klar plan.</span></em></h2>
+    </div>
+    <div class="appr-grid stagger">
+      <div class="appr-step">
+        <div class="appr-idx">1</div>
+        <h3 class="appr-title"><span data-da="Forstå" data-en="Understand">Forstå</span></h3>
+        <p class="appr-desc"><span data-da="Vi taler om jeres virksomhed, udfordringer og de krav, I skal forholde jer til." data-en="We discuss your business, your challenges and the requirements you need to address.">Vi taler om jeres virksomhed, udfordringer og de krav, I skal forholde jer til.</span></p>
+      </div>
+      <div class="appr-step">
+        <div class="appr-idx">2</div>
+        <h3 class="appr-title"><span data-da="Undersøg" data-en="Review">Undersøg</span></h3>
+        <p class="appr-desc"><span data-da="Vi gennemgår jeres IT, arbejdsgange og dokumentation for at finde styrker og mangler." data-en="We review your IT, processes and evidence to identify strengths and gaps.">Vi gennemgår jeres IT, arbejdsgange og dokumentation for at finde styrker og mangler.</span></p>
+      </div>
+      <div class="appr-step">
+        <div class="appr-idx">3</div>
+        <h3 class="appr-title"><span data-da="Prioritér" data-en="Prioritise">Prioritér</span></h3>
+        <p class="appr-desc"><span data-da="I får en forståelig rapport med de vigtigste fund og anbefalinger i prioriteret rækkefølge." data-en="You receive a clear report with key findings and recommendations in priority order.">I får en forståelig rapport med de vigtigste fund og anbefalinger i prioriteret rækkefølge.</span></p>
+      </div>
+      <div class="appr-step">
+        <div class="appr-idx">4</div>
+        <h3 class="appr-title"><span data-da="Følg op" data-en="Follow through">Følg op</span></h3>
+        <p class="appr-desc"><span data-da="Vi kan hjælpe jer videre med forbedringerne og følge op på, om de virker i praksis." data-en="We can help you implement improvements and follow up on how they work in practice.">Vi kan hjælpe jer videre med forbedringerne og følge op på, om de virker i praksis.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY GAMMA7 -->
+<section id="about">
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="reveal-left">
+        <div class="stat-row">
+          <span class="stat-num" data-count="25" data-suffix="+">0+</span>
+          <span class="stat-desc"><span data-da="Års erfaring med IT-revision og compliance-rådgivning" data-en="Years' experience in IT audit and compliance advisory">Års erfaring med IT-revision og compliance-rådgivning</span></span>
+        </div>
+        <div class="cred-row">
+          <div class="cred-badge">
+            <span class="cred-init">CIA</span>
+            <span class="cred-name">Certified Internal Auditor</span>
+          </div>
+          <div class="cred-badge">
+            <span class="cred-init">CISA</span>
+            <span class="cred-name">Certified Information Systems Auditor</span>
+          </div>
+          <div class="cred-badge">
+            <span class="cred-init">CIPP/E</span>
+            <span class="cred-name">Certified EU Privacy Professional</span>
+          </div>
+        </div>
+      </div>
+      <div class="reveal-right">
+        <p class="eyebrow"><span data-da="Hvorfor Gamma7" data-en="Why Gamma7">Hvorfor Gamma7</span></p>
+        <h2 style="font-family:var(--font-d);font-size:clamp(1.9rem,3.8vw,2.7rem);font-weight:500;line-height:1.15;text-wrap:balance;margin-block:10px 18px;"><span data-da="Erfaring, I kan bruge." data-en="Senior expertise.">Erfaring, I kan bruge.</span> <em style="font-style:italic;color:var(--accent);"><span data-da="Rådgivning, I kan handle på." data-en="Directly applied.">Rådgivning, I kan handle på.</span></em></h2>
+        <p class="about-body"><span data-da="Hos Gamma7 har I direkte kontakt med en erfaren rådgiver inden for IT-audit og compliance. Vi forbinder ledelsens behov med det, der skal fungere i hverdagen." data-en="You work directly with an experienced IT audit and compliance professional who understands both the boardroom question and the operational reality behind it. Big-firm rigour without the overhead.">Hos Gamma7 har I direkte kontakt med en erfaren rådgiver inden for IT-audit og compliance. Vi forbinder ledelsens behov med det, der skal fungere i hverdagen.</span></p>
+        <blockquote class="about-quote">"<span data-da="I skal vide, hvad der fungerer, hvad der mangler, og hvad I bør gøre først." data-en="You should know what works, what is missing and what to tackle first.">I skal vide, hvad der fungerer, hvad der mangler, og hvad I bør gøre først.</span>"</blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-band">
+  <div class="wrap">
+    <div class="contact-inner reveal">
+      <p class="eyebrow"><span data-da="Start en samtale" data-en="Start a conversation">Start en samtale</span></p>
+      <h2 class="contact-h2"><span data-da="Hvad skal blive " data-en="What needs to become ">Hvad skal blive </span><em><span data-da="klarere?" data-en="clearer?">klarere?</span></em></h2>
+      <p class="contact-p"><span data-da="Fortæl os, hvad I har brug for hjælp til. Vi tager en uforpligtende samtale om jeres situation og afklarer, om Gamma7 er det rette match." data-en="Book a confidential, no-obligation discovery call to discuss your priorities and where Gamma7 can help.">Fortæl os, hvad I har brug for hjælp til. Vi tager en uforpligtende samtale om jeres situation og afklarer, om Gamma7 er det rette match.</span></p>
+      <a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="btn-pl"><span data-da="Book en uforpligtende samtale ↗" data-en="Book an introductory call ↗">Book en uforpligtende samtale ↗</span></a>
+      <p class="contact-note"><span data-da="Fortroligt · Ingen forpligtelse · Svar inden én arbejdsdag" data-en="Confidential · No obligation · Response within one business day">Fortroligt · Ingen forpligtelse · Svar inden én arbejdsdag</span></p>
+      <a href="mailto:info@gamma7.io" class="contact-email">info@gamma7.io</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER REMOVED -->
+<div style="display:none"><div class="footer-inner">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <img src="data:image/png;base64,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Ah0AAA8Q6AAAeIBABwDAAwQ6AAAeINABAPAAgQ4AgAcIdAAAPECgAwDgAQIdAAAPEOgAAHiAQAcAwAMEOgAAHiDQAQDwAIEOAIAHCHQAADxAoAMA4AECHQAADxDoAAB4gEAHAMADBDoAAB4g0AEA8ACBDgCABwh0AAA8QKADAOABAh0AAA8Q6AAAeIBABwDAAwQ6AAAeINABAPAAgQ4AgAcIdAAAPECgAwDgAQIdAAAPEOgAAHiAQAcAwAMEOgAAHiDQAQDwAIEOAIAHCHQAADxAoAMA4AECHQAADxDoAAB4gEAHAMADBDoAAB4g0AEA8ACBDgCABwh0AAA8QKADAOABAh0AAA8Q6AAAeIBABwDAAwQ6AAAeINABAPAAgQ4AgAcIdAAAPECgAwDgAQIdAAAPEOgAAHiAQAcAwAMEOgAAHiDQAQDwAIEOAIAHCHQAADxAoAMA4AECHQAADxDoAAB4gEAHAMADBDoAAB4g0AEA8ACBDgCABwh0AAA8QKADAOABAh0AAA8Q6AAAeIBABwDAAwQ6AAAeINABAPAAgQ4AgAcIdAAAPECgAwDgAQIdAAAPEOgAAHiAQAcAwAMEOgAAHiDQAQDwAIEOAIAHCHQAADxAoAMA4AECHQAADxDoAAB4gEAHAMADBDoAAB4g0AEA8ACBDgCABwh0AAA8QKADAOABAh0AAA8Q6AAAeIBABwDAAwQ6AAAeINABAPAAgQ4AgAcIdAAAPECgAwDgAQIdAAAPEOgAAHiAQAcAwAMEOgAAHiDQAQDwAIEOAIAHCHQAADxAoAMA4AECHQAADxDoAAB4gEAHAMADBDoAAB4g0AEA8ACBDgCABwh0AAA88D+OCBa/E69EcwAAAABJRU5ErkJggg==" alt="Gamma7" style="height:32px;width:auto;">
+        <span style="font-size:13px;font-weight:600;letter-spacing:.09em;">GAMMA7</span>
+      </div>
+      <p class="footer-desc"><span data-da="Uafhængig IT-revision, sikkerhed &amp; compliance-rådgivning · gamma7.io" data-en="Independent IT audit, security &amp; compliance advisory · gamma7.io">Uafhængig IT-revision, sikkerhed &amp; compliance-rådgivning · gamma7.io</span></p>
+    </div>
+    <div class="footer-links">
+      <a href="https://gamma7.io/#self-assess"><span data-da="Gratis vurdering" data-en="Free Assessment">Gratis vurdering</span></a>
+      <a href="https://gamma7.io/#services"><span data-da="Ydelser" data-en="Services">Ydelser</span></a>
+      <a href="mailto:info@gamma7.io">info@gamma7.io</a>
+    </div>
+    <p class="footer-copy">© 2026 Gamma7</p>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   RISK EXPLORER
+================================================================ */
+const riskTranslations={"da":[["DRIFTSBEREDSKAB","Kan I komme i gang igen efter et driftsstop?","En plan er først nyttig, når ansvar, systemer og gendannelse er afklaret. Vi gennemgår jeres beredskab og hjælper med at teste det i praksis.","Beredskabsplaner · analyse af driftsstop · øvelser og gendannelse"],["IT-SIKKERHED","Vil I opdage et angreb i tide?","Sikkerhedsværktøjer skal følges af klare arbejdsgange. Vi undersøger overvågning, alarmer og ansvar, så I kan finde svagheder i håndteringen.","IT-sikkerhedsreview · hændelseshåndtering · NIS2-gennemgang"],["ANSVARLIG AI","Ved I, hvor og hvordan I bruger AI?","Et overblik over AI-værktøjer er første skridt. Vi hjælper med at undersøge anvendelser, risici og hvilke krav der kan være relevante for jer.","AI-kortlægning · vurdering af anvendelser · AI Act-gennemgang"],["IT-LEVERANDØRER","Hvad sker der, hvis en vigtig leverandør svigter?","Vi undersøger afhængigheder, aftaler og muligheder for at skifte leverandør. I får overblik over, hvor I bør stille tydeligere krav.","Leverandørrisici · aftalegennemgang · DORA-vurdering"],["FOREBYGGELSE AF HVIDVASK","Kan I dokumentere jeres indsats mod hvidvask?","Vi gennemgår jeres kundekendskab, overvågning og opfølgning og undersøger, om dokumentationen understøtter det arbejde, I udfører.","AML-gennemgang · kundekendskab · dokumentation"],["DOKUMENTATION","Kan I vise, at jeres kontroller virker?","Vi hjælper med at forbinde jeres arbejdsgange med tydelig dokumentation, så I er bedre forberedt på spørgsmål fra kunder, ledelse og revisor.","Kontrolgennemgang · revisionsforberedelse · ISAE-parathed"]],"en":[["BUSINESS CONTINUITY","Can you recover after an outage?","A useful recovery plan needs clear responsibilities, systems and priorities. We review your preparations and help test how they work in practice.","Continuity plans · business impact analysis · recovery exercises"],["IT SECURITY","Would you detect an attack in time?","Security tools need clear processes behind them. We review monitoring, alerts and responsibilities to identify gaps in your response.","Security review · incident management · NIS2 review"],["RESPONSIBLE AI","Do you know where and how you use AI?","An inventory of AI tools is a useful first step. We help review use cases, risks and which requirements may apply to your business.","AI inventory · use-case assessment · AI Act review"],["IT SUPPLIERS","What if a critical supplier fails?","We review dependencies, agreements and your options for switching suppliers, so you know where clearer requirements are needed.","Supplier risk review · contract review · DORA assessment"],["ANTI-MONEY LAUNDERING","Can you evidence your AML work?","We review customer due diligence, monitoring and follow-up, and assess whether your records support the work you perform.","AML review · customer due diligence · documentation"],["AUDIT EVIDENCE","Can you show that your controls work?","We help connect your processes with clear evidence, so you are better prepared for questions from customers, management and auditors.","Control review · audit preparation · ISAE readiness"]]};
+let riskTimer;
+function showRisk(i){
+ clearTimeout(riskTimer);
+ const panel=document.getElementById('rp');panel.style.opacity='0';
+ riskTimer=setTimeout(()=>{const lang=document.documentElement.lang==='en'?'en':'da';const r=riskTranslations[lang][i];
+ panel.innerHTML='<div class="rp-cat"><span class="eyebrow">'+r[0]+'</span><span class="risk-badge b-elev">'+(lang==='da'?'Illustrativt eksempel':'Illustrative example')+'</span></div><h3 class="rp-h3">'+r[1]+'</h3><p class="rp-body">'+r[2]+'</p><div class="rp-svc"><strong>'+(lang==='da'?'Sådan kan vi hjælpe':'How we can help')+'</strong>'+r[3]+'</div><a href="https://calendly.com/gamma7/online-meeting" target="_blank" rel="noopener" class="rp-link">'+(lang==='da'?'Tal med os om jeres situation →':'Discuss your situation →')+'</a>';
+ panel.style.transition='opacity .3s ease';panel.style.opacity='1';},100);
+}
+showRisk(0);
+document.querySelectorAll('.risk-item').forEach(el => {
+  function activate() {
+    document.querySelectorAll('.risk-item').forEach(x => { x.classList.remove('on'); x.setAttribute('aria-pressed','false'); });
+    el.classList.add('on'); el.setAttribute('aria-pressed','true');
+    showRisk(+el.dataset.risk);
+  }
+  el.addEventListener('click', activate);
+  el.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); activate(); } });
+});
+
+/* ================================================================
+   SCROLL REVEAL — IntersectionObserver
+================================================================ */
+const ioOpts = { threshold: 0.12, rootMargin: '0px 0px -40px 0px' };
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); }
+  });
+}, ioOpts);
+
+document.querySelectorAll('.reveal, .reveal-up, .reveal-left, .reveal-right, .stagger').forEach(el => io.observe(el));
+
+/* ================================================================
+   COUNTER ANIMATION
+================================================================ */
+function animateCount(el) {
+  const target = parseInt(el.dataset.count);
+  const suffix = el.dataset.suffix || '';
+  const dur = 1600;
+  const start = performance.now();
+  function step(now) {
+    const p = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(ease * target) + suffix;
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { animateCount(e.target); counterObs.unobserve(e.target); }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
+
+/* ================================================================
+   SIGNAL WIDGET BAR ANIMATION (delayed load)
+================================================================ */
+setTimeout(() => {
+  document.querySelectorAll('.sw-fill[data-w]').forEach(el => {
+    el.style.width = el.dataset.w;
+  });
+}, 800);
+
+/* ================================================================
+   HERO CANVAS — floating particles
+================================================================ */
+(function() {
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], animId;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  function Particle() {
+    this.reset();
+  }
+  Particle.prototype.reset = function() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.r = Math.random() * 1.5 + 0.4;
+    this.vx = (Math.random() - 0.5) * 0.25;
+    this.vy = (Math.random() - 0.5) * 0.25 - 0.08;
+    this.alpha = Math.random() * 0.5 + 0.1;
+    this.life = 0;
+    this.maxLife = Math.random() * 300 + 200;
+  };
+
+  function init() {
+    particles = [];
+    const count = Math.min(80, Math.floor(W * H / 14000));
+    for (let i = 0; i < count; i++) { const p = new Particle(); p.life = Math.random() * p.maxLife; particles.push(p); }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.life++;
+      if (p.life > p.maxLife) { p.reset(); return; }
+      const fade = p.life < 40 ? p.life / 40 : p.life > p.maxLife - 40 ? (p.maxLife - p.life) / 40 : 1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,201,167,' + (p.alpha * fade * 0.6) + ')';
+      ctx.fill();
+      p.x += p.vx; p.y += p.vy;
+    });
+    animId = requestAnimationFrame(draw);
+  }
+
+  resize();
+  init();
+  draw();
+  window.addEventListener('resize', () => { cancelAnimationFrame(animId); resize(); init(); draw(); });
+})();
+
+/* ================================================================
+   NAV scroll opacity
+================================================================ */
+(function() {
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    const s = window.scrollY;
+    nav.style.background = s > 60
+      ? 'rgba(247,249,248,0.97)'
+      : 'rgba(247,249,248,0.92)';
+  }, { passive: true });
+})();
+
+/* ---- LANGUAGE SYSTEM ---- */
+function setLang(l) {
+  l = l === 'en' ? 'en' : 'da';
+  document.documentElement.lang = l;
+  document.documentElement.setAttribute('data-lang', l);
+  document.title = l === 'da' ? 'Gamma7 | Compliance & IT-audit' : 'Gamma7 | Compliance & IT audit';
+  document.querySelectorAll('[data-da],[data-en]').forEach(el => {
+    const val = l === 'da' ? el.dataset.da : el.dataset.en;
+    if (val !== undefined) el.textContent = val;
+  });
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === l);
+    b.setAttribute('aria-pressed', String(b.dataset.lang === l));
+  });
+  showRisk(+(document.querySelector('.risk-item.on')?.dataset.risk || 0));
+  try { localStorage.setItem('g7lang', l); } catch(e){}
+}
+// Init language
+(function(){
+  let lang = 'da';
+  try { lang = localStorage.getItem('g7lang') || 'da'; } catch(e){}
+  setLang(lang);
+})();
+
+</script>
+
+
+
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <span class="g7-footer-copy">Gamma7 · CVR 44378329 · c/o Flexum Coworking, Lyngbyvej 83A, 2100 København Ø</span>
+    </div>
+    <nav class="g7-footer-links" aria-label="Juridiske sider">
+      <a href="/agents.html"><span data-da="AI-agenter" data-en="AI Agents">AI-agenter</span></a>
+      <a href="/privacy.html"><span data-da="Privatlivspolitik" data-en="Privacy Policy">Privatlivspolitik</span></a>
+      <a href="/disclaimer.html"><span data-da="Vilkår og betingelser" data-en="Terms &amp; Conditions">Vilkår og betingelser</span></a>
+    </nav>
+  </div>
+</footer>
+</body></html>

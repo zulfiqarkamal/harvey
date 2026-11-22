@@ -2,213 +2,199 @@
 <html lang="da" data-lang="da">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-da="Vilkår og betingelser — Gamma7" data-en="Terms &amp; Conditions — Gamma7">Vilkår og betingelser — Gamma7</title>
-<meta name="description" content="Gamma7 vilkår og betingelser / Terms and Conditions">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-da="Gamma7 | Vilkår og betingelser" data-en="Gamma7 | Terms and Conditions">Gamma7 | Vilkår og betingelser</title>
+<meta name="description" content="Gamma7 vilkår og betingelser / Gamma7 terms and conditions">
+<meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Cormorant:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0D1E37; --bg-alt: #112445; --surface: #172D52;
-  --border: rgba(140,180,255,0.10); --accent: #00D4B4;
+  --bg: #0D1E37; --bg-alt: #112445; --surface: #172D52; --surface-hi: #1D3A6A;
+  --border: rgba(140,180,255,0.10); --border-mid: rgba(140,180,255,0.18);
+  --accent: #00D4B4; --accent-dim: rgba(0,212,180,0.13);
+  --accent-muted: #4AE8CC;
   --text: #EDF3FF; --text-2: #8DB4D6; --text-dim: #5A87AD;
-  --font-d: 'Cormorant', Georgia, serif;
-  --font-b: 'Inter', -apple-system, sans-serif;
+  --font-d: 'Cormorant', Georgia, serif; --font-b: 'Inter', -apple-system, sans-serif;
+  color-scheme: dark;
 }
-*, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: var(--font-b); font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
-.g7-nav { position: sticky; top: 0; z-index: 100; background: rgba(13,30,55,0.97); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px); }
-.g7-nav-inner { max-width: 1100px; margin: 0 auto; padding: 14px max(16px, env(safe-area-inset-left,0px)); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.g7-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font-weight: 600; font-size: 15px; }
-.g7-logo-mark { width: 28px; height: 28px; background: var(--accent); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #0D1E37; flex-shrink: 0; }
-.g7-back { font-size: 13px; color: var(--text-2); text-decoration: none; }
-.g7-back:hover { color: var(--accent); }
-.lang-toggle { display: flex; gap: 4px; }
-.lang-btn { padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-size: 12px; font-weight: 500; cursor: pointer; transition: all .2s; }
-.lang-btn.active, .lang-btn:hover { background: var(--accent); border-color: var(--accent); color: #0D1E37; }
-.page-wrap { max-width: 760px; margin: 0 auto; padding: 60px max(16px, env(safe-area-inset-left,0px)) 80px; }
-.page-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
-.page-title { font-family: var(--font-d); font-size: clamp(28px, 5vw, 44px); font-weight: 600; line-height: 1.15; margin-bottom: 8px; }
-.page-meta { font-size: 13px; color: var(--text-dim); margin-bottom: 48px; }
-.section { margin-bottom: 40px; }
-.section h2 { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 10px; border-left: 2px solid var(--accent); padding-left: 12px; }
-.section p, .section li { font-size: 15px; color: var(--text-2); margin-bottom: 8px; }
-.section ul { padding-left: 20px; }
-.section li { margin-bottom: 6px; }
-.section strong { color: var(--text); font-weight: 600; }
-.note { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 6px; padding: 14px 18px; margin: 16px 0; font-size: 14px; color: var(--text-2); }
-footer { background: var(--bg); border-top: 1px solid var(--border); padding: 24px 0; }
-.footer-inner { max-width: 1100px; margin: 0 auto; padding: 0 max(16px, env(safe-area-inset-left,0px)); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.g7-footer-copy { font-size: 12px; color: var(--text-dim); }
-.g7-footer-links { display: flex; gap: 20px; }
-.g7-footer-links a { font-size: 12px; color: var(--text-dim); text-decoration: none; }
-.g7-footer-links a:hover { color: var(--accent); }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:16px;line-height:1.7;min-height:100vh}
+a{color:var(--accent-muted);text-decoration:none}
+a:hover{text-decoration:underline;color:var(--accent)}
+
+.lang-bar{position:fixed;top:12px;right:16px;z-index:100;display:flex;border:1px solid var(--border-mid);border-radius:6px;overflow:hidden;background:rgba(13,30,55,0.88);backdrop-filter:blur(12px)}
+.lang-btn{background:none;border:none;color:var(--text-2);padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-b);transition:background 0.2s,color 0.2s}
+.lang-btn.active{background:var(--accent-dim);color:var(--accent-muted)}
+.lang-btn:hover:not(.active){background:rgba(140,180,255,0.07);color:var(--text)}
+
+.page-header{padding:60px 2rem 2rem;border-bottom:1px solid var(--border)}
+.page-header-inner{max-width:820px;margin:0 auto}
+.site-link{font-family:var(--font-d);font-size:1.25rem;font-weight:600;color:var(--text);display:inline-block;margin-bottom:1.5rem}
+.site-link span{color:var(--accent)}
+
+.page-content{max-width:820px;margin:0 auto;padding:3rem 2rem 6rem}
+h1.page-title{font-family:var(--font-d);font-size:2.6rem;font-weight:600;color:var(--text);margin-bottom:.5rem;line-height:1.15}
+.page-meta{color:var(--text-dim);font-size:.875rem;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+h2{font-family:var(--font-d);font-size:1.55rem;font-weight:600;color:var(--accent-muted);margin:2.5rem 0 .75rem}
+p{color:var(--text-2);margin-bottom:1rem}
+ul,ol{color:var(--text-2);padding-left:1.5rem;margin-bottom:1rem}
+li{margin-bottom:.4rem}
+.info-box{background:var(--surface);border:1px solid var(--border-mid);border-radius:10px;padding:1.25rem 1.5rem;margin:1.5rem 0}
+.info-box p{margin-bottom:0}
+.info-box strong{color:var(--text)}
+
+footer{background:var(--bg-alt);border-top:1px solid var(--border);padding:2rem}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.footer-copy{color:var(--text-dim);font-size:.8rem}
+.footer-links-row{display:flex;gap:1.5rem;flex-wrap:wrap}
+.footer-links-row a{color:var(--text-dim);font-size:.8rem;transition:color .2s}
+.footer-links-row a:hover{color:var(--accent-muted);text-decoration:none}
+
+@media(max-width:640px){
+  h1.page-title{font-size:2rem}
+  .page-content{padding:2.5rem 1.25rem 4rem}
+  .page-header{padding:56px 1.25rem 1.5rem}
+  .footer-inner{flex-direction:column;align-items:flex-start}
+}
 </style>
 </head>
 <body>
 
-<nav class="g7-nav" aria-label="Navigation">
-  <div class="g7-nav-inner">
-    <a href="/" class="g7-logo" aria-label="Gamma7 forside">
-      <div class="g7-logo-mark" aria-hidden="true">G7</div>
-      <span>Gamma7</span>
-    </a>
-    <div style="display:flex;align-items:center;gap:20px;">
-      <a href="/" class="g7-back" data-da="← Tilbage til forsiden" data-en="← Back to home">← Tilbage til forsiden</a>
-      <div class="lang-toggle" role="group" aria-label="Sprog / Language">
-        <button class="lang-btn" data-lang="da" onclick="setLang('da')" aria-pressed="true">DA</button>
-        <button class="lang-btn" data-lang="en" onclick="setLang('en')" aria-pressed="false">EN</button>
-      </div>
-    </div>
+<div class="lang-bar" role="group" aria-label="Language">
+  <button class="lang-btn active" data-lang="da" aria-pressed="true" onclick="setLang('da')">DA</button>
+  <button class="lang-btn" data-lang="en" aria-pressed="false" onclick="setLang('en')">EN</button>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <a href="https://gamma7.io" class="site-link">Gamma<span>7</span></a>
   </div>
-</nav>
+</div>
 
-<main class="page-wrap">
+<div class="page-content">
 
-  <p class="page-eyebrow" data-da="Juridisk" data-en="Legal">Juridisk</p>
-  <h1 class="page-title" data-da="Vilkår og betingelser" data-en="Terms &amp; Conditions">Vilkår og betingelser</h1>
-  <p class="page-meta" data-da="Senest opdateret: november 2026 · Gælder for gamma7.io og rådgivningsydelser leveret af Gamma7" data-en="Last updated: November 2026 · Applies to gamma7.io and consulting services delivered by Gamma7">Senest opdateret: november 2026 · Gælder for gamma7.io og rådgivningsydelser leveret af Gamma7</p>
+  <!-- DA version -->
+  <div data-lang-block="da">
+    <h1 class="page-title">Vilkår og betingelser</h1>
+    <p class="page-meta">Sidst opdateret: november 2026 · CVR 44378329</p>
 
-  <!-- DANISH VERSION -->
-  <div data-show-lang="da">
-
-    <div class="section">
-      <h2>1. Virksomhedsoplysninger</h2>
-      <p><strong>Gamma7</strong><br>
-      CVR-nr.: 44378329<br>
-      c/o Flexum Coworking, Lyngbyvej 83A, 2100 København Ø<br>
-      E-mail: <a href="mailto:zulfiqar@gamma7.io">zulfiqar@gamma7.io</a></p>
+    <div class="info-box">
+      <p><strong>Leverandør:</strong> Gamma7, enkeltmandsvirksomhed, CVR 44378329 · c/o Flexum Coworking, Lyngbyvej 83A, 2100 København Ø · <a href="mailto:info@gamma7.io">info@gamma7.io</a></p>
     </div>
 
-    <div class="section">
-      <h2>2. Anvendelsesområde</h2>
-      <p>Disse vilkår gælder for brugen af gamma7.io samt for rådgivningsydelser leveret af Gamma7. Ved at anvende hjemmesiden eller indgå aftale om rådgivning accepterer du disse vilkår.</p>
+    <h2>1. Anvendelsesområde</h2>
+    <p>Disse vilkår gælder for alle ydelser leveret af Gamma7, herunder:</p>
+    <ul>
+      <li>IT-revision, risiko- og compliancerådgivning</li>
+      <li>Gamma7 Audit Intelligence — AI-understøttet revisionsplanlægning og rapportering</li>
+      <li>Gamma7 Supplier Assurance — AI-understøttet kontraktanalyse mod DORA, GDPR og øvrige krav</li>
+      <li>Selvbetjeningsværktøjer på gamma7.io og gamma7-selfassessment.netlify.app</li>
+    </ul>
+    <p>Eventuelle tillægsvilkår fremgår af den skriftlige aftale (Statement of Work eller lignende).</p>
+
+    <h2>2. AI-agenter — særlige betingelser</h2>
+    <p>Gamma7 Audit Intelligence og Gamma7 Supplier Assurance er AI-assisterede analyseværktøjer. Brugeren accepterer følgende:</p>
+    <ul>
+      <li><strong>Human review påkrævet:</strong> Al output fra agenterne — findings, kravvurderinger, rapporter — er udkast og kræver gennemgang og godkendelse af en kvalificeret fagperson inden brug.</li>
+      <li><strong>Ikke retlig rådgivning:</strong> Agenternes output udgør ikke juridisk, revisions- eller compliance-rådgivning i lovens forstand og erstatter ikke professionel rådgivning.</li>
+      <li><strong>Nøjagtighed og fuldstændighed:</strong> Gamma7 bestræber sig på høj præcision, men AI-systemer kan fejle. Resultater skal valideres af brugeren.</li>
+      <li><strong>Dataansvar:</strong> Brugeren er ansvarlig for, at uploadede dokumenter og data er lovlige at behandle, herunder evt. nødvendig anonymisering.</li>
+    </ul>
+
+    <h2>3. Selvbetjeningsværktøjer</h2>
+    <p>Assessment-værktøjerne (NIS2, DORA, GDPR, AI Act, CRA) er vejledende. Resultater er baseret på brugerens egne input og afspejler ikke en formel auditering eller certificering. Gamma7 påtager sig intet ansvar for beslutninger truffet alene på baggrund af disse resultater.</p>
+
+    <h2>4. Betaling og priser</h2>
+    <p>Priser aftales skriftligt inden opstart. Fakturaer forfalder 30 dage fra udstedelse. Ved forsinket betaling tilskrives renter efter rentelovens satser. Priserne er ekskl. moms, medmindre andet er angivet.</p>
+
+    <h2>5. Fortrolighed</h2>
+    <p>Begge parter forpligter sig til at behandle hinandens fortrolige oplysninger fortroligt. Fortrolighedsforpligtelsen gælder i 3 år efter aftalens ophør. Gamma7's behandling af personoplysninger er beskrevet i <a href="./privacy.html">privatlivspolitikken</a>.</p>
+
+    <h2>6. Immaterielle rettigheder</h2>
+    <p>Rapporter, analyser og dokumenter udarbejdet af Gamma7 tilhører kunden efter fuld betaling. Gamma7 beholder retten til at anvende metodikker, skabeloner og generelle erfaringer til fremtidigt arbejde, dog uden at viderebringe fortrolige kundeoplysninger.</p>
+
+    <h2>7. Ansvarsbegrænsning</h2>
+    <p>Gamma7's samlede erstatningsansvar er begrænset til det faktisk betalte honorar for den pågældende opgave. Gamma7 er ikke ansvarlig for indirekte tab, følgetab eller tabt fortjeneste. Ansvaret kan ikke begrænses ved grov uagtsomhed eller forsætlig handling.</p>
+
+    <h2>8. Ophør</h2>
+    <p>Begge parter kan opsige løbende aftaler med 30 dages skriftligt varsel, medmindre andet er aftalt. Allerede udført arbejde faktureres pro rata.</p>
+
+    <h2>9. Lovvalg og værneting</h2>
+    <p>Disse vilkår er underlagt dansk ret. Tvister søges løst i mindelighed. Kan enighed ikke opnås, afgøres tvisten ved Retten i København som rette værneting.</p>
+
+    <h2>10. Kontakt</h2>
+    <p>Spørgsmål til vilkårene: <a href="mailto:info@gamma7.io">info@gamma7.io</a></p>
+    <p>Gamma7 · CVR 44378329 · c/o Flexum Coworking, Lyngbyvej 83A, 2100 København Ø, Danmark</p>
+  </div>
+
+  <!-- EN version -->
+  <div data-lang-block="en" style="display:none">
+    <h1 class="page-title">Terms and Conditions</h1>
+    <p class="page-meta">Last updated: November 2026 · VAT DK44378329</p>
+
+    <div class="info-box">
+      <p><strong>Supplier:</strong> Gamma7, sole trader, VAT DK44378329 · c/o Flexum Coworking, Lyngbyvej 83A, DK-2100 Copenhagen Ø · <a href="mailto:info@gamma7.io">info@gamma7.io</a></p>
     </div>
 
-    <div class="section">
-      <h2>3. Rådgivningsydelser</h2>
-      <p>Gamma7 leverer rådgivning inden for IT-revision, risikostyring, compliance og relaterede områder. Rådgivningen er vejledende og erstatter ikke juridisk rådgivning fra advokat eller anden lovpligtig revision.</p>
-      <div class="note">
-        Gamma7 er en uafhængig konsulentvirksomhed og er ikke et revisionsfirma i henhold til revisorloven. Vores ydelser er rådgivende af natur.
-      </div>
-      <p>Konkrete aftaler om ydelser, pris og leveringsvilkår fastsættes i separate tilbud og engagementsbreve.</p>
-    </div>
+    <h2>1. Scope</h2>
+    <p>These terms apply to all services delivered by Gamma7, including:</p>
+    <ul>
+      <li>IT audit, risk and compliance consulting</li>
+      <li>Gamma7 Audit Intelligence — AI-assisted audit planning and reporting</li>
+      <li>Gamma7 Supplier Assurance — AI-assisted contract analysis against DORA, GDPR and other requirements</li>
+      <li>Self-assessment tools at gamma7.io and gamma7-selfassessment.netlify.app</li>
+    </ul>
+    <p>Any additional terms are set out in the written agreement (Statement of Work or similar).</p>
 
-    <div class="section">
-      <h2>4. Ansvarsbegrænsning</h2>
-      <p>Gamma7 er ikke ansvarlig for:</p>
-      <ul>
-        <li>Tab opstået som følge af beslutninger truffet på grundlag af vores rådgivning, medmindre der er tale om grov uagtsomhed eller forsæt</li>
-        <li>Indirekte tab, følgeskader eller mistet fortjeneste</li>
-        <li>Tekniske fejl, nedbrud eller utilgængelighed af hjemmesiden</li>
-        <li>Tredjepartstjenester, som der linkes til fra gamma7.io</li>
-      </ul>
-      <p>Vores samlede ansvar er under alle omstændigheder begrænset til det beløb, der er betalt for den konkrete ydelse, som klagen vedrører.</p>
-    </div>
+    <h2>2. AI agents — specific conditions</h2>
+    <p>Gamma7 Audit Intelligence and Gamma7 Supplier Assurance are AI-assisted analysis tools. The user accepts the following:</p>
+    <ul>
+      <li><strong>Human review required:</strong> All output from the agents — findings, compliance assessments, reports — are drafts and require review and approval by a qualified professional before use.</li>
+      <li><strong>Not professional advice:</strong> The agents' output does not constitute legal, audit or compliance advice in the professional sense and does not replace professional counsel.</li>
+      <li><strong>Accuracy and completeness:</strong> Gamma7 strives for high precision, but AI systems can make errors. Results must be validated by the user.</li>
+      <li><strong>Data responsibility:</strong> The user is responsible for ensuring that uploaded documents and data are lawful to process, including any necessary anonymisation.</li>
+    </ul>
 
-    <div class="section">
-      <h2>5. Intellektuelle rettigheder</h2>
-      <p>Alt indhold på gamma7.io, herunder tekster, design, illustrationer og kode, er ophavsretligt beskyttet og tilhører Gamma7. Indholdet må ikke gengives, distribueres eller anvendes kommercielt uden forudgående skriftlig tilladelse.</p>
-    </div>
+    <h2>3. Self-assessment tools</h2>
+    <p>The assessment tools (NIS2, DORA, GDPR, AI Act, CRA) are indicative. Results are based on the user's own inputs and do not reflect a formal audit or certification. Gamma7 accepts no liability for decisions taken solely on the basis of these results.</p>
 
-    <div class="section">
-      <h2>6. Fortrolighed</h2>
-      <p>Gamma7 behandler alle oplysninger modtaget fra kunder som fortrolige og videregiver dem ikke til tredjeparter uden samtykke, medmindre vi er forpligtet hertil ved lov. Se vores <a href="/privacy.html">privatlivspolitik</a> for yderligere information.</p>
-    </div>
+    <h2>4. Payment and pricing</h2>
+    <p>Prices are agreed in writing before commencement. Invoices are due 30 days from issue. Late payments accrue interest at Danish statutory rates. Prices are exclusive of VAT unless otherwise stated.</p>
 
-    <div class="section">
-      <h2>7. Ændringer i vilkårene</h2>
-      <p>Vi forbeholder os ret til at ændre disse vilkår. Ændringer offentliggøres på denne side. Ved væsentlige ændringer, der påvirker igangværende engagementer, orienterer vi berørte kunder direkte.</p>
-    </div>
+    <h2>5. Confidentiality</h2>
+    <p>Both parties undertake to treat each other's confidential information as confidential. The confidentiality obligation applies for 3 years after the agreement ends. Gamma7's processing of personal data is described in the <a href="./privacy.html">privacy policy</a>.</p>
 
-    <div class="section">
-      <h2>8. Lovvalg og værneting</h2>
-      <p>Disse vilkår er underlagt dansk ret. Eventuelle tvister afgøres ved Københavns Byret som første instans, medmindre andet følger af ufravigelig lovgivning.</p>
-    </div>
+    <h2>6. Intellectual property</h2>
+    <p>Reports, analyses and documents prepared by Gamma7 belong to the client upon full payment. Gamma7 retains the right to use methodologies, templates and general experience for future work, without disclosing confidential client information.</p>
 
-    <div class="section">
-      <h2>9. Kontakt</h2>
-      <p>Spørgsmål til disse vilkår kan rettes til: <a href="mailto:zulfiqar@gamma7.io">zulfiqar@gamma7.io</a></p>
-    </div>
+    <h2>7. Limitation of liability</h2>
+    <p>Gamma7's total liability is limited to the fees actually paid for the assignment in question. Gamma7 is not liable for indirect loss, consequential loss or loss of profit. Liability cannot be limited in cases of gross negligence or wilful misconduct.</p>
 
-  </div><!-- /da -->
+    <h2>8. Termination</h2>
+    <p>Either party may terminate ongoing agreements with 30 days' written notice, unless otherwise agreed. Work already performed is invoiced pro rata.</p>
 
-  <!-- ENGLISH VERSION -->
-  <div data-show-lang="en" hidden>
+    <h2>9. Governing law and jurisdiction</h2>
+    <p>These terms are governed by Danish law. Disputes shall be sought resolved amicably. If agreement cannot be reached, the dispute shall be settled by the Copenhagen City Court as the proper venue.</p>
 
-    <div class="section">
-      <h2>1. Company details</h2>
-      <p><strong>Gamma7</strong><br>
-      CVR (company reg.): 44378329<br>
-      c/o Flexum Coworking, Lyngbyvej 83A, 2100 Copenhagen Ø, Denmark<br>
-      Email: <a href="mailto:zulfiqar@gamma7.io">zulfiqar@gamma7.io</a></p>
-    </div>
+    <h2>10. Contact</h2>
+    <p>Questions about these terms: <a href="mailto:info@gamma7.io">info@gamma7.io</a></p>
+    <p>Gamma7 · VAT DK44378329 · c/o Flexum Coworking, Lyngbyvej 83A, DK-2100 Copenhagen Ø, Denmark</p>
+  </div>
 
-    <div class="section">
-      <h2>2. Scope</h2>
-      <p>These terms apply to the use of gamma7.io and to consulting services delivered by Gamma7. By using the website or engaging our services you accept these terms.</p>
-    </div>
-
-    <div class="section">
-      <h2>3. Consulting services</h2>
-      <p>Gamma7 provides advisory services within IT audit, risk management, compliance and related areas. Our advice is advisory in nature and does not constitute legal advice or statutory auditing.</p>
-      <div class="note">
-        Gamma7 is an independent consulting firm and is not a licensed audit firm under Danish auditing legislation. Our services are advisory in nature.
-      </div>
-      <p>Specific terms regarding scope, pricing and delivery are set out in separate proposals and engagement letters.</p>
-    </div>
-
-    <div class="section">
-      <h2>4. Limitation of liability</h2>
-      <p>Gamma7 is not liable for:</p>
-      <ul>
-        <li>Losses arising from decisions made on the basis of our advice, unless caused by gross negligence or wilful misconduct</li>
-        <li>Indirect losses, consequential damages or loss of profit</li>
-        <li>Technical errors, outages or unavailability of the website</li>
-        <li>Third-party services linked to from gamma7.io</li>
-      </ul>
-      <p>Our aggregate liability is in any event limited to the amount paid for the specific service to which the claim relates.</p>
-    </div>
-
-    <div class="section">
-      <h2>5. Intellectual property</h2>
-      <p>All content on gamma7.io, including text, design, illustrations and code, is protected by copyright and owned by Gamma7. Content may not be reproduced, distributed or used commercially without prior written consent.</p>
-    </div>
-
-    <div class="section">
-      <h2>6. Confidentiality</h2>
-      <p>Gamma7 treats all information received from clients as confidential and does not disclose it to third parties without consent, unless required by law. See our <a href="/privacy.html">privacy policy</a> for further information.</p>
-    </div>
-
-    <div class="section">
-      <h2>7. Changes to these terms</h2>
-      <p>We reserve the right to amend these terms. Changes will be published on this page. For material changes affecting ongoing engagements, we will notify affected clients directly.</p>
-    </div>
-
-    <div class="section">
-      <h2>8. Governing law and jurisdiction</h2>
-      <p>These terms are governed by Danish law. Any disputes shall be resolved by the Copenhagen City Court as the court of first instance, unless otherwise required by mandatory legislation.</p>
-    </div>
-
-    <div class="section">
-      <h2>9. Contact</h2>
-      <p>Questions about these terms can be directed to: <a href="mailto:zulfiqar@gamma7.io">zulfiqar@gamma7.io</a></p>
-    </div>
-
-  </div><!-- /en -->
-
-</main>
+</div><!-- /page-content -->
 
 <footer>
   <div class="footer-inner">
-    <span class="g7-footer-copy">Gamma7 · CVR 44378329 · c/o Flexum Coworking, Lyngbyvej 83A, 2100 København Ø</span>
-    <nav class="g7-footer-links" aria-label="Juridiske sider">
-      <a href="/privacy.html" data-da="Privatlivspolitik" data-en="Privacy policy">Privatlivspolitik</a>
-      <a href="/disclaimer.html" data-da="Vilkår og betingelser" data-en="Terms &amp; conditions">Vilkår og betingelser</a>
-    </nav>
+    <span class="footer-copy">© 2026 Gamma7 · CVR 44378329</span>
+    <div class="footer-links-row">
+      <a href="https://gamma7.io" data-da="gamma7.io" data-en="gamma7.io">gamma7.io</a>
+      <a href="./audit-intelligence/" data-da="Audit Intelligence" data-en="Audit Intelligence">Audit Intelligence</a>
+      <a href="./privacy.html" data-da="Privatlivspolitik" data-en="Privacy Policy">Privatlivspolitik</a>
+      <a href="mailto:info@gamma7.io">info@gamma7.io</a>
+    </div>
   </div>
 </footer>
 
@@ -217,24 +203,26 @@ function setLang(l) {
   l = l === 'en' ? 'en' : 'da';
   document.documentElement.lang = l;
   document.documentElement.setAttribute('data-lang', l);
-  document.title = l === 'da' ? 'Vilkår og betingelser — Gamma7' : 'Terms & Conditions — Gamma7';
-  document.querySelectorAll('[data-da],[data-en]').forEach(el => {
-    const val = l === 'da' ? el.dataset.da : el.dataset.en;
+  var title = document.querySelector('title');
+  if (title && title.dataset.da && title.dataset.en)
+    title.textContent = l === 'da' ? title.dataset.da : title.dataset.en;
+  document.querySelectorAll('[data-da],[data-en]').forEach(function(el) {
+    if (el.tagName === 'TITLE') { el.textContent = l === 'da' ? el.dataset.da : el.dataset.en; return; }
+    var val = l === 'da' ? el.dataset.da : el.dataset.en;
     if (val !== undefined) el.textContent = val;
   });
-  document.querySelectorAll('.lang-btn').forEach(b => {
+  document.querySelectorAll('[data-lang-block]').forEach(function(el) {
+    el.style.display = el.getAttribute('data-lang-block') === l ? '' : 'none';
+  });
+  document.querySelectorAll('.lang-btn').forEach(function(b) {
     b.classList.toggle('active', b.dataset.lang === l);
     b.setAttribute('aria-pressed', String(b.dataset.lang === l));
-  });
-  document.querySelectorAll('[data-show-lang]').forEach(el => {
-    el.hidden = el.getAttribute('data-show-lang') !== l;
   });
   try { localStorage.setItem('g7lang', l); } catch(e) {}
 }
 (function() {
-  let lang = 'da';
-  try { lang = localStorage.getItem('g7lang') || 'da'; } catch(e) {}
-  setLang(lang);
+  var saved; try { saved = localStorage.getItem('g7lang'); } catch(e) {}
+  if (saved === 'en') setLang('en');
 })();
 </script>
 </body>
