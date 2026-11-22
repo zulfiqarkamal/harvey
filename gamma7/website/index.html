@@ -1218,6 +1218,10 @@ function setLang(l) {
   showRisk(+(document.querySelector('.risk-item.on')?.dataset.risk || 0));
   try { localStorage.setItem('g7lang', l); } catch(e){}
 }
+// Wire up language buttons
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => setLang(btn.dataset.lang));
+});
 // Init language
 (function(){
   let lang = 'da';
