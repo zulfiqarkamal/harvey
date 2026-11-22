@@ -660,13 +660,18 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <button class="nav-item nav-overview active" onclick="showTab('overview',this)">Overview</button>
     <button class="nav-item nav-contracts" onclick="showTab('contracts',this)">Contracts</button>
     <button class="nav-item nav-register" onclick="showTab('register',this)">Register</button>
-    <button class="nav-item nav-reconciliation" onclick="showTab('reconciliation',this)">Coverage Check</button>
+    <button class="nav-item nav-reconciliation" onclick="showTab('reconciliation',this)">ICT Register</button>
     <button class="nav-item nav-workpapers" onclick="showTab('workpapers',this)">Audit Papers</button>
     <button class="nav-item nav-audit" onclick="showTab('audit',this)">Audit Plan</button>
     <button class="nav-item nav-boardreport" onclick="showTab('boardreport',this)">Board Report</button>
+    <button class="nav-item nav-protocols" onclick="showTab('protocols',this)" style="color:#0ea5e9;border-left:3px solid #0ea5e9">Protocols</button>
   </nav>
   <div class="sidebar-footer">
-    <div class="advisory-badge">&#9888; Advisory — Human review required before regulatory use</div>
+    <div class="lang-toggle" style="display:flex;gap:6px;justify-content:center;margin-bottom:8px">
+      <button id="lang-en" onclick="setLang('en')" style="background:var(--accent);color:#fff;border:none;border-radius:12px;padding:3px 12px;font-size:11px;cursor:pointer;font-weight:600">EN</button>
+      <button id="lang-da" onclick="setLang('da')" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:12px;padding:3px 12px;font-size:11px;cursor:pointer">DA</button>
+    </div>
+    <div class="advisory-badge" data-i18n="advisory">&#9888; Advisory — Human review required before regulatory use</div>
   </div>
 </aside>
 <div class="content-area">
@@ -685,7 +690,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
         <div style="font-size:11px;color:var(--muted);margin-top:4px">Open, unresolved</div>
       </div>
       <div class="card" style="border-top:3px solid var(--yellow)">
-        <div class="label">P3 — Minor Findings</div>
+        <div class="label">P3 — Medium Findings</div>
         <div class="value yellow" id="stat-p3">&#8212;</div>
         <div style="font-size:11px;color:var(--muted);margin-top:4px">Open, unresolved</div>
       </div>
@@ -810,6 +815,67 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     </div>
     <div id="boardreport-content"></div>
   </div>
+
+  <div id="tab-protocols" class="tab-pane">
+    <div class="tab-header">
+      <h2 style="color:#0ea5e9">Protocols</h2>
+      <div class="agent-label">IIA Standards — Board Reporting Protocol &amp; Escalation Rules</div>
+    </div>
+    <div style="max-width:900px;margin:0 auto">
+
+      <!-- Traffic-light legend -->
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
+        <span style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Status indicators</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:12px"><span style="width:14px;height:14px;border-radius:50%;background:var(--green);display:inline-block"></span>Green — no action required</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:12px"><span style="width:14px;height:14px;border-radius:50%;background:var(--orange);display:inline-block"></span>Amber — monitor / management response due</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:12px"><span style="width:14px;height:14px;border-radius:50%;background:var(--red);display:inline-block"></span>Red — board escalation required</span>
+      </div>
+
+      <!-- P1 Escalation box -->
+      <div style="background:rgba(239,68,68,.08);border:1px solid var(--red);border-radius:8px;padding:16px 18px;margin-bottom:24px">
+        <div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:8px">&#9888; P1 Escalation Rule — Non-Actioned Critical Findings</div>
+        <p style="margin:0 0 6px;font-size:13px;line-height:1.6">Any P1 (Critical) finding not remediated or formally accepted by the board within <strong>30 calendar days</strong> of the report date must be escalated directly to the Board Audit &amp; Risk Committee (BARC) by the Chief Audit Executive (CAE).</p>
+        <p style="margin:0;font-size:13px;line-height:1.6">Escalation must include: (1) the original finding reference, (2) the agreed remediation plan and owner, (3) the reason for non-completion, and (4) the CAE's recommended next action. IIA Standard 2600 applies.</p>
+      </div>
+
+      <!-- EN version -->
+      <div style="background:var(--surface2);border-radius:8px;padding:18px 20px;margin-bottom:20px">
+        <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">English — IIA Board Reporting Template</div>
+        <p style="font-size:13px;font-weight:600;margin:0 0 8px">Purpose</p>
+        <p style="font-size:13px;line-height:1.6;margin:0 0 12px">This template is used by the Chief Audit Executive (CAE) to report internal audit results to the Board Audit &amp; Risk Committee in accordance with IIA Standard 2060 — Reporting to Senior Management and the Board.</p>
+        <p style="font-size:13px;font-weight:600;margin:0 0 8px">Mandatory sections</p>
+        <ol style="font-size:13px;line-height:1.9;margin:0 0 12px;padding-left:20px">
+          <li><strong>Audit universe &amp; coverage</strong> — planned vs. actual audits completed this period</li>
+          <li><strong>Findings summary</strong> — P1/P2/P3/P4 breakdown; new, open, closed counts</li>
+          <li><strong>Follow-up status</strong> — overdue items, extension requests, management acceptance</li>
+          <li><strong>Key risks identified</strong> — emerging risks surfaced through audit work</li>
+          <li><strong>Independence declaration</strong> — CAE confirmation of organisational independence</li>
+          <li><strong>Next period plan</strong> — upcoming audits, resource needs, any scope changes</li>
+        </ol>
+        <p style="font-size:13px;font-weight:600;margin:0 0 8px">Approval &amp; distribution</p>
+        <p style="font-size:13px;line-height:1.6;margin:0">The board report is approved by the CAE, presented at the quarterly BARC meeting, and distributed to: BARC members, CEO, CFO, CRO, and the external auditor upon request. It is classified <strong>Confidential</strong> and not for further distribution.</p>
+      </div>
+
+      <!-- DA version -->
+      <div style="background:var(--surface2);border-radius:8px;padding:18px 20px">
+        <div style="font-size:11px;font-weight:700;color:#0ea5e9;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Dansk — IIA Bestyrelsesrapporteringsskabelon</div>
+        <p style="font-size:13px;font-weight:600;margin:0 0 8px">Form&#229;l</p>
+        <p style="font-size:13px;line-height:1.6;margin:0 0 12px">Denne skabelon anvendes af Chief Audit Executive (CAE) til at rapportere interne revisionsresultater til Bestyrelsens Revisions- og Risikoudvalg i henhold til IIA-standard 2060 — Rapportering til sen&#237;or ledelse og bestyrelsen.</p>
+        <p style="font-size:13px;font-weight:600;margin:0 0 8px">Obligatoriske afsnit</p>
+        <ol style="font-size:13px;line-height:1.9;margin:0 0 12px;padding-left:20px">
+          <li><strong>Revisionsunivers og d&#230;kning</strong> — planlagte vs. gennemf&#248;rte revisioner i perioden</li>
+          <li><strong>Fundsammenfatning</strong> — P1/P2/P3/P4-opdeling; nye, &#229;bne, lukkede</li>
+          <li><strong>Opf&#248;lgningsstatus</strong> — forfaldne punkter, forl&#230;ngelsesanmodninger, ledelsesgodkendelse</li>
+          <li><strong>Identificerede n&#248;glerisici</strong> — nye risici identificeret gennem revisionsarbejdet</li>
+          <li><strong>Uafh&#230;ngighedserkl&#230;ring</strong> — CAE&#8217;s bekr&#230;ftelse af organisatorisk uafh&#230;ngighed</li>
+          <li><strong>Plan for n&#230;ste periode</strong> — kommende revisioner, ressourcebehov, eventuelle scopebilag</li>
+        </ol>
+        <p style="font-size:13px;font-weight:600;margin:0 0 8px">Godkendelse og distribution</p>
+        <p style="font-size:13px;line-height:1.6;margin:0">Bestyrelsesrapporten godkendes af CAE, pr&#230;senteres p&#229; det kvartalsvise BARC-m&#248;de og distribueres til: BARC-medlemmer, administrerende direkt&#248;r, CFO, CRO og den eksterne revisor p&#229; anmodning. Rapporten er klassificeret <strong>Fortrolig</strong> og m&#229; ikke videredistribueres.</p>
+      </div>
+
+    </div>
+  </div>
 </main>
 </div><!-- content-area -->
 </div><!-- app-shell -->
@@ -900,19 +966,49 @@ function residualRiskClassWP(inherentRisk, missing) {
 
 // ── Consequence lookup (client-side, no backend changes needed) ───────────
 const CONSEQUENCES = {
-  'ART30-001': 'Supplier may sub-contract core ICT functions without customer approval, introducing unvetted third-party risk and a potential DORA Art. 28 breach.',
-  'ART30-002': 'Customer data may be processed or stored in jurisdictions without adequate protection, violating GDPR data transfer rules and DORA location transparency.',
-  'ART30-003': 'No contractual security baseline — data breaches cannot be attributed to contractual failure, limiting regulatory and legal recourse.',
-  'ART30-004': 'No enforceable service level targets — the financial entity cannot hold the supplier accountable for outages affecting critical operations.',
-  'ART30-005': 'Supplier not obligated to report incidents, leaving the financial entity unable to meet its own reporting obligations under DORA Art. 19.',
-  'ART30-006': 'No right to audit or inspect supplier — the financial entity cannot verify DORA Art. 30 compliance, exposing it to supervisory scrutiny.',
-  'ART30-007': 'No exit/termination plan — transition risk crystallises at contract end or failure, with operational continuity potentially compromised.',
-  'ART30-008': 'Customer data not portable — in event of supplier failure or termination, data retrieval may be blocked, increasing recovery time significantly.',
-  'ART30-009': 'Business continuity obligations not specified — supplier not contractually required to maintain resilience capabilities required under DORA.',
-  'ART30-010': 'No obligation to test continuity/recovery plans — supplier resilience is unverified and cannot be relied upon for DORA operational resilience.',
-  'ART30-011': 'No change management or notification requirements — supplier may change infrastructure/processes without customer awareness, introducing uncontrolled risk.',
-  'ART30-012': 'No capacity management provisions — supplier may not scale to meet the financial entity\\'s needs, creating availability and performance risk.',
-  'ART30-013': 'No data processing agreement — GDPR Art. 28 violation; potential supervisory authority enforcement and fines up to 2% of global annual turnover.',
+  'ART30-001': 'The contract does not restrict sub-contracting of critical ICT functions. As a result, core services may be delegated to undisclosed sub-processors without customer approval. This creates an uncontrolled chain of ICT dependency outside the financial entity\'s oversight framework, in breach of DORA Art. 30(3).',
+  'ART30-002': 'The contract does not specify permitted data locations. Customer data may be processed or stored in jurisdictions without an adequate level of protection, in violation of GDPR Chapter V and DORA Art. 30(2)(j). The financial entity cannot demonstrate lawful transfers to supervisory authorities.',
+  'ART30-003': 'No minimum information security requirements are contractually defined. In the event of a data breach, the financial entity cannot rely on the contract to attribute fault or trigger liability. This gap undermines the ability to demonstrate adequate vendor oversight under DORA Art. 30(2)(d).',
+  'ART30-004': 'The contract contains no enforceable service level targets. The financial entity cannot hold the supplier accountable for degraded performance or outages. Without SLAs, the operational resilience framework required by DORA Art. 30(2)(d) is not supported by contractual controls.',
+  'ART30-005': 'The supplier has no contractual obligation to report ICT-related incidents. The financial entity may not receive timely notification, preventing it from meeting its own reporting obligations under DORA Art. 17 and Art. 19. Incident response timelines will be impaired.',
+  'ART30-006': 'The contract does not grant audit or inspection rights over the supplier. The financial entity cannot verify DORA Art. 30 compliance through independent testing or reviews. This exposes it to supervisory scrutiny for failing to demonstrate adequate third-party oversight.',
+  'ART30-007': 'No exit strategy or termination plan is documented. If the supplier fails or the relationship ends, the financial entity has no contractual basis to demand orderly transition of services or data. Operational continuity is at risk, contrary to DORA Art. 30(2)(g).',
+  'ART30-008': 'The contract does not guarantee data portability on exit or termination. In the event of supplier failure, data retrieval may be delayed or blocked, increasing recovery time and regulatory exposure. This conflicts with DORA Art. 30(2)(h) continuity requirements.',
+  'ART30-009': 'Business continuity obligations are not contractually specified. The supplier is not required to maintain or test resilience capabilities aligned with the financial entity\'s own BCP/DR framework. This creates an unverifiable dependency contrary to DORA Art. 30(2)(e).',
+  'ART30-010': 'The contract imposes no obligation to test business continuity or recovery plans. Supplier resilience is assumed but unverified. The financial entity cannot demonstrate to supervisors that ICT resilience across the supply chain has been tested, as required under DORA Art. 30(2)(f).',
+  'ART30-011': 'No change management or advance notification requirements are contractually defined. The supplier may alter infrastructure, processes or sub-contractors without notifying the financial entity, introducing uncontrolled change risk in breach of DORA Art. 30(2)(i).',
+  'ART30-012': 'The contract contains no capacity management provisions. The supplier is not contractually required to scale or maintain performance under demand increases, creating availability and performance risk during peak operational periods.',
+  'ART30-013': 'No data processing agreement (DPA) is in place. This is a direct violation of GDPR Art. 28, which requires a written contract between the controller and processor. Supervisory authorities may impose fines of up to 2% of global annual turnover for this breach.',
+};
+const ARTICLE_CITATIONS = {
+  'ART30-001': 'DORA Art. 30(3) — Sub-contracting of critical or important functions',
+  'ART30-002': 'DORA Art. 30(2)(j) · GDPR Chapter V — Data location and transfer controls',
+  'ART30-003': 'DORA Art. 30(2)(d) — Information security requirements',
+  'ART30-004': 'DORA Art. 30(2)(d) — Service levels and performance standards',
+  'ART30-005': 'DORA Art. 17 · Art. 19 — ICT-related incident reporting',
+  'ART30-006': 'DORA Art. 30(2)(f) — Audit rights and inspection',
+  'ART30-007': 'DORA Art. 30(2)(g) — Exit strategy and termination',
+  'ART30-008': 'DORA Art. 30(2)(h) — Data portability on exit',
+  'ART30-009': 'DORA Art. 30(2)(e) — Business continuity obligations',
+  'ART30-010': 'DORA Art. 30(2)(f) — Testing of continuity and recovery plans',
+  'ART30-011': 'DORA Art. 30(2)(i) — Change management and notification',
+  'ART30-012': 'DORA Art. 30(2)(d) — Capacity and performance management',
+  'ART30-013': 'GDPR Art. 28(3) — Data processing agreement (mandatory written contract)',
+};
+const REMEDIES = {
+  'ART30-001': {text:'Amend the contract to include a sub-contracting approval clause requiring written consent before delegation of critical ICT functions.',effort:'Low'},
+  'ART30-002': {text:'Specify permitted data processing locations in a contract schedule. Establish SCCs or adequacy decisions for non-EEA transfers.',effort:'Medium'},
+  'ART30-003': {text:'Attach a minimum security requirements annex aligned to ISO 27001 or equivalent. Include audit rights for security controls.',effort:'Medium'},
+  'ART30-004': {text:'Define measurable SLAs (availability, RTO, RPO) in a service schedule. Include remedies for SLA breach.',effort:'Low'},
+  'ART30-005': {text:'Insert an incident notification clause requiring the supplier to report ICT incidents within 24 hours.',effort:'Low'},
+  'ART30-006': {text:'Include a right-to-audit clause with at least annual inspection rights, including access to sub-processors.',effort:'Low'},
+  'ART30-007': {text:'Develop and attach a formal exit strategy covering transition timelines, data handover, and knowledge transfer obligations.',effort:'High'},
+  'ART30-008': {text:'Include a data portability clause guaranteeing extraction in a standard, machine-readable format within a specified timeframe.',effort:'Low'},
+  'ART30-009': {text:'Require the supplier to maintain a BCP aligned with the financial entity\'s own requirements and provide evidence on request.',effort:'Medium'},
+  'ART30-010': {text:'Mandate annual BCP/DR testing and require the supplier to provide test results to the financial entity.',effort:'Medium'},
+  'ART30-011': {text:'Include a change management clause requiring advance notice (minimum 30 days) for significant infrastructure or process changes.',effort:'Low'},
+  'ART30-012': {text:'Define capacity thresholds and require the supplier to notify and address capacity constraints before they impact service.',effort:'Low'},
+  'ART30-013': {text:'Execute a GDPR-compliant Data Processing Agreement including all mandatory Art. 28(3) elements immediately.',effort:'Low'},
 };
 function getConsequence(reqId) {
   return CONSEQUENCES[reqId] || 'Non-compliance with DORA/GDPR contractual obligation — regulatory exposure and potential supervisory action.';
@@ -1068,8 +1164,9 @@ async function loadBoardReport() {
   const sec3 = `<div class="board-section" style="margin-bottom:24px">
     <div class="section-title" style="color:var(--orange);margin-bottom:4px">&#9654; Prior Period Follow-Up Action Tracker</div>
     <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Findings from finalised, board-reported audits. Internal Audit tracks implementation. Resolution is confirmed before a finding is marked Closed.</p>
+    <div class="info-box" style="margin-bottom:10px;font-size:12px"><strong>Extension approval rules:</strong> Extensions up to 30 days may be approved by the control owner. Extensions of 31–90 days require Head of Internal Audit approval. Extensions exceeding 90 days or a second extension require Audit Committee approval. All extensions must be documented in writing before the original deadline.</div>
     <div class="table-wrap"><table>
-      <thead><tr><th>Finding</th><th>Source</th><th>Priority</th><th>Owner</th><th>Original Due</th><th>Revised Due</th><th>Status</th></tr></thead>
+      <thead><tr><th>Finding</th><th>Source</th><th>Priority</th><th>Owner</th><th>Original Due</th><th>Revised Due</th><th>Days Overdue</th><th>Extension #</th><th>Extension Approved By</th><th>Status</th></tr></thead>
       <tbody>
         <tr>
           <td style="font-size:12px"><strong>F-2024-003-01</strong><br>Exit strategy not documented (NNS-NET-2021-007)</td>
@@ -1078,6 +1175,9 @@ async function loadBoardReport() {
           <td style="font-size:12px">Legal &amp; Procurement</td>
           <td style="font-size:12px;color:var(--muted)">2025-03-31</td>
           <td style="font-size:12px;color:var(--orange)">2025-06-30 &#8593;</td>
+          <td style="font-size:12px;color:var(--red);font-weight:600">+91</td>
+          <td style="font-size:12px;text-align:center">1</td>
+          <td style="font-size:12px;color:var(--muted)">Head of IA</td>
           <td><span style="background:rgba(251,191,36,0.2);color:var(--yellow);border-radius:4px;padding:2px 8px;font-size:11px">Overdue</span></td>
         </tr>
         <tr>
@@ -1087,6 +1187,9 @@ async function loadBoardReport() {
           <td style="font-size:12px">Contract Manager</td>
           <td style="font-size:12px;color:var(--muted)">2025-05-31</td>
           <td style="font-size:12px;color:var(--green)">2025-05-31</td>
+          <td style="font-size:12px;color:var(--muted)">0</td>
+          <td style="font-size:12px;text-align:center">0</td>
+          <td style="font-size:12px;color:var(--muted)">—</td>
           <td><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 8px;font-size:11px">On Track</span></td>
         </tr>
       </tbody>
@@ -1148,7 +1251,31 @@ async function loadBoardReport() {
     </div>
   </div>`;
 
-  container.innerHTML = `
+  // Draft Audit Reports (shown at top of board report)
+  const darSection = `<div class="board-section" style="margin-bottom:24px">
+    <div class="section-title" style="margin-bottom:4px">Draft Audit Reports — Pending Board Submission</div>
+    <p style="font-size:12px;color:var(--muted);margin:0 0 14px">Reports in draft or in-review status. Once finalised they move to the Finalised Reports register below. Click a card to view scope and findings summary.</p>
+    ${[
+      {id:'DAR-2025-001',title:'ISO 27001 Information Security Controls Assessment — Q4 2025',scope:'AU01–AU05',status:'Draft',date:'2025-12-15',findings:2,auditor:'Internal Audit'},
+      {id:'DAR-2025-002',title:'DORA Art. 30 ICT Third-Party Contract Gap Analysis — FY 2025',scope:'5 ICT contracts',status:'Draft',date:'2025-12-20',findings:1,auditor:'IT Audit'},
+      {id:'DAR-2025-003',title:'BCP / DR Operational Resilience Review — Q4 2025',scope:'AU07 (BCP)',status:'In Review',date:'2025-11-30',findings:0,auditor:'Internal Audit'},
+    ].map(r => {
+      const badge = r.status==='Draft'?'<span style="background:rgba(124,106,255,0.2);color:var(--accent);border-radius:4px;padding:2px 8px;font-size:11px">Draft</span>'
+        :'<span style="background:rgba(251,191,36,0.2);color:var(--yellow);border-radius:4px;padding:2px 8px;font-size:11px">In Review</span>';
+      return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
+        +'<div style="font-size:14px;font-weight:600">'+r.title+'</div>'+badge+'</div>'
+        +'<div style="font-size:12px;color:var(--muted)">'
+        +'<span style="margin-right:16px"><code>'+r.id+'</code></span>'
+        +'<span style="margin-right:16px">Scope: '+r.scope+'</span>'
+        +'<span style="margin-right:16px">Target: '+r.date+'</span>'
+        +'<span style="margin-right:16px">By: '+r.auditor+'</span>'
+        +(r.findings>0?'<span style="color:var(--orange)">'+r.findings+' open finding(s)</span>':'<span style="color:var(--green)">No findings</span>')
+        +'</div></div>';
+    }).join('')}
+  </div>`;
+
+  container.innerHTML = darSection + `
     <!-- Executive summary cards -->
     <div class="summary-cards" style="margin-bottom:24px">
       <div class="card"><div class="label">Total Controls Tested</div><div class="value">${wpData.tested_count||0} / ${wpData.total_controls||0}</div></div>
@@ -1281,6 +1408,14 @@ async function loadBoardReport() {
             <div style="padding:8px 12px;${bg};text-align:center;color:${openCount > 0 ? 'var(--orange)' : 'var(--muted)'}">${openCount}</div>
             <div style="padding:8px 12px;${bg};text-align:center;color:${closedCount > 0 ? 'var(--green)' : 'var(--muted)'}">${closedCount}</div>`;
         }, '')}
+        ${(() => {
+          const allF = wps.flatMap(w => w.findings || []);
+          const tNew = allF.length, tOpen = allF.filter(f=>f.status==='open').length, tClosed = allF.filter(f=>f.status==='closed').length;
+          return `<div style="padding:8px 12px;border-top:2px solid var(--border);font-weight:700">Total</div>
+            <div style="padding:8px 12px;border-top:2px solid var(--border);text-align:center;font-weight:700">${tNew}</div>
+            <div style="padding:8px 12px;border-top:2px solid var(--border);text-align:center;font-weight:700;color:${tOpen>0?'var(--orange)':'var(--muted)'}">${tOpen}</div>
+            <div style="padding:8px 12px;border-top:2px solid var(--border);text-align:center;font-weight:700;color:${tClosed>0?'var(--green)':'var(--muted)'}">${tClosed}</div>`;
+        })()}
       </div>
     </div>
 
@@ -1513,7 +1648,7 @@ async function showContractDetail(id) {
   const rr = residualRisk(data.classification, miss);
   const rrC = residualRiskClass(data.classification, miss);
 
-  const statusLabel = s => ({missing:'Mangler',ambiguous:'Tvetydig',satisfied:'Opfyldt',na:'N/A',not_assessed:'Ikke vurderet'}[s]||s);
+  const statusLabel = s => ({missing:'Non-Compliant',ambiguous:'Needs Clarification',satisfied:'Compliant',na:'N/A',not_assessed:'Not Assessed'}[s]||s);
   const statusCls   = s => ({missing:'status-missing',ambiguous:'status-ambiguous',satisfied:'status-satisfied',na:'status-na'}[s]||'');
   const riskLabel   = r => r ? r.replace(/_/g,' ') : '—';
 
@@ -1813,9 +1948,11 @@ async function showWPDetail(controlId) {
     scenarioLabel = 'Design &amp; Implementation Review (D&amp;I) — Scenario A';
     const policyRef = wp.policy_reference || (wp.control_domain + ' Policy');
     declarationHtml =
-      '<p style="margin:8px 0 6px;line-height:1.7;font-size:13px">We inspected 1-2 items from the <a href="#" onclick="return false" style="color:var(--accent);text-decoration:underline">' + policyRef + '</a> for <strong>' + wp.control_domain + '</strong>.</p>' +
+      '<p style="margin:8px 0 6px;line-height:1.7;font-size:13px">We inspected ' + (wp.sample_count || '1–2') + ' item(s) from the <a href="#" onclick="return false" style="color:var(--accent);text-decoration:underline">' + policyRef + '</a> for <strong>' + wp.control_domain + '</strong>.</p>' +
+      '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">Risk: <em>' + (wp.risk_statement || 'Failure of this control may result in regulatory non-compliance or operational disruption.') + '</em></p>' +
       '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">The control <strong>' + wp.control_id + ' — ' + wp.control_title + '</strong> is designed adequately and has been implemented as intended.</p>' +
       '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">We inquired with the responsible control owner on <strong>' + inquiryDate + '</strong> and confirmed the control is operating as designed. A communication log of the inquiry is available on request.</p>' +
+      '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">Controls are assessed as adequate.</p>' +
       '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">Our review did not give rise to further comments.</p>';
     resultLine = '<p style="margin:8px 0 4px;font-size:13px;font-weight:600;color:var(--green)">&#10003; Pass — Control Effective</p>';
     const cs = controlStrengthWP(wp.open_finding_count);
@@ -1825,7 +1962,8 @@ async function showWPDetail(controlId) {
     scenarioLabel = 'Design &amp; Implementation Review (D&amp;I) — Scenario B — Finding(s) Noted';
     const policyRef = wp.policy_reference || (wp.control_domain + ' Policy');
     declarationHtml =
-      '<p style="margin:8px 0 6px;line-height:1.7;font-size:13px">We inspected 1-2 items from the <a href="#" onclick="return false" style="color:var(--accent);text-decoration:underline">' + policyRef + '</a> for <strong>' + wp.control_domain + '</strong>.</p>' +
+      '<p style="margin:8px 0 6px;line-height:1.7;font-size:13px">We inspected ' + (wp.sample_count || '1–2') + ' item(s) from the <a href="#" onclick="return false" style="color:var(--accent);text-decoration:underline">' + policyRef + '</a> for <strong>' + wp.control_domain + '</strong>.</p>' +
+      '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">Risk: <em>' + (wp.risk_statement || 'Failure of this control may result in regulatory non-compliance or operational disruption.') + '</em></p>' +
       '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">The control <strong>' + wp.control_id + ' — ' + wp.control_title + '</strong> was reviewed for design adequacy and implementation.</p>' +
       '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">We inquired with the responsible control owner on <strong>' + inquiryDate + '</strong>. A communication log of the inquiry is available on request.</p>' +
       '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px;color:var(--orange)"><strong>Our review identified findings (see findings below).</strong></p>';
@@ -2134,23 +2272,42 @@ async function loadAuditIntelligence() {
     : s === 'In Review' ? '<span style="background:rgba(251,191,36,0.2);color:var(--yellow);border-radius:4px;padding:2px 8px;font-size:11px">In Review</span>'
     : '<span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 8px;font-size:11px">Finalised</span>';
 
-  let reportsHtml = '<div style="margin-bottom:24px"><div class="section-title" style="margin-bottom:4px">Draft Audit Reports — Period</div>';
-  reportsHtml += '<p style="font-size:12px;color:var(--muted);margin:0 0 14px">Working papers are the evidence supporting these reports. Click a card to view scope and findings summary. Once finalised, reports move to Board Report for follow-up tracking.</p>';
-  draftReports.forEach((r, i) => {
-    reportsHtml += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick="showDARModal(' + i + ')">'
-      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
-      + '<div style="font-size:14px;font-weight:600">' + r.title + '</div>'
-      + statusBadgeRpt(r.status)
-      + '</div>'
-      + '<div style="font-size:12px;color:var(--muted)">'
-      + '<span style="margin-right:16px"><code>' + r.id + '</code></span>'
-      + '<span style="margin-right:16px">Scope: ' + r.scope + '</span>'
-      + '<span style="margin-right:16px">Target issue: ' + r.date + '</span>'
-      + '<span style="margin-right:16px">Responsible: ' + r.auditor + '</span>'
-      + (r.findings > 0 ? '<span style="color:var(--orange)">' + r.findings + ' open finding(s)</span>' : '<span style="color:var(--green)">No findings</span>')
-      + '</div></div>';
-  });
-  reportsHtml += '</div>';
+  // 3-Year audit methodology
+  const methodologyHtml = '<div style="margin-bottom:24px"><div class="section-title" style="margin-bottom:4px">3-Year Risk-Based Audit Methodology</div>'
+    + '<p style="font-size:12px;color:var(--muted);margin:0 0 12px">Annual audit cadence determined by risk rating. Staffing: 3 FTE Internal Audit (1 Lead Auditor + 2 Senior Auditors). Full reviews are substantive testing; Follow-up reviews confirm prior-year remediation; D&amp;I reviews confirm controls are designed and implemented.</p>'
+    + '<div class="table-wrap"><table style="font-size:12px"><thead><tr><th>Risk Rating</th><th>Audit Type</th><th>Year 1</th><th>Year 2</th><th>Year 3</th><th>Effort (days/year)</th></tr></thead><tbody>'
+    + '<tr><td style="color:var(--red);font-weight:600">High</td><td>Full Review → Follow-up → D&amp;I</td><td style="text-align:center">Full Review (10d)</td><td style="text-align:center">Follow-up (3d)</td><td style="text-align:center">D&amp;I (5d)</td><td style="text-align:center">10 / 3 / 5</td></tr>'
+    + '<tr><td style="color:var(--orange);font-weight:600">Medium</td><td>Full Review → D&amp;I → Follow-up</td><td style="text-align:center">Full Review (7d)</td><td style="text-align:center">D&amp;I (4d)</td><td style="text-align:center">Follow-up (2d)</td><td style="text-align:center">7 / 4 / 2</td></tr>'
+    + '<tr><td style="color:var(--green);font-weight:600">Low</td><td>D&amp;I → D&amp;I → Full Review</td><td style="text-align:center">D&amp;I (3d)</td><td style="text-align:center">D&amp;I (3d)</td><td style="text-align:center">Full Review (5d)</td><td style="text-align:center">3 / 3 / 5</td></tr>'
+    + '</tbody></table></div>'
+    + '<div class="info-box" style="margin-top:10px;font-size:12px"><strong>Staffing note:</strong> 3 FTE Internal Audit. Lead Auditor owns engagement quality and board reporting. Two Senior Auditors conduct fieldwork, working paper preparation and finding management. External co-sourcing may supplement for specialist technical reviews (e.g. penetration testing, cloud security).</div>'
+    + '<div style="margin-top:14px"><div class="section-title" style="margin-bottom:8px;font-size:12px">Monthly Audit Calendar — Current Year</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(12,1fr);gap:4px;font-size:10px">'
+    + ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m,i) => {
+        const activity = [
+          {label:'ISO 27001 (AU01-AU05)',color:'var(--red)'},     // Jan
+          {label:'ISO 27001 (AU01-AU05)',color:'var(--red)'},     // Feb
+          {label:'Follow-up (AU01-AU05)',color:'var(--orange)'},  // Mar
+          {label:'Planning & Risk Assessment',color:'var(--muted)'},// Apr
+          {label:'DORA Art.30 Contracts',color:'var(--accent)'},  // May
+          {label:'DORA Art.30 Contracts',color:'var(--accent)'},  // Jun
+          {label:'BCP / DR Review (AU07)',color:'var(--orange)'}, // Jul
+          {label:'BCP / DR Review (AU07)',color:'var(--orange)'}, // Aug
+          {label:'Access Control D&I',color:'var(--yellow)'},     // Sep
+          {label:'Vuln Mgmt D&I',color:'var(--yellow)'},         // Oct
+          {label:'Board Report Prep',color:'var(--muted)'},       // Nov
+          {label:'Annual Methodology Review',color:'var(--muted)'},// Dec
+        ];
+        const a = activity[i];
+        return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:5px 4px;text-align:center">'
+          + '<div style="font-weight:600;color:var(--muted);margin-bottom:3px">' + m + '</div>'
+          + '<div style="font-size:9px;color:' + a.color + ';line-height:1.4">' + a.label + '</div>'
+          + '</div>';
+      }).join('')
+    + '</div></div>'
+    + '</div>';
+
+  const reportsHtml = '';
 
   // --- Open Findings (compact) ---
   let findingsHtml = '';
@@ -2220,9 +2377,9 @@ async function loadAuditIntelligence() {
     + '<div class="card"><div class="label">Open Findings</div><div class="value ' + (wpData.open_findings>0?'red':'') + '">' + wpData.open_findings + '</div></div>'
     + '</div>'
     + infoBox
+    + methodologyHtml
     + riskMatrixHtml
     + accordionHtml
-    + reportsHtml
     + findingsHtml;
 }
 
@@ -2289,6 +2446,37 @@ function showLFAP(period, el) {
       </tr>`).join('')
     + '</tbody></table></div>';
 }
+
+// Language toggle
+const TRANSLATIONS = {
+  en: {
+    advisory: '⚠ Advisory — Human review required before regulatory use'
+  },
+  da: {
+    advisory: '⚠ Rådgivende — Menneskelig gennemgang kræves inden regulatorisk brug'
+  }
+};
+function setLang(lang) {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) el.textContent = TRANSLATIONS[lang][key];
+  });
+  const enBtn = document.getElementById('lang-en');
+  const daBtn = document.getElementById('lang-da');
+  if (enBtn && daBtn) {
+    if (lang === 'en') {
+      enBtn.style.background = 'var(--accent)'; enBtn.style.color = '#fff'; enBtn.style.border = 'none';
+      daBtn.style.background = 'var(--surface2)'; daBtn.style.color = 'var(--muted)'; daBtn.style.border = '1px solid var(--border)';
+    } else {
+      daBtn.style.background = 'var(--accent)'; daBtn.style.color = '#fff'; daBtn.style.border = 'none';
+      enBtn.style.background = 'var(--surface2)'; enBtn.style.color = 'var(--muted)'; enBtn.style.border = '1px solid var(--border)';
+    }
+  }
+  try { localStorage.setItem('gamma7-lang', lang); } catch(e) {}
+}
+(function initLang() {
+  try { const l = localStorage.getItem('gamma7-lang'); if (l) setLang(l); } catch(e) {}
+})();
 
 // Load data on page load
 (async () => {
