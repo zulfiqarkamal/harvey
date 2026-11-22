@@ -2676,6 +2676,37 @@ def main():
         if args.register:
             register = load_register(args.register)
             print(f"Loaded {len(register)} register entries from {args.register}")
+        # Auto-demo: if no data source was given, load synthetic contracts so the dashboard is never blank.
+        if not results and not register and not args.results_dir and not args.register:
+            print("No data source specified — loading demo data (5 synthetic contracts + sample register).")
+            results, register = _load_demo_results()
+            print(f"  Demo: {len(results)} analyses, {len(register)} register entries loaded.")
+            from .audit_intelligence.audit_universe import build_universe
+            from .audit_intelligence.workpaper import build_workpapers, TestResult, FindingSeverity, FindingStatus
+            _auto_universe = build_universe(organisation="Demo Customer A/S", scope=["iso27001"])
+            _auto_wps = build_workpapers(_auto_universe)
+            _AUTO_TR = [
+                TestResult.PASSED, TestResult.PASSED, TestResult.PASSED,
+                TestResult.EXCEPTION, TestResult.PASSED, TestResult.EXCEPTION,
+                TestResult.NOT_TESTED, TestResult.PASSED, TestResult.PASSED,
+                TestResult.EXCEPTION, TestResult.NOT_APPLICABLE, TestResult.PASSED,
+            ]
+            for _ai, _awp in enumerate(_auto_wps.work_papers):
+                _awp.test_result = _AUTO_TR[_ai % len(_AUTO_TR)]
+                if _awp.test_result == TestResult.EXCEPTION and not _awp.findings:
+                    _awp.add_finding(
+                        title="Demo finding — control not fully implemented",
+                        condition="Control activity is partially configured.",
+                        criteria="ISO 27001 requires full implementation of this control.",
+                        cause="Resource constraints delayed implementation.",
+                        effect="Residual risk remains above accepted threshold.",
+                        recommendation="Complete implementation by Q1 and re-test.",
+                        severity=FindingSeverity.MEDIUM,
+                        status=FindingStatus.OPEN,
+                        owner="IT Security",
+                        target_remediation_date="2027-03-31",
+                    )
+            args = argparse.Namespace(**{**vars(args), "_demo_wps": _auto_wps})
 
     wps = getattr(args, "_demo_wps", None)
     if wps is not None and not (args.workpapers and args.workpapers.exists()):
