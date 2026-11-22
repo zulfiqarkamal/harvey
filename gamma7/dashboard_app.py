@@ -1164,7 +1164,7 @@ async function loadBoardReport() {
   const sec3 = `<div class="board-section" style="margin-bottom:24px">
     <div class="section-title" style="color:var(--orange);margin-bottom:4px">&#9654; Prior Period Follow-Up Action Tracker</div>
     <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Findings from finalised, board-reported audits. Internal Audit tracks implementation. Resolution is confirmed before a finding is marked Closed.</p>
-    <div class="info-box" style="margin-bottom:10px;font-size:12px"><strong>Extension approval rules:</strong> Extensions up to 30 days may be approved by the control owner. Extensions of 31–90 days require Head of Internal Audit approval. Extensions exceeding 90 days or a second extension require Audit Committee approval. All extensions must be documented in writing before the original deadline.</div>
+    <div class="info-box" style="margin-bottom:10px;font-size:12px"><strong>Extension approval rules:</strong> <strong style="color:var(--red)">P1 (Critical)</strong> — extension requires L2 (CRO/CFO) sign-off; must resolve within 3 months of closing meeting or risk is formally accepted at L2 level. <strong style="color:var(--orange)">P2 (High)</strong> — one extension permitted, requires L3 (Head of IA) approval; must resolve within 12 months of closing meeting. <strong style="color:var(--yellow)">P3 (Medium)</strong> — one extension permitted, approved by the engagement auditor; must resolve within 12 months of closing meeting. All findings must be closed within 12 months of the closing meeting.</div>
     <div class="table-wrap"><table>
       <thead><tr><th>Finding</th><th>Source</th><th>Priority</th><th>Owner</th><th>Original Due</th><th>Revised Due</th><th>Days Overdue</th><th>Extension #</th><th>Extension Approved By</th><th>Status</th></tr></thead>
       <tbody>
@@ -1726,7 +1726,26 @@ async function loadReconciliation() {
   const container = document.getElementById('recon-content');
 
   if (data.message) {
-    container.innerHTML = `<div class="empty">${data.message}</div>`;
+    // Contracts-only state: no ICT register uploaded. Show analysed contracts as list + explain register value.
+    const analyses = await fetch('/api/analyses').then(r => r.json()).catch(() => []);
+    const contractList = Array.isArray(analyses) && analyses.length
+      ? `<div class="table-wrap" style="margin-top:16px"><table style="font-size:12px">
+          <thead><tr><th>Contract / Supplier</th><th>Analysis Status</th><th>Missing Requirements</th><th>Classification</th></tr></thead>
+          <tbody>${analyses.map(a => `<tr style="cursor:pointer" onclick="showContractModal('${a.id||a.key||''}')">
+            <td style="font-weight:500">${a.supplier_name||a.filename||'—'}</td>
+            <td>${(a.overall_status||'').replace(/_/g,' ')}</td>
+            <td style="font-weight:600;color:${(a.missing_count||0)>0?'var(--orange)':'var(--green)'}">${a.missing_count||0}</td>
+            <td>${(a.classification||'—')}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>`
+      : '<p style="font-size:13px;color:var(--muted);margin-top:12px">No contracts analysed yet. Upload contracts in the <strong>Contracts</strong> tab.</p>';
+    container.innerHTML = `
+      <div class="info-box" style="margin-bottom:16px">
+        <strong>Contracts uploaded — ICT Register not yet loaded.</strong>
+        Your contracts have been analysed for DORA/GDPR compliance gaps. To unlock the full register reconciliation (DORA Art. 28(3) completeness proof), upload your ICT third-party register via the register endpoint. The register lets you demonstrate to supervisors that <em>every</em> provider in your register has been assessed — not just those whose contracts you uploaded.
+      </div>
+      <div class="section-title" style="margin-bottom:4px">Analysed Contracts — ${Array.isArray(analyses)?analyses.length:0} contract(s)</div>
+      ${contractList}`;
     return;
   }
 
@@ -1948,7 +1967,7 @@ async function showWPDetail(controlId) {
     scenarioLabel = 'Design &amp; Implementation Review (D&amp;I) — Scenario A';
     const policyRef = wp.policy_reference || (wp.control_domain + ' Policy');
     declarationHtml =
-      '<p style="margin:8px 0 6px;line-height:1.7;font-size:13px">We inspected ' + (wp.sample_count || '1–2') + ' item(s) from the <a href="#" onclick="return false" style="color:var(--accent);text-decoration:underline">' + policyRef + '</a> for <strong>' + wp.control_domain + '</strong>.</p>' +
+      '<p style="margin:8px 0 6px;line-height:1.7;font-size:13px">We inspected ' + (wp.sample_count || '1') + ' item(s) from the <a href="#" onclick="return false" style="color:var(--accent);text-decoration:underline">' + policyRef + '</a> for <strong>' + wp.control_domain + '</strong>.</p>' +
       '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">Risk: <em>' + (wp.risk_statement || 'Failure of this control may result in regulatory non-compliance or operational disruption.') + '</em></p>' +
       '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">The control <strong>' + wp.control_id + ' — ' + wp.control_title + '</strong> is designed adequately and has been implemented as intended.</p>' +
       '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">We inquired with the responsible control owner on <strong>' + inquiryDate + '</strong> and confirmed the control is operating as designed. A communication log of the inquiry is available on request.</p>' +
@@ -1962,7 +1981,7 @@ async function showWPDetail(controlId) {
     scenarioLabel = 'Design &amp; Implementation Review (D&amp;I) — Scenario B — Finding(s) Noted';
     const policyRef = wp.policy_reference || (wp.control_domain + ' Policy');
     declarationHtml =
-      '<p style="margin:8px 0 6px;line-height:1.7;font-size:13px">We inspected ' + (wp.sample_count || '1–2') + ' item(s) from the <a href="#" onclick="return false" style="color:var(--accent);text-decoration:underline">' + policyRef + '</a> for <strong>' + wp.control_domain + '</strong>.</p>' +
+      '<p style="margin:8px 0 6px;line-height:1.7;font-size:13px">We inspected ' + (wp.sample_count || '1') + ' item(s) from the <a href="#" onclick="return false" style="color:var(--accent);text-decoration:underline">' + policyRef + '</a> for <strong>' + wp.control_domain + '</strong>.</p>' +
       '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">Risk: <em>' + (wp.risk_statement || 'Failure of this control may result in regulatory non-compliance or operational disruption.') + '</em></p>' +
       '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">The control <strong>' + wp.control_id + ' — ' + wp.control_title + '</strong> was reviewed for design adequacy and implementation.</p>' +
       '<p style="margin:4px 0 6px;line-height:1.7;font-size:13px">We inquired with the responsible control owner on <strong>' + inquiryDate + '</strong>. A communication log of the inquiry is available on request.</p>' +
@@ -2275,12 +2294,12 @@ async function loadAuditIntelligence() {
   // 3-Year audit methodology
   const methodologyHtml = '<div style="margin-bottom:24px"><div class="section-title" style="margin-bottom:4px">3-Year Risk-Based Audit Methodology</div>'
     + '<p style="font-size:12px;color:var(--muted);margin:0 0 12px">Annual audit cadence determined by risk rating. Staffing: 3 FTE Internal Audit (1 Lead Auditor + 2 Senior Auditors). Full reviews are substantive testing; Follow-up reviews confirm prior-year remediation; D&amp;I reviews confirm controls are designed and implemented.</p>'
-    + '<div class="table-wrap"><table style="font-size:12px"><thead><tr><th>Risk Rating</th><th>Audit Type</th><th>Year 1</th><th>Year 2</th><th>Year 3</th><th>Effort (days/year)</th></tr></thead><tbody>'
-    + '<tr><td style="color:var(--red);font-weight:600">High</td><td>Full Review → Follow-up → D&amp;I</td><td style="text-align:center">Full Review (10d)</td><td style="text-align:center">Follow-up (3d)</td><td style="text-align:center">D&amp;I (5d)</td><td style="text-align:center">10 / 3 / 5</td></tr>'
-    + '<tr><td style="color:var(--orange);font-weight:600">Medium</td><td>Full Review → D&amp;I → Follow-up</td><td style="text-align:center">Full Review (7d)</td><td style="text-align:center">D&amp;I (4d)</td><td style="text-align:center">Follow-up (2d)</td><td style="text-align:center">7 / 4 / 2</td></tr>'
-    + '<tr><td style="color:var(--green);font-weight:600">Low</td><td>D&amp;I → D&amp;I → Full Review</td><td style="text-align:center">D&amp;I (3d)</td><td style="text-align:center">D&amp;I (3d)</td><td style="text-align:center">Full Review (5d)</td><td style="text-align:center">3 / 3 / 5</td></tr>'
+    + '<div class="table-wrap"><table style="font-size:12px"><thead><tr><th>Risk Rating</th><th>Audit Type</th><th>Year 1</th><th>Year 2</th><th>Year 3</th><th>Total Hours/Cycle</th></tr></thead><tbody>'
+    + '<tr><td style="color:var(--red);font-weight:600">High</td><td>Full audit annually</td><td style="text-align:center">Full Audit (240h = 30d)</td><td style="text-align:center">Full Audit (240h)</td><td style="text-align:center">Full Audit (240h)</td><td style="text-align:center;font-weight:600">720h</td></tr>'
+    + '<tr><td style="color:var(--orange);font-weight:600">Medium</td><td>Follow-up every 2 yrs</td><td style="text-align:center">Full Audit (160h = 20d)</td><td style="text-align:center">Follow-up (40h)</td><td style="text-align:center">Full Audit (160h)</td><td style="text-align:center;font-weight:600">360h</td></tr>'
+    + '<tr><td style="color:var(--green);font-weight:600">Low</td><td>D&amp;I check every 3 yrs, spread evenly</td><td style="text-align:center">D&amp;I (13h)</td><td style="text-align:center">D&amp;I (14h)</td><td style="text-align:center">D&amp;I (13h = 5d total)</td><td style="text-align:center;font-weight:600">40h</td></tr>'
     + '</tbody></table></div>'
-    + '<div class="info-box" style="margin-top:10px;font-size:12px"><strong>Staffing note:</strong> 3 FTE Internal Audit. Lead Auditor owns engagement quality and board reporting. Two Senior Auditors conduct fieldwork, working paper preparation and finding management. External co-sourcing may supplement for specialist technical reviews (e.g. penetration testing, cloud security).</div>'
+    + '<div class="info-box" style="margin-top:10px;font-size:12px"><strong>Hour budgets:</strong> High risk = 240 hrs (1.5 months) full audit each year. Medium risk = 160 hrs (1 month) full audit + 40 hrs follow-up every other year. Low risk = 40 hrs (5 days) D&amp;I spread over 3 years. <strong>Staffing:</strong> 3 FTE Internal Audit — Lead Auditor owns engagement quality and board reporting; two Senior Auditors conduct fieldwork, working paper preparation and finding management. External co-sourcing may supplement for specialist technical reviews.</div>'
     + '<div style="margin-top:14px"><div class="section-title" style="margin-bottom:8px;font-size:12px">Monthly Audit Calendar — Current Year</div>'
     + '<div style="display:grid;grid-template-columns:repeat(12,1fr);gap:4px;font-size:10px">'
     + ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m,i) => {
