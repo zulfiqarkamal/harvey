@@ -54,7 +54,7 @@ a { color: inherit; }
 
 body::before { content: ""; position: fixed; inset: 0px 0px auto; height: env(safe-area-inset-top, 0px); z-index: 101; background: rgba(13, 30, 55, 0.97); }
 
-nav { position: fixed; top: env(safe-area-inset-top, 0px); left: 0px; right: 0px; z-index: 100; background: rgba(13, 30, 55, 0.88); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); transition: background 0.3s; }
+body > nav { position: fixed; top: env(safe-area-inset-top, 0px); left: 0px; right: 0px; z-index: 100; background: rgba(13, 30, 55, 0.88); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); transition: background 0.3s; }
 
 .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 60px; max-width: 1100px; margin: 0px auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 
@@ -441,7 +441,7 @@ body { font-size: 16px; background: rgb(19, 44, 67); min-height: 100vh; }
 
 .wrap { max-width: 1200px; padding-left: 32px; padding-right: 32px; }
 
-nav { color: rgb(237, 243, 255); border-bottom: 1px solid rgba(205, 225, 237, 0.18); background: rgb(13, 30, 50) !important; backdrop-filter: none !important; }
+body > nav { color: rgb(237, 243, 255); border-bottom: 1px solid rgba(205, 225, 237, 0.18); background: rgb(13, 30, 50) !important; backdrop-filter: none !important; }
 
 nav .nav-inner { height: 82px; max-width: 1200px; padding-inline: 32px; }
 
@@ -629,7 +629,6 @@ body { min-height: 100vh; margin: 0px; padding: 0px; background-color: rgb(19, 4
       <li><a href="https://gamma7.io/#services"><span data-da="Ydelser" data-en="Services">Ydelser</span></a></li>
       <li><a href="https://gamma7.io/#approach"><span data-da="Tilgang" data-en="Approach">Tilgang</span></a></li>
       <li><a href="https://gamma7.io/#about"><span data-da="Om Gamma7" data-en="Why Gamma7">Om Gamma7</span></a></li>
-      <li><a href="/agents.html"><span data-da="AI-agenter" data-en="AI Agents">AI-agenter</span></a></li>
     </ul>
     <div class="lang-toggle" role="group" aria-label="Language">
       <button class="lang-btn active" data-lang="da" aria-pressed="true">DA</button>
