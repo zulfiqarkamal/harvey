@@ -1517,7 +1517,10 @@ async function loadOverview() {
   // Fall back to contract gap severity if no working papers loaded
   let p1 = 0, p2 = 0, p3 = 0;
   try {
-    const wpRes = await fetch('/api/workpapers');
+    const wpCtrl = new AbortController();
+    const wpTimer = setTimeout(() => wpCtrl.abort(), 3000);
+    const wpRes = await fetch('/api/workpapers', { signal: wpCtrl.signal });
+    clearTimeout(wpTimer);
     const wpData = await wpRes.json();
     if (!wpData.message && wpData.work_papers) {
       wpData.work_papers.forEach(wp => {
@@ -1532,7 +1535,7 @@ async function loadOverview() {
         });
       });
     }
-  } catch(e) { /* working papers not loaded yet — leave at 0 */ }
+  } catch(e) { /* working papers not loaded or timed out — leave at 0 */ }
 
   document.getElementById('stat-p1').textContent = p1 || '0';
   document.getElementById('stat-p2').textContent = p2 || '0';
@@ -2498,6 +2501,13 @@ function setLang(lang) {
 })();
 
 // Load data on page load
+const _loadStart = Date.now();
+setTimeout(() => {
+  const tb = document.getElementById('overview-table');
+  if (tb && tb.querySelector('td.empty') && tb.querySelector('td.empty').textContent.includes('Loading')) {
+    tb.innerHTML = `<tr><td colspan="5" class="empty" style="color:var(--red)">Still loading after ${Math.round((Date.now()-_loadStart)/1000)}s — check browser console (F12) for errors. Server: <a href="/api/analyses" target="_blank">/api/analyses</a></td></tr>`;
+  }
+}, 5000);
 (async () => {
   try {
     await loadOverview();
@@ -2505,7 +2515,7 @@ function setLang(lang) {
   } catch(e) {
     console.error('Dashboard init error:', e);
     const tb = document.getElementById('overview-table');
-    if (tb) tb.innerHTML = `<tr><td colspan="7" class="empty" style="color:var(--red)">Init error: ${e.message}</td></tr>`;
+    if (tb) tb.innerHTML = `<tr><td colspan="5" class="empty" style="color:var(--red)">Init error: ${e.message}</td></tr>`;
   }
 })();
 </script>
