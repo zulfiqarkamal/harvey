@@ -825,60 +825,187 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
 
   <div id="tab-protocols" class="tab-pane">
     <div class="tab-header">
-      <h2 style="color:#0ea5e9">Protocols</h2>
-      <div class="agent-label">IIA Standards — Board Reporting Protocol &amp; Escalation Rules</div>
+      <h2 style="color:#0ea5e9">Protokoller</h2>
+      <div class="agent-label">Eksempler p&#229; udfyldte revisionsprotokol-skabeloner — Gamma7 Finans A/S</div>
     </div>
-    <div style="max-width:900px;margin:0 auto">
+    <div style="max-width:960px;margin:0 auto">
 
-      <!-- Traffic-light legend -->
-      <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
-        <span style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Status indicators</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:12px"><span style="width:14px;height:14px;border-radius:50%;background:var(--green);display:inline-block"></span>Green — no action required</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:12px"><span style="width:14px;height:14px;border-radius:50%;background:var(--orange);display:inline-block"></span>Amber — monitor / management response due</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:12px"><span style="width:14px;height:14px;border-radius:50%;background:var(--red);display:inline-block"></span>Red — board escalation required</span>
+      <!-- Protocol 1: Quarterly Q3 -->
+      <div style="background:var(--surface2);border-radius:8px;padding:20px 22px;margin-bottom:28px;border:1px solid var(--border)">
+        <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px">Protokol 1 &#8212; Kvartalsmæssig intern systemrevision (Q3 2025)</div>
+
+        <table class="def-table" style="margin-bottom:20px">
+          <tr><td class="term">Virksomhed</td><td class="def">Gamma7 Finans A/S</td></tr>
+          <tr><td class="term">Systemer d&#230;kket</td><td class="def">Core Banking System (CBS), Azure AD / Entra ID, Tenable.io</td></tr>
+          <tr><td class="term">Revisionsperiode</td><td class="def">1. juli &#8211; 30. september 2025 (Q3 2025)</td></tr>
+          <tr><td class="term">Dato for protokol</td><td class="def">15. oktober 2025</td></tr>
+          <tr><td class="term">Udarbejdet af</td><td class="def">Intern Revision, Gamma7 Finans A/S</td></tr>
+          <tr><td class="term">Modtagere</td><td class="def">Bestyrelsens Revisions- og Risikoudvalg (BRRU) &#183; Administrerende direkt&#248;r &#183; CTO</td></tr>
+        </table>
+
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 6px">1. Kvartalets fokusomr&#229;der</div>
+        <p style="font-size:13px;line-height:1.7;margin:0 0 12px">Q3 2025 fokuserede p&#229; informationssikkerhed og adgangskontrol jf. den risikobaserede revisionsplan for 2025. F&#248;lgende kontroller var planlagt og gennemf&#248;rt: identitets- og adgangsstyring (AU01&#8211;AU02) samt s&#229;rbarhedsst&#229;ndtering (AU04&#8211;AU05). Business Continuity Planning (AU07) blev p&#229;begyndt og afsluttes i Q4.</p>
+
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 6px">2. Samlet kvartalsvurdering</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span style="width:14px;height:14px;border-radius:50%;background:var(--orange);display:inline-block;flex-shrink:0"></span>
+          <span style="font-size:13px;font-weight:600;color:var(--orange)">GUL &#8212; Tilfredsstillende med bem&#230;rkninger</span>
+        </div>
+        <p style="font-size:13px;line-height:1.7;margin:0 0 12px">Revisionen af adgangskontroller (AU01&#8211;AU02) konstaterede &#233;n afvigelse i den kvartalsvise adgangsgennemgang, som ikke var gennemf&#248;rt rettidigt. S&#229;rbarhedsst&#229;ndteringen (AU04&#8211;AU05) viste, at 3 kritiske CVE&#8217;er var patchet efter SLA-fristen. Begge afvigelser er eskaleret til IT-sikkerhedschefen med aftalte afhj&#230;lpningsplaner.</p>
+
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 10px">3. Gennemf&#248;rte kontroller og observationer</div>
+        <div class="table-wrap"><table style="font-size:12px">
+          <thead><tr>
+            <th>Kontrolomr&#229;de</th>
+            <th>Gennemf&#248;rt test</th>
+            <th>Resultat og observation</th>
+            <th>Alvorlighed</th>
+            <th>Status / Handling</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-size:12px;font-weight:600">Adgangskontrol &#8212; kvartalsmæssig gennemgang<br><code style="font-size:10px">AU01</code></td>
+              <td style="font-size:12px">Gennemgang af adgangsrettigheder for 42 brugere i Azure AD; kontrol af dokumentation for Q3-gennemgang</td>
+              <td style="font-size:12px">Q3-gennemgangen for 7 privilegerede konti var ikke gennemf&#248;rt inden fristens udl&#248;b (30. sept.). Ingen uautoriserede adgange identificeret.</td>
+              <td><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600">MIDDEL</span></td>
+              <td style="font-size:12px;color:var(--orange)">&#197;ben &#8212; IT-sikkerhedschef ansvarlig; afhj&#230;lpningsfrist 31. okt. 2025</td>
+            </tr>
+            <tr>
+              <td style="font-size:12px;font-weight:600">Privilegeret adgangsstyring (PAM)<br><code style="font-size:10px">AU02</code></td>
+              <td style="font-size:12px">Test af CyberArk session recordings for 15 privilegerede sessioner; verifikation af godkendelsesworkflow</td>
+              <td style="font-size:12px">Alle 15 sessioner var korrekt logget og godkendt. Ingen afvigelser.</td>
+              <td><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600">GODKENDT</span></td>
+              <td style="font-size:12px;color:var(--green)">Lukket &#8212; ingen handling p&#229;kr&#230;vet</td>
+            </tr>
+            <tr>
+              <td style="font-size:12px;font-weight:600">Patch- og s&#229;rbarhedsst&#229;ndtering<br><code style="font-size:10px">AU04</code></td>
+              <td style="font-size:12px">Udtræk af &#229;bne CVE&#8217;er fra Tenable.io; verifikation af patch-SLA-overholdelse (kritisk: 72t, h&#248;j: 7d)</td>
+              <td style="font-size:12px">3 kritiske CVE&#8217;er patchet 4&#8211;9 dage over SLA-fristen. Eskaleringsprocessen var ikke aktiveret.</td>
+              <td><span style="background:rgba(248,113,113,0.2);color:var(--red);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600">H&#216;J</span></td>
+              <td style="font-size:12px;color:var(--orange)">&#197;ben &#8212; CISO ansvarlig; afhj&#230;lpningsfrist 15. nov. 2025; procesforbedring kr&#230;vet</td>
+            </tr>
+            <tr>
+              <td style="font-size:12px;font-weight:600">Sikkerhedsovervågning (SIEM)<br><code style="font-size:10px">AU05</code></td>
+              <td style="font-size:12px">Stikpr&#248;ve af 20 SIEM-alarmer; verifikation af klassifikation og responstid</td>
+              <td style="font-size:12px">19 af 20 alarmer var korrekt klassificeret og behandlet inden for SLA. &#201;n alarm var fejlklassificeret som lav risiko.</td>
+              <td><span style="background:rgba(251,191,36,0.2);color:var(--yellow);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600">LAV</span></td>
+              <td style="font-size:12px;color:var(--green)">Lukket &#8212; klassifikationsguide opdateret</td>
+            </tr>
+          </tbody>
+        </table></div>
+
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin:20px 0 10px">4. Underskrifter</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:12px">
+          <div style="border-top:1px solid var(--border);padding-top:10px">
+            <div style="color:var(--muted);margin-bottom:4px">Udarbejdet af &#8212; Intern Revision</div>
+            <div style="height:32px"></div>
+            <div style="color:var(--muted);font-size:11px">Dato: 15. oktober 2025</div>
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:10px">
+            <div style="color:var(--muted);margin-bottom:4px">Godkendt af &#8212; Bestyrelsesformand, BRRU</div>
+            <div style="height:32px"></div>
+            <div style="color:var(--muted);font-size:11px">Dato: _______________</div>
+          </div>
+        </div>
       </div>
 
-      <!-- P1 Escalation box -->
-      <div style="background:rgba(239,68,68,.08);border:1px solid var(--red);border-radius:8px;padding:16px 18px;margin-bottom:24px">
-        <div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:8px">&#9888; P1 Escalation Rule — Non-Actioned Critical Findings</div>
-        <p style="margin:0 0 6px;font-size:13px;line-height:1.6">Any P1 (Critical) finding not remediated or formally accepted by the board within <strong>30 calendar days</strong> of the report date must be escalated directly to the Board Audit &amp; Risk Committee (BARC) by the Chief Audit Executive (CAE).</p>
-        <p style="margin:0;font-size:13px;line-height:1.6">Escalation must include: (1) the original finding reference, (2) the agreed remediation plan and owner, (3) the reason for non-completion, and (4) the CAE's recommended next action. IIA Standard 2600 applies.</p>
-      </div>
+      <!-- Protocol 2: Annual 2026 -->
+      <div style="background:var(--surface2);border-radius:8px;padding:20px 22px;margin-bottom:28px;border:1px solid var(--border)">
+        <div style="font-size:11px;font-weight:700;color:#0ea5e9;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px">Protokol 2 &#8212; &#197;rsprotokol for intern systemrevision (2026)</div>
 
-      <!-- EN version -->
-      <div style="background:var(--surface2);border-radius:8px;padding:18px 20px;margin-bottom:20px">
-        <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">English — IIA Board Reporting Template</div>
-        <p style="font-size:13px;font-weight:600;margin:0 0 8px">Purpose</p>
-        <p style="font-size:13px;line-height:1.6;margin:0 0 12px">This template is used by the Chief Audit Executive (CAE) to report internal audit results to the Board Audit &amp; Risk Committee in accordance with IIA Standard 2060 — Reporting to Senior Management and the Board.</p>
-        <p style="font-size:13px;font-weight:600;margin:0 0 8px">Mandatory sections</p>
-        <ol style="font-size:13px;line-height:1.9;margin:0 0 12px;padding-left:20px">
-          <li><strong>Audit universe &amp; coverage</strong> — planned vs. actual audits completed this period</li>
-          <li><strong>Findings summary</strong> — P1/P2/P3/P4 breakdown; new, open, closed counts</li>
-          <li><strong>Follow-up status</strong> — overdue items, extension requests, management acceptance</li>
-          <li><strong>Key risks identified</strong> — emerging risks surfaced through audit work</li>
-          <li><strong>Independence declaration</strong> — CAE confirmation of organisational independence</li>
-          <li><strong>Next period plan</strong> — upcoming audits, resource needs, any scope changes</li>
-        </ol>
-        <p style="font-size:13px;font-weight:600;margin:0 0 8px">Approval &amp; distribution</p>
-        <p style="font-size:13px;line-height:1.6;margin:0">The board report is approved by the CAE, presented at the quarterly BARC meeting, and distributed to: BARC members, CEO, CFO, CRO, and the external auditor upon request. It is classified <strong>Confidential</strong> and not for further distribution.</p>
-      </div>
+        <table class="def-table" style="margin-bottom:20px">
+          <tr><td class="term">Virksomhed</td><td class="def">Gamma7 Finans A/S</td></tr>
+          <tr><td class="term">Regnskabs&#229;r</td><td class="def">1. januar &#8211; 31. december 2026</td></tr>
+          <tr><td class="term">Dato for protokol</td><td class="def">15. januar 2027</td></tr>
+          <tr><td class="term">Udarbejdet af</td><td class="def">Chief Audit Executive (CAE), Gamma7 Finans A/S</td></tr>
+          <tr><td class="term">Rapporteret til</td><td class="def">Bestyrelsens Revisions- og Risikoudvalg (BRRU) &#183; Bestyrelsen</td></tr>
+        </table>
 
-      <!-- DA version -->
-      <div style="background:var(--surface2);border-radius:8px;padding:18px 20px">
-        <div style="font-size:11px;font-weight:700;color:#0ea5e9;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Dansk — IIA Bestyrelsesrapporteringsskabelon</div>
-        <p style="font-size:13px;font-weight:600;margin:0 0 8px">Form&#229;l</p>
-        <p style="font-size:13px;line-height:1.6;margin:0 0 12px">Denne skabelon anvendes af Chief Audit Executive (CAE) til at rapportere interne revisionsresultater til Bestyrelsens Revisions- og Risikoudvalg i henhold til IIA-standard 2060 — Rapportering til sen&#237;or ledelse og bestyrelsen.</p>
-        <p style="font-size:13px;font-weight:600;margin:0 0 8px">Obligatoriske afsnit</p>
-        <ol style="font-size:13px;line-height:1.9;margin:0 0 12px;padding-left:20px">
-          <li><strong>Revisionsunivers og d&#230;kning</strong> — planlagte vs. gennemf&#248;rte revisioner i perioden</li>
-          <li><strong>Fundsammenfatning</strong> — P1/P2/P3/P4-opdeling; nye, &#229;bne, lukkede</li>
-          <li><strong>Opf&#248;lgningsstatus</strong> — forfaldne punkter, forl&#230;ngelsesanmodninger, ledelsesgodkendelse</li>
-          <li><strong>Identificerede n&#248;glerisici</strong> — nye risici identificeret gennem revisionsarbejdet</li>
-          <li><strong>Uafh&#230;ngighedserkl&#230;ring</strong> — CAE&#8217;s bekr&#230;ftelse af organisatorisk uafh&#230;ngighed</li>
-          <li><strong>Plan for n&#230;ste periode</strong> — kommende revisioner, ressourcebehov, eventuelle scopebilag</li>
-        </ol>
-        <p style="font-size:13px;font-weight:600;margin:0 0 8px">Godkendelse og distribution</p>
-        <p style="font-size:13px;line-height:1.6;margin:0">Bestyrelsesrapporten godkendes af CAE, pr&#230;senteres p&#229; det kvartalsvise BARC-m&#248;de og distribueres til: BARC-medlemmer, administrerende direkt&#248;r, CFO, CRO og den eksterne revisor p&#229; anmodning. Rapporten er klassificeret <strong>Fortrolig</strong> og m&#229; ikke videredistribueres.</p>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 6px">1. Form&#229;l og gennemf&#248;relse af &#229;rsplan</div>
+        <p style="font-size:13px;line-height:1.7;margin:0 0 12px">&#197;rsplanen for 2026 er udarbejdet i henhold til den risikobaserede 3-&#229;rige revisionsmetode vedtaget af BRRU. Planen d&#230;kkede revisionsunivers best&#229;ende af 10 kontroller fordelt p&#229; fire procesdomæner: Informationssikkerhed, ICT-tredjepartsrisiko, Operationel robusthed og Databeskyttelse (GDPR). I alt er 8 planlagte revisioner gennemf&#248;rt; 2 revisioner er udsat til Q1 2027 grundet ressourcebegr&#230;nsninger, som BRRU er orienteret om.</p>
+
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 6px">2. &#197;rskonklusion</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span style="width:14px;height:14px;border-radius:50%;background:var(--orange);display:inline-block;flex-shrink:0"></span>
+          <span style="font-size:13px;font-weight:600;color:var(--orange)">GUL &#8212; Tilfredsstillende med v&#230;sentlige bem&#230;rkninger</span>
+        </div>
+        <p style="font-size:13px;line-height:1.7;margin:0 0 12px">Revisionen for 2026 identificerede i alt 7 fund, heraf 2 h&#248;j-prioritet (P1), 3 medium-prioritet (P2) og 2 lav-prioritet (P3). Pr. 31. december 2026 er 5 fund lukket; 2 P1-fund vedr&#248;rende DORA Art. 30 kontraktmangler og adgangskontrol-gennemgang er fortsat &#229;bne med aftalte afhj&#230;lpningsplaner. CAE vurderer det interne kontrolmilj&#248; som tilfredsstillende med behov for forbedring inden for tredjepartsrisikostyring.</p>
+
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 10px">3. Oversigt over gennemf&#248;rte revisioner og n&#248;glefund i 2026</div>
+        <div class="table-wrap"><table style="font-size:12px">
+          <thead><tr>
+            <th style="white-space:nowrap">Kvartal / Tema</th>
+            <th>Revideret omr&#229;de</th>
+            <th>Samlet vurdering</th>
+            <th>N&#248;gleobservationer</th>
+            <th style="white-space:nowrap">Status pr. 31.12</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-size:12px;font-weight:600;white-space:nowrap">Q1 2026<br>Adgangskontrol</td>
+              <td style="font-size:12px">ISO 27001 A.9 &#8212; IAM &amp; PAM (AU01&#8211;AU02)</td>
+              <td><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 8px;font-size:11px">GUL</span></td>
+              <td style="font-size:12px">Kvartalsmæssig adgangsgennemgang ikke gennemf&#248;rt for 7 konti (P1). PAM-kontroller godkendt.</td>
+              <td><span style="background:rgba(251,191,36,0.2);color:var(--yellow);border-radius:4px;padding:2px 8px;font-size:11px">&#197;ben</span></td>
+            </tr>
+            <tr>
+              <td style="font-size:12px;font-weight:600;white-space:nowrap">Q2 2026<br>DORA Art. 30</td>
+              <td style="font-size:12px">DORA Art. 30 kontraktklausuler &#8212; 5 kritiske leverand&#248;rer</td>
+              <td><span style="background:rgba(248,113,113,0.2);color:var(--red);border-radius:4px;padding:2px 8px;font-size:11px">R&#216;D</span></td>
+              <td style="font-size:12px">Exitstrategi mangler for 2 kritiske leverand&#248;rer (P1). SLA-klausuler mangler i &#233;n kontrakt (P2).</td>
+              <td><span style="background:rgba(251,191,36,0.2);color:var(--yellow);border-radius:4px;padding:2px 8px;font-size:11px">&#197;ben</span></td>
+            </tr>
+            <tr>
+              <td style="font-size:12px;font-weight:600;white-space:nowrap">Q2 2026<br>Datakryptering</td>
+              <td style="font-size:12px">ISO 27001 A.10 &#8212; Kryptering og n&#248;gleh&#229;ndtering (AU03)</td>
+              <td><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 8px;font-size:11px">GR&#216;N</span></td>
+              <td style="font-size:12px">Alle systemer krypterer data-at-rest og data-in-transit med godkendte algoritmer. N&#248;glerotation gennemf&#248;rt rettidigt.</td>
+              <td><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 8px;font-size:11px">Lukket</span></td>
+            </tr>
+            <tr>
+              <td style="font-size:12px;font-weight:600;white-space:nowrap">Q3 2026<br>S&#229;rbarhedsstyring</td>
+              <td style="font-size:12px">ISO 27001 A.12.6 &#8212; Patch management (AU04&#8211;AU05)</td>
+              <td><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 8px;font-size:11px">GUL</span></td>
+              <td style="font-size:12px">3 kritiske patches forsinket ud over SLA (P2). Eskaleringsproces implementeret efter Q3 2025-revisionen.</td>
+              <td><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 8px;font-size:11px">Lukket</span></td>
+            </tr>
+            <tr>
+              <td style="font-size:12px;font-weight:600;white-space:nowrap">Q4 2026<br>BCP/DR</td>
+              <td style="font-size:12px">ISO 27001 A.17 / DORA Art. 11 &#8212; Forretningskontinuitet (AU07)</td>
+              <td><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 8px;font-size:11px">GR&#216;N</span></td>
+              <td style="font-size:12px">BCP-dokumentation opdateret og DR-test gennemf&#248;rt med tilfredsstillende resultat. RTO/RPO opfyldt.</td>
+              <td><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 8px;font-size:11px">Lukket</span></td>
+            </tr>
+          </tbody>
+        </table></div>
+
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin:20px 0 6px">4. Fokusomr&#229;der for n&#230;ste &#229;rs revisionsplan (2027)</div>
+        <ul style="font-size:13px;line-height:1.9;margin:0 0 12px;padding-left:20px">
+          <li><strong>DORA Art. 30 follow-up:</strong> Verifikation af implementering af exitstrategier og manglende kontraktklausuler (&#229;bne P1-fund)</li>
+          <li><strong>Adgangskontrol:</strong> Opf&#248;lgningsrevision af IAM-processer med fokus p&#229; automatisering af kvartalsmæssig adgangsgennemgang</li>
+          <li><strong>GDPR Art. 28:</strong> Gennemgang af databehandleraftaler og underbehandlerdokumentation (planlagt i Q2 2027)</li>
+          <li><strong>ICT-h&#230;ndelsesh&#229;ndtering:</strong> F&#248;rstegangsvurdering af DORA Art. 17 h&#230;ndelsesbeeredskab og rapporteringsprocedurer</li>
+          <li><strong>Koncentrationsrisiko:</strong> DORA Art. 29 &#229;rlig vurdering af ICT-leverand&#248;rkoncentration</li>
+        </ul>
+
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin:20px 0 10px">5. Underskrifter</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;font-size:12px">
+          <div style="border-top:1px solid var(--border);padding-top:10px">
+            <div style="color:var(--muted);margin-bottom:4px">Chief Audit Executive</div>
+            <div style="height:32px"></div>
+            <div style="color:var(--muted);font-size:11px">Dato: 15. januar 2027</div>
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:10px">
+            <div style="color:var(--muted);margin-bottom:4px">Bestyrelsesformand, BRRU</div>
+            <div style="height:32px"></div>
+            <div style="color:var(--muted);font-size:11px">Dato: _______________</div>
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:10px">
+            <div style="color:var(--muted);margin-bottom:4px">Administrerende direkt&#248;r</div>
+            <div style="height:32px"></div>
+            <div style="color:var(--muted);font-size:11px">Dato: _______________</div>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -2247,19 +2374,59 @@ async function loadAuditIntelligence() {
     + '</div>';
 
   // --- Org process mapping accordion (Business Process → Sub-process → ISO Control + Critical System + Audit Objective + Audit Action + Risk) ---
+  const DEFAULT_INHERENT_RISK = {
+    'Identity & Access Management': 'High',
+    'Data Protection & Encryption': 'Medium',
+    'Vulnerability Management': 'High',
+    'Supplier Onboarding & Due Diligence': 'Medium',
+    'Contract Governance (DORA Art. 30)': 'High',
+    'Exit Strategy & Concentration Risk': 'High',
+    'Business Continuity & Disaster Recovery': 'Medium',
+    'Incident Response & Recovery': 'Medium',
+    'Article 28 Processor Agreements': 'Medium',
+    'Data Subject Rights (DSR)': 'Low',
+  };
+  const PROC_RISK_RATING = {
+    'Information Security': 'High',
+    'ICT Third-Party Risk': 'High',
+    'Operational Resilience': 'Medium',
+    'Data Privacy & GDPR': 'Medium',
+  };
+  const riskBadge = r => r === 'High'
+    ? '<span style="background:rgba(248,113,113,0.2);color:var(--red);border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;white-space:nowrap">High</span>'
+    : r === 'Medium'
+    ? '<span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;white-space:nowrap">Medium</span>'
+    : '<span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;white-space:nowrap">Low</span>';
+  const auditTypeForRiskYear = (risk, year) => {
+    if (risk === 'High') return 'Full Audit';
+    if (risk === 'Medium') return year === 2 ? 'Follow-up Audit' : 'Full Audit';
+    return 'DI Review';
+  };
+
   let accordionHtml = '<div class="section-title" style="margin-bottom:8px">Business Process &amp; Audit Scope Mapping</div>';
   accordionHtml += '<p style="font-size:12px;color:var(--muted);margin:0 0 12px">Business Process &#8594; Sub-process &#8594; ISO Control / Regulation &#8594; Critical System &#8594; Audit Objective &amp; Action &#8594; Risk. Click a process to expand.</p>';
+  accordionHtml += '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px">'
+    + '<label style="font-size:12px;color:var(--muted);white-space:nowrap">Risk class:</label>'
+    + '<select id="filter-risk" onchange="applyAuditFilters()" style="font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:3px 8px;color:var(--text)">'
+    + '<option value="">All</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option>'
+    + '</select>'
+    + '<label style="font-size:12px;color:var(--muted);white-space:nowrap;margin-left:8px">Audit cycle year:</label>'
+    + '<select id="filter-year" onchange="applyAuditFilters()" style="font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:3px 8px;color:var(--text)">'
+    + '<option value="">All years</option><option value="1">Year 1</option><option value="2">Year 2</option><option value="3">Year 3</option>'
+    + '</select>'
+    + '</div>';
   accordionHtml += '<div class="proc-accordion">';
   DEMO_ORG_STRUCTURE.forEach((proc, pi) => {
     const domainId = 'proc-' + pi;
     const mappedWps = proc.subprocesses.flatMap(sp => (sp.controls||[]).map(c => wpByCtrl[c]).filter(Boolean));
     const findingCount = mappedWps.filter(w => w.test_result === 'EXCEPTION').length;
     const passCount = mappedWps.filter(w => w.test_result === 'PASSED').length;
+    const procRisk = PROC_RISK_RATING[proc.process] || 'Medium';
     const statusChip = findingCount ? '<span style="font-size:11px;color:var(--orange);margin-left:8px">&#9888; ' + findingCount + ' finding(s)</span>'
       : passCount ? '<span style="font-size:11px;color:var(--green);margin-left:8px">&#10003; ' + passCount + ' tested</span>'
       : '';
     accordionHtml += '<div class="proc-header" onclick="const b=document.getElementById(\\'' + domainId + '\\');b.classList.toggle(\\'open\\')">'
-      + '<span style="font-size:13px;font-weight:600">' + proc.process + statusChip + '</span>'
+      + '<span style="font-size:13px;font-weight:600">' + proc.process + statusChip + '&nbsp;&nbsp;' + riskBadge(procRisk) + '</span>'
       + '<span style="font-size:11px;color:var(--muted)">' + proc.subprocesses.length + ' sub-process(es) &#9660;</span>'
       + '</div>';
     accordionHtml += '<div id="' + domainId + '" class="proc-body">';
@@ -2271,7 +2438,8 @@ async function loadAuditIntelligence() {
       + '<th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:600">Audit Objective</th>'
       + '<th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:600">Audit Action</th>'
       + '<th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:600">Risk</th>'
-      + '<th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:600">WP Status</th>'
+      + '<th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:600;white-space:nowrap">Inherent Risk</th>'
+      + '<th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:600;white-space:nowrap">Audit Type</th>'
       + '</tr></thead><tbody>';
     proc.subprocesses.forEach(sp => {
       const isoHtml = (sp.iso_controls||[]).map(c => '<div style="line-height:1.5">' + c + '</div>').join('');
@@ -2289,14 +2457,20 @@ async function loadAuditIntelligence() {
       } else {
         wpStatusHtml = '<span style="font-size:11px;color:var(--muted)">Scope TBD</span>';
       }
-      accordionHtml += '<tr style="border-bottom:1px solid var(--border);vertical-align:top">'
+      const spInherent = DEFAULT_INHERENT_RISK[sp.name] || 'Medium';
+      const spAuditType = auditTypeForRiskYear(spInherent, 1);
+      const rowId = 'row-' + pi + '-' + proc.subprocesses.indexOf(sp);
+      accordionHtml += '<tr id="' + rowId + '" data-inherent="' + spInherent + '" style="border-bottom:1px solid var(--border);vertical-align:top">'
         + '<td style="padding:8px;font-weight:600;color:var(--text);white-space:nowrap">' + sp.name + '</td>'
         + '<td style="padding:8px;line-height:1.5">' + isoHtml + '</td>'
         + '<td style="padding:8px">' + sysHtml + '</td>'
         + '<td style="padding:8px;color:var(--muted)">' + (sp.audit_objective||'') + '</td>'
         + '<td style="padding:8px;color:var(--muted)">' + (sp.audit_action||'') + '</td>'
         + '<td style="padding:8px;color:var(--red)">' + (sp.risk||'') + '</td>'
-        + '<td style="padding:8px">' + wpStatusHtml + '</td>'
+        + '<td style="padding:8px">' + riskBadge(spInherent) + '</td>'
+        + '<td style="padding:8px"><select class="audit-type-sel" style="font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;color:var(--text)">'
+        + ['Full Audit','Follow-up Audit','DI Review'].map(t => '<option value="' + t + '"' + (t === spAuditType ? ' selected' : '') + '>' + t + '</option>').join('')
+        + '</select></td>'
         + '</tr>';
     });
     accordionHtml += '</tbody></table>';
@@ -2324,30 +2498,6 @@ async function loadAuditIntelligence() {
     + '<tr><td style="color:var(--green);font-weight:600">Low</td><td>D&amp;I check every 3 yrs, spread evenly</td><td style="text-align:center">D&amp;I (13h)</td><td style="text-align:center">D&amp;I (14h)</td><td style="text-align:center">D&amp;I (13h = 5d total)</td><td style="text-align:center;font-weight:600">40h</td></tr>'
     + '</tbody></table></div>'
     + '<div class="info-box" style="margin-top:10px;font-size:12px"><strong>Hour budgets:</strong> High risk = 240 hrs (1.5 months) full audit each year. Medium risk = 160 hrs (1 month) full audit + 40 hrs follow-up every other year. Low risk = 40 hrs (5 days) D&amp;I spread over 3 years. <strong>Staffing:</strong> 3 FTE Internal Audit — Lead Auditor owns engagement quality and board reporting; two Senior Auditors conduct fieldwork, working paper preparation and finding management. External co-sourcing may supplement for specialist technical reviews.</div>'
-    + '<div style="margin-top:14px"><div class="section-title" style="margin-bottom:8px;font-size:12px">Monthly Audit Calendar — Current Year</div>'
-    + '<div style="display:grid;grid-template-columns:repeat(12,1fr);gap:4px;font-size:10px">'
-    + ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m,i) => {
-        const activity = [
-          {label:'ISO 27001 (AU01-AU05)',color:'var(--red)'},     // Jan
-          {label:'ISO 27001 (AU01-AU05)',color:'var(--red)'},     // Feb
-          {label:'Follow-up (AU01-AU05)',color:'var(--orange)'},  // Mar
-          {label:'Planning & Risk Assessment',color:'var(--muted)'},// Apr
-          {label:'DORA Art.30 Contracts',color:'var(--accent)'},  // May
-          {label:'DORA Art.30 Contracts',color:'var(--accent)'},  // Jun
-          {label:'BCP / DR Review (AU07)',color:'var(--orange)'}, // Jul
-          {label:'BCP / DR Review (AU07)',color:'var(--orange)'}, // Aug
-          {label:'Access Control D&I',color:'var(--yellow)'},     // Sep
-          {label:'Vuln Mgmt D&I',color:'var(--yellow)'},         // Oct
-          {label:'Board Report Prep',color:'var(--muted)'},       // Nov
-          {label:'Annual Methodology Review',color:'var(--muted)'},// Dec
-        ];
-        const a = activity[i];
-        return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:5px 4px;text-align:center">'
-          + '<div style="font-weight:600;color:var(--muted);margin-bottom:3px">' + m + '</div>'
-          + '<div style="font-size:9px;color:' + a.color + ';line-height:1.4">' + a.label + '</div>'
-          + '</div>';
-      }).join('')
-    + '</div></div>'
     + '</div>';
 
   const reportsHtml = '';
@@ -2424,6 +2574,25 @@ async function loadAuditIntelligence() {
     + riskMatrixHtml
     + accordionHtml
     + findingsHtml;
+}
+
+function applyAuditFilters() {
+  const riskFilter = (document.getElementById('filter-risk')||{}).value || '';
+  const yearFilter = parseInt((document.getElementById('filter-year')||{}).value || '0', 10);
+  const auditTypeForRiskYear = (risk, year) => {
+    if (risk === 'High') return 'Full Audit';
+    if (risk === 'Medium') return year === 2 ? 'Follow-up Audit' : 'Full Audit';
+    return 'DI Review';
+  };
+  document.querySelectorAll('[data-inherent]').forEach(row => {
+    const inherent = row.getAttribute('data-inherent');
+    const matchRisk = !riskFilter || inherent === riskFilter;
+    row.style.display = matchRisk ? '' : 'none';
+    if (yearFilter && matchRisk) {
+      const sel = row.querySelector('.audit-type-sel');
+      if (sel) sel.value = auditTypeForRiskYear(inherent, yearFilter);
+    }
+  });
 }
 
 function showDARModal(idx) {
