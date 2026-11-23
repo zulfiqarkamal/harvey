@@ -1,4 +1,4 @@
-﻿"""
+"""
 Gamma7 — Unified Dashboard
 
 FastAPI app serving a minimal HTML dashboard showing:
@@ -17,6 +17,12 @@ All findings require human review before regulatory reporting.
 """
 
 from __future__ import annotations
+
+import sys as _sys
+import os as _os
+if __name__ == "__main__" and __package__ is None:
+    _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    __package__ = "gamma7"
 
 import argparse
 import base64
@@ -946,213 +952,375 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     </div>
   </div>
 
-  <!-- Audit Plan tab (Agent 4) -->
+  <!-- Audit Plan tab (Agent 4) — Business Process & Audit Scope Mapping -->
   <div id="tab-audit" class="tab-pane">
     <div class="tab-header">
       <h2>Audit Plan</h2>
-      <div class="agent-label">Risk-Based Audit Universe — ISO 27001 / IIA Standards / 3 FTE Annual Capacity</div>
+      <div class="agent-label">Business Process &amp; Audit Scope Mapping — IIA / ISO 27001 / DORA / 3 FTE Annual Capacity</div>
     </div>
-    <div style="max-width:1100px;margin:0 auto">
+    <div style="max-width:1180px;margin:0 auto">
 
-      <!-- Capacity summary -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+      <!-- Capacity summary cards -->
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px">
         <div class="card" style="border-top:3px solid var(--accent)">
           <div class="label">Annual Capacity</div>
-          <div class="value">4,884 h</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">3 FTE × 10 working months</div>
+          <div class="value">4,860 h</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">3 FTE × 10 mo × 162 h</div>
         </div>
         <div class="card" style="border-top:3px solid var(--green)">
-          <div class="label">Planned Audits</div>
-          <div class="value green" id="ap-planned-count">25</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">Risk-based schedule</div>
+          <div class="label">Target Audits / Year</div>
+          <div class="value green">~25</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">≈ 194 h avg per audit</div>
         </div>
-        <div class="card" style="border-top:3px solid var(--yellow)">
+        <div class="card" style="border-top:3px solid var(--blue)">
           <div class="label">Hours Allocated</div>
-          <div class="value yellow" id="ap-hours-allocated">3,620</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">of 4,884 h budgeted</div>
+          <div class="value blue" id="ap-hours-allocated">—</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Auto-calculated below</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--red)">
+          <div class="label">High-Risk Areas</div>
+          <div class="value red" id="ap-high-count">—</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Inherent risk = High</div>
         </div>
         <div class="card" style="border-top:3px solid var(--orange)">
-          <div class="label">High-Risk Areas</div>
-          <div class="value orange">4</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">Annual full audit required</div>
+          <div class="label">Business Processes</div>
+          <div class="value orange">8</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Nets/Nordic coverage</div>
         </div>
       </div>
 
-      <!-- Capacity legend -->
+      <!-- Capacity model note -->
       <div style="font-size:12px;color:var(--muted);margin-bottom:16px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px">
         <strong style="color:var(--text)">3 FTE capacity model:</strong>
-        3 auditors × 10 working months/year (excl. leave &amp; training) × 162 h/month = <strong style="color:var(--accent)">4,884 h/year</strong> &nbsp;|&nbsp;
-        Full Audit = 220 h &nbsp;·&nbsp; Follow-up Audit = 100 h &nbsp;·&nbsp; DI Review = 50 h &nbsp;|&nbsp;
-        <strong style="color:var(--red)">High risk</strong> → Full Audit every year &nbsp;·&nbsp;
-        <strong style="color:var(--orange)">Medium risk</strong> → Full Y1&amp;Y3 / Follow-up Y2 &nbsp;·&nbsp;
-        <strong style="color:var(--yellow)">Low risk</strong> → DI Review Y3 only
+        3 auditors × 10 working months/year (excl. 6 wks leave + 2 wks training/illness) × 162 h/month = <strong style="color:var(--accent)">4,860 h/year</strong> &nbsp;|&nbsp;
+        <strong style="color:var(--green)">Full Audit</strong> = 220 h (lead + optional assistant + 1–3 days QA) &nbsp;·&nbsp;
+        <strong style="color:var(--orange)">Follow-up Audit</strong> = 100 h &nbsp;·&nbsp;
+        <strong style="color:var(--yellow)">DI Review</strong> = 50 h
       </div>
 
-      <!-- Audit Universe table -->
-      <div class="section-title" style="margin-bottom:12px">Audit Universe — Gamma7 Finans A/S</div>
-      <div class="table-wrap">
-        <table id="audit-universe-table" style="font-size:12px">
+      <!-- Filter bar -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--muted);font-weight:600">FILTER:</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:12px;color:var(--text)">Risk:</span>
+          <select id="filter-risk" onchange="filterAuditPlan()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:3px 8px;font-size:12px">
+            <option value="">All</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:12px;color:var(--text)">Cycle:</span>
+          <select id="filter-year" onchange="filterAuditPlan()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:3px 8px;font-size:12px">
+            <option value="">All Years</option>
+            <option value="1">Year 1</option>
+            <option value="2">Year 2</option>
+            <option value="3">Year 3</option>
+          </select>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button onclick="expandAllBP()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer">Expand All</button>
+          <button onclick="collapseAllBP()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer">Collapse All</button>
+        </div>
+      </div>
+
+      <!-- Audit universe accordion table -->
+      <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+        <table id="audit-universe-table" style="width:100%;border-collapse:collapse;font-size:12px">
           <thead>
-            <tr>
-              <th style="width:160px">Business Area</th>
-              <th style="width:140px">Process / System</th>
-              <th style="width:160px">ISO 27001 Controls</th>
-              <th style="width:120px">Critical System</th>
-              <th style="width:110px">Inherent Risk</th>
-              <th style="width:120px">Audit Type</th>
-              <th style="width:70px">Hours</th>
-              <th style="width:80px">Year 1</th>
-              <th style="width:80px">Year 2</th>
-              <th style="width:80px">Year 3</th>
+            <tr style="background:var(--surface2);border-bottom:2px solid var(--border)">
+              <th style="padding:8px 10px;text-align:left;width:170px;color:var(--muted)">Sub-Process</th>
+              <th style="padding:8px 10px;text-align:left;width:150px;color:var(--muted)">ISO / Regulation</th>
+              <th style="padding:8px 10px;text-align:left;width:130px;color:var(--muted)">Critical System</th>
+              <th style="padding:8px 10px;text-align:left;color:var(--muted)">Audit Objective</th>
+              <th style="padding:8px 10px;text-align:left;width:110px;color:var(--muted)">Inherent Risk</th>
+              <th style="padding:8px 10px;text-align:left;width:120px;color:var(--muted)">Audit Type</th>
+              <th style="padding:8px 4px;text-align:center;width:60px;color:var(--muted)">Hours</th>
+              <th style="padding:8px 4px;text-align:center;width:50px;color:var(--muted)">Yr1</th>
+              <th style="padding:8px 4px;text-align:center;width:50px;color:var(--muted)">Yr2</th>
+              <th style="padding:8px 4px;text-align:center;width:50px;color:var(--muted)">Yr3</th>
             </tr>
           </thead>
           <tbody id="audit-universe-body">
-            <!-- IT Operations -->
-            <tr>
-              <td style="font-weight:600;color:var(--accent)" rowspan="3">IT Operations</td>
-              <td>Identity &amp; Access Management (IAM)</td>
-              <td><code style="font-size:10px">A.9.1–A.9.4, A.8.2</code></td>
-              <td>Azure AD / Entra ID</td>
-              <td><select onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
-              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
-              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+
+            <!-- BP1: IT Operations -->
+            <tr class="bp-header" data-bp="bp1" onclick="toggleBP('bp1')" style="background:rgba(124,58,237,0.12);cursor:pointer;user-select:none">
+              <td colspan="10" style="padding:9px 12px;font-weight:700;color:var(--accent);font-size:13px">
+                <span class="bp-arrow" id="bp1-arrow" style="margin-right:8px;display:inline-block;transition:transform 0.2s">&#9660;</span>
+                IT Operations
+                <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:12px">Information Security &middot; Operational Resilience &middot; BCM</span>
+              </td>
             </tr>
-            <tr>
-              <td>Patch &amp; Vulnerability Management</td>
+            <tr class="bp-row bp1" data-bp="bp1" data-risk="High" data-year="1">
+              <td style="padding:7px 10px">Identity &amp; Access Management</td>
+              <td><code style="font-size:10px">A.9.1&ndash;A.9.4</code></td>
+              <td style="font-size:11px">Azure AD / Entra ID</td>
+              <td style="font-size:11px;color:var(--muted)">Verify least-privilege access controls and periodic recertification</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+            </tr>
+            <tr class="bp-row bp1" data-bp="bp1" data-risk="High" data-year="1">
+              <td style="padding:7px 10px">Patch &amp; Vulnerability Mgmt</td>
               <td><code style="font-size:10px">A.12.6, A.14.2</code></td>
-              <td>Tenable.io / SIEM</td>
-              <td><select onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
-              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td style="font-size:11px">Tenable / SIEM</td>
+              <td style="font-size:11px;color:var(--muted)">Assess patch cycle adherence and critical CVE remediation timeliness</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
               <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
             </tr>
-            <tr>
-              <td>Business Continuity &amp; DR</td>
-              <td><code style="font-size:10px">A.17.1–A.17.2</code></td>
-              <td>CBS / Core Systems</td>
-              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
-              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+            <tr class="bp-row bp1" data-bp="bp1" data-risk="High" data-year="1">
+              <td style="padding:7px 10px">Operational Resilience &amp; DORA</td>
+              <td><code style="font-size:10px">DORA Art.9&ndash;11, A.17</code></td>
+              <td style="font-size:11px">CBS / Core Systems</td>
+              <td style="font-size:11px;color:var(--muted)">Validate ICT resilience testing, RTO/RPO targets, and DORA Art.11 compliance</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
               <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
             </tr>
-            <!-- Procurement / Vendor -->
-            <tr>
-              <td style="font-weight:600;color:var(--accent)" rowspan="2">Procurement / Vendor</td>
-              <td>DORA Art. 30 ICT Contract Compliance</td>
-              <td><code style="font-size:10px">DORA Art.28–30</code></td>
-              <td>All ICT critical providers</td>
-              <td><select onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
-              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+
+            <!-- BP2: Procurement -->
+            <tr class="bp-header" data-bp="bp2" onclick="toggleBP('bp2')" style="background:rgba(124,58,237,0.12);cursor:pointer;user-select:none">
+              <td colspan="10" style="padding:9px 12px;font-weight:700;color:var(--accent);font-size:13px">
+                <span class="bp-arrow" id="bp2-arrow" style="margin-right:8px;display:inline-block;transition:transform 0.2s">&#9660;</span>
+                Procurement
+                <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:12px">ICT Third-Party Risk &middot; Vendor Due Diligence &middot; DORA Art.28&ndash;30</span>
+              </td>
+            </tr>
+            <tr class="bp-row bp2" data-bp="bp2" data-risk="High" data-year="1">
+              <td style="padding:7px 10px">ICT Contract Compliance</td>
+              <td><code style="font-size:10px">DORA Art.28&ndash;30</code></td>
+              <td style="font-size:11px">All critical ICT providers</td>
+              <td style="font-size:11px;color:var(--muted)">Confirm DORA Art.30 contractual clauses and register of ICT critical third parties</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
               <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
             </tr>
-            <tr>
-              <td>Vendor Onboarding &amp; Due Diligence</td>
-              <td><code style="font-size:10px">A.15.1–A.15.2</code></td>
-              <td>Procurement system</td>
-              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
-              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
-              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-            </tr>
-            <!-- Compliance / 2nd Line -->
-            <tr>
-              <td style="font-weight:600;color:var(--accent)" rowspan="2">Compliance (2nd Line)</td>
-              <td>GDPR Data Processing &amp; DPA Agreements</td>
-              <td><code style="font-size:10px">GDPR Art.28, A.18.1</code></td>
-              <td>CRM / Data warehouse</td>
-              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
-              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
-              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-            </tr>
-            <tr>
-              <td>Regulatory Reporting &amp; FIU Compliance</td>
-              <td><code style="font-size:10px">A.18.1, AML/4AMLD</code></td>
-              <td>RegRep system</td>
-              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
-              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
-              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-            </tr>
-            <!-- Commercial / Sales -->
-            <tr>
-              <td style="font-weight:600;color:var(--accent)">Commercial / Sales</td>
-              <td>Customer Data &amp; Sales Conduct</td>
-              <td><code style="font-size:10px">A.8.1, MiFID II</code></td>
-              <td>CRM / Sales platform</td>
-              <td><select onchange="updateAuditRow(this)" style="background:rgba(234,179,8,0.15);color:var(--yellow);border:1px solid #eab308;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option>Medium</option><option selected>Low</option></select></td>
-              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>Full Audit</option><option>Follow-up Audit</option><option selected>DI Review</option></select></td>
-              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">50</td>
-              <td style="text-align:center"><span style="color:var(--muted);font-size:10px">—</span></td>
-              <td style="text-align:center"><span style="color:var(--muted);font-size:10px">—</span></td>
-              <td style="text-align:center"><span style="background:rgba(234,179,8,0.2);color:var(--yellow);border-radius:4px;padding:2px 6px;font-size:10px">DI</span></td>
-            </tr>
-            <!-- Supply Chain -->
-            <tr>
-              <td style="font-weight:600;color:var(--accent)">Supply Chain</td>
-              <td>Supplier Assurance &amp; Sub-contractor Risk</td>
-              <td><code style="font-size:10px">A.15.1–A.15.2</code></td>
-              <td>ERP / Supplier portal</td>
-              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
-              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>Full Audit</option><option selected>Follow-up Audit</option><option>DI Review</option></select></td>
+            <tr class="bp-row bp2" data-bp="bp2" data-risk="Medium" data-year="2">
+              <td style="padding:7px 10px">Vendor Onboarding &amp; Due Diligence</td>
+              <td><code style="font-size:10px">A.15.1&ndash;A.15.2</code></td>
+              <td style="font-size:11px">Procurement system</td>
+              <td style="font-size:11px;color:var(--muted)">Evaluate third-party risk assessments and contractual security requirements</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>Full Audit</option><option selected>Follow-up Audit</option><option>DI Review</option></select></td>
               <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">100</td>
-              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
             </tr>
-            <!-- Finance -->
-            <tr>
-              <td style="font-weight:600;color:var(--accent)" rowspan="2">Finance</td>
-              <td>Financial Reporting &amp; General Ledger Controls</td>
+
+            <!-- BP3: Compliance (2nd Line) -->
+            <tr class="bp-header" data-bp="bp3" onclick="toggleBP('bp3')" style="background:rgba(124,58,237,0.12);cursor:pointer;user-select:none">
+              <td colspan="10" style="padding:9px 12px;font-weight:700;color:var(--accent);font-size:13px">
+                <span class="bp-arrow" id="bp3-arrow" style="margin-right:8px;display:inline-block;transition:transform 0.2s">&#9660;</span>
+                Compliance (2nd Line)
+                <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:12px">Data Privacy &middot; GDPR &middot; Regulatory Reporting</span>
+              </td>
+            </tr>
+            <tr class="bp-row bp3" data-bp="bp3" data-risk="High" data-year="1">
+              <td style="padding:7px 10px">GDPR Data Processing &amp; DPAs</td>
+              <td><code style="font-size:10px">GDPR Art.28, A.18.1</code></td>
+              <td style="font-size:11px">CRM / Data warehouse</td>
+              <td style="font-size:11px;color:var(--muted)">Assess data processing agreements, consent management, and DSAR procedures</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+            </tr>
+            <tr class="bp-row bp3" data-bp="bp3" data-risk="Medium" data-year="2">
+              <td style="padding:7px 10px">Regulatory Reporting &amp; AML</td>
+              <td><code style="font-size:10px">A.18.1, 4AMLD/5AMLD</code></td>
+              <td style="font-size:11px">RegRep system</td>
+              <td style="font-size:11px;color:var(--muted)">Verify completeness and timeliness of regulatory submissions to Finanstilsynet</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+            </tr>
+
+            <!-- BP4: Commercial / Sales -->
+            <tr class="bp-header" data-bp="bp4" onclick="toggleBP('bp4')" style="background:rgba(124,58,237,0.12);cursor:pointer;user-select:none">
+              <td colspan="10" style="padding:9px 12px;font-weight:700;color:var(--accent);font-size:13px">
+                <span class="bp-arrow" id="bp4-arrow" style="margin-right:8px;display:inline-block;transition:transform 0.2s">&#9660;</span>
+                Commercial / Sales
+                <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:12px">Merchant Services &middot; Customer Onboarding &middot; Sales Conduct</span>
+              </td>
+            </tr>
+            <tr class="bp-row bp4" data-bp="bp4" data-risk="High" data-year="1">
+              <td style="padding:7px 10px">Merchant Terminal Onboarding</td>
+              <td><code style="font-size:10px">PCI-DSS, A.8.1</code></td>
+              <td style="font-size:11px">Merchant portal / CRM</td>
+              <td style="font-size:11px;color:var(--muted)">Assess KYC/KYB completeness, terminal provisioning controls, and fraud detection</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+            </tr>
+            <tr class="bp-row bp4" data-bp="bp4" data-risk="Low" data-year="3">
+              <td style="padding:7px 10px">Sales Conduct &amp; Customer Data</td>
+              <td><code style="font-size:10px">MiFID II, A.8.1</code></td>
+              <td style="font-size:11px">CRM / Sales platform</td>
+              <td style="font-size:11px;color:var(--muted)">Review sales incentive schemes, customer suitability assessments, and data handling</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(234,179,8,0.15);color:var(--yellow);border:1px solid #eab308;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option>Medium</option><option selected>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>Full Audit</option><option>Follow-up Audit</option><option selected>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">50</td>
+              <td style="text-align:center"><span style="color:var(--muted);font-size:10px">&mdash;</span></td>
+              <td style="text-align:center"><span style="color:var(--muted);font-size:10px">&mdash;</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(234,179,8,0.2);color:var(--yellow);border-radius:3px;padding:1px 5px;font-size:10px">DI</span></td>
+            </tr>
+
+            <!-- BP5: Supply Chain Delivery -->
+            <tr class="bp-header" data-bp="bp5" onclick="toggleBP('bp5')" style="background:rgba(124,58,237,0.12);cursor:pointer;user-select:none">
+              <td colspan="10" style="padding:9px 12px;font-weight:700;color:var(--accent);font-size:13px">
+                <span class="bp-arrow" id="bp5-arrow" style="margin-right:8px;display:inline-block;transition:transform 0.2s">&#9660;</span>
+                Supply Chain Delivery
+                <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:12px">Supplier Assurance &middot; Sub-contractor Risk &middot; Hardware Logistics</span>
+              </td>
+            </tr>
+            <tr class="bp-row bp5" data-bp="bp5" data-risk="Medium" data-year="2">
+              <td style="padding:7px 10px">Supplier Assurance &amp; Sub-contractor Risk</td>
+              <td><code style="font-size:10px">A.15.1&ndash;A.15.2</code></td>
+              <td style="font-size:11px">ERP / Supplier portal</td>
+              <td style="font-size:11px;color:var(--muted)">Assess supplier security certifications, sub-processor agreements, and delivery controls</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>Full Audit</option><option selected>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">100</td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
+            </tr>
+
+            <!-- BP6: Financial Operations -->
+            <tr class="bp-header" data-bp="bp6" onclick="toggleBP('bp6')" style="background:rgba(124,58,237,0.12);cursor:pointer;user-select:none">
+              <td colspan="10" style="padding:9px 12px;font-weight:700;color:var(--accent);font-size:13px">
+                <span class="bp-arrow" id="bp6-arrow" style="margin-right:8px;display:inline-block;transition:transform 0.2s">&#9660;</span>
+                Financial Operations (Finance)
+                <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:12px">GL Controls &middot; Treasury &middot; Payments Oversight &middot; ISAE 3402</span>
+              </td>
+            </tr>
+            <tr class="bp-row bp6" data-bp="bp6" data-risk="Medium" data-year="1">
+              <td style="padding:7px 10px">Financial Reporting &amp; GL Controls</td>
               <td><code style="font-size:10px">A.18.1, ISAE 3402</code></td>
-              <td>ERP / GL system</td>
-              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
-              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td style="font-size:11px">ERP / GL system</td>
+              <td style="font-size:11px;color:var(--muted)">Review journal entry controls, period-close procedures, and ISAE 3402 service org controls</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
               <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
             </tr>
-            <tr>
-              <td>Treasury &amp; Payments Oversight</td>
+            <tr class="bp-row bp6" data-bp="bp6" data-risk="Medium" data-year="2">
+              <td style="padding:7px 10px">Treasury &amp; Payments Oversight</td>
               <td><code style="font-size:10px">A.9.4, PCI-DSS</code></td>
-              <td>Payment gateway / CBS</td>
-              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
-              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td style="font-size:11px">Payment gateway / CBS</td>
+              <td style="font-size:11px;color:var(--muted)">Assess segregation of duties in payment processing and treasury management controls</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
               <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
-              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
-              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
             </tr>
+
+            <!-- BP7: Payment Processing & Digital Identity -->
+            <tr class="bp-header" data-bp="bp7" onclick="toggleBP('bp7')" style="background:rgba(124,58,237,0.12);cursor:pointer;user-select:none">
+              <td colspan="10" style="padding:9px 12px;font-weight:700;color:var(--accent);font-size:13px">
+                <span class="bp-arrow" id="bp7-arrow" style="margin-right:8px;display:inline-block;transition:transform 0.2s">&#9660;</span>
+                Payment Processing &amp; Digital Identity
+                <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:12px">Core Payment Infrastructure &middot; SCA &middot; PSD2 &middot; 3DS</span>
+              </td>
+            </tr>
+            <tr class="bp-row bp7" data-bp="bp7" data-risk="High" data-year="1">
+              <td style="padding:7px 10px">Core Payment Processing</td>
+              <td><code style="font-size:10px">PSD2, PCI-DSS v4</code></td>
+              <td style="font-size:11px">Payment switch / HSM</td>
+              <td style="font-size:11px;color:var(--muted)">Validate end-to-end transaction integrity, HSM key management, and PCI-DSS compliance</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+            </tr>
+            <tr class="bp-row bp7" data-bp="bp7" data-risk="High" data-year="1">
+              <td style="padding:7px 10px">Strong Customer Auth (SCA/3DS)</td>
+              <td><code style="font-size:10px">PSD2 Art.97, A.9.3</code></td>
+              <td style="font-size:11px">3DS server / ACS</td>
+              <td style="font-size:11px;color:var(--muted)">Assess SCA exemption logic, authentication failure rates, and 3DS2 implementation</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+            </tr>
+
+            <!-- BP8: IT Development & Change Management -->
+            <tr class="bp-header" data-bp="bp8" onclick="toggleBP('bp8')" style="background:rgba(124,58,237,0.12);cursor:pointer;user-select:none">
+              <td colspan="10" style="padding:9px 12px;font-weight:700;color:var(--accent);font-size:13px">
+                <span class="bp-arrow" id="bp8-arrow" style="margin-right:8px;display:inline-block;transition:transform 0.2s">&#9660;</span>
+                IT Development &amp; Change Management
+                <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:12px">SDLC &middot; DevSecOps &middot; Change &amp; Release Controls</span>
+              </td>
+            </tr>
+            <tr class="bp-row bp8" data-bp="bp8" data-risk="Medium" data-year="2">
+              <td style="padding:7px 10px">SDLC &amp; DevSecOps Controls</td>
+              <td><code style="font-size:10px">A.14.1&ndash;A.14.3</code></td>
+              <td style="font-size:11px">CI/CD pipeline / JIRA</td>
+              <td style="font-size:11px;color:var(--muted)">Review secure development practices, code review controls, and SAST/DAST integration</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span style="color:var(--muted);font-size:10px">&mdash;</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:3px;padding:1px 5px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="color:var(--muted);font-size:10px">&mdash;</span></td>
+            </tr>
+            <tr class="bp-row bp8" data-bp="bp8" data-risk="Medium" data-year="2">
+              <td style="padding:7px 10px">Change &amp; Release Management</td>
+              <td><code style="font-size:10px">A.12.1.2, ITIL</code></td>
+              <td style="font-size:11px">ServiceNow / CMDB</td>
+              <td style="font-size:11px;color:var(--muted)">Assess change advisory board effectiveness, emergency change controls, and rollback procedures</td>
+              <td><select class="risk-sel" onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select class="audit-type-sel" onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>Full Audit</option><option selected>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">100</td>
+              <td style="text-align:center"><span style="color:var(--muted);font-size:10px">&mdash;</span></td>
+              <td style="text-align:center"><span class="cycle-badge" style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:3px;padding:1px 5px;font-size:10px">F/U</span></td>
+              <td style="text-align:center"><span style="color:var(--muted);font-size:10px">&mdash;</span></td>
+            </tr>
+
           </tbody>
         </table>
       </div>
 
       <!-- Total hours bar -->
-      <div style="margin-top:16px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;gap:16px">
+      <div style="margin-top:16px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
         <div style="font-size:13px;font-weight:600;color:var(--text)">Total planned:</div>
-        <div style="font-size:18px;font-weight:700;color:var(--accent)" id="ap-total-hours">1,890 h</div>
-        <div style="flex:1;background:var(--surface2);border-radius:4px;height:10px;overflow:hidden">
-          <div id="ap-capacity-bar" style="height:10px;background:var(--accent);border-radius:4px;width:38%"></div>
+        <div style="font-size:18px;font-weight:700;color:var(--accent)" id="ap-total-hours">— h</div>
+        <div style="flex:1;min-width:120px;background:var(--surface2);border-radius:4px;height:10px;overflow:hidden">
+          <div id="ap-capacity-bar" style="height:10px;background:var(--accent);border-radius:4px;width:0%"></div>
         </div>
-        <div style="font-size:12px;color:var(--muted)">of 4,884 h capacity</div>
-        <div style="font-size:11px;color:var(--green)">&#10003; Within capacity</div>
+        <div style="font-size:12px;color:var(--muted)">of 4,860 h capacity</div>
+        <div id="ap-capacity-status" style="font-size:11px;color:var(--green)"></div>
       </div>
     </div>
   </div>
@@ -1731,7 +1899,82 @@ function openContractForSupplier(supplierName, evt) {
 }
 
 // ── Board Report ──────────────────────────────────────────────────────────
-async function loadBoardReport() {
+async 
+    // ── Audit Plan accordion & auto-calc ──────────────────────────────────
+    function toggleBP(bp) {
+      var rows = document.querySelectorAll('.bp-row.' + bp);
+      var arrow = document.getElementById(bp + '-arrow');
+      var hidden = rows.length > 0 && rows[0].style.display === 'none';
+      rows.forEach(function(r) { r.style.display = hidden ? '' : 'none'; });
+      if (arrow) arrow.style.transform = hidden ? '' : 'rotate(-90deg)';
+    }
+    function expandAllBP() {
+      document.querySelectorAll('.bp-row').forEach(function(r) { r.style.display = ''; });
+      for (var i = 1; i <= 8; i++) {
+        var a = document.getElementById('bp' + i + '-arrow');
+        if (a) a.style.transform = '';
+      }
+    }
+    function collapseAllBP() {
+      document.querySelectorAll('.bp-row').forEach(function(r) { r.style.display = 'none'; });
+      for (var i = 1; i <= 8; i++) {
+        var a = document.getElementById('bp' + i + '-arrow');
+        if (a) a.style.transform = 'rotate(-90deg)';
+      }
+    }
+    function updateAuditRow(sel) {
+      var row = sel.closest('tr');
+      if (sel.classList.contains('audit-type-sel')) {
+        var h = sel.value === 'Full Audit' ? 220 : sel.value === 'Follow-up Audit' ? 100 : 50;
+        var hCell = row.querySelector('.ap-hours');
+        if (hCell) hCell.textContent = h;
+      }
+      if (sel.classList.contains('risk-sel')) {
+        var riskSel = row.querySelector('.risk-sel');
+        var v = riskSel ? riskSel.value : '';
+        var bg = v === 'High' ? 'rgba(248,113,113,0.15)' : v === 'Medium' ? 'rgba(251,146,60,0.15)' : 'rgba(234,179,8,0.15)';
+        var fg = v === 'High' ? 'var(--red)' : v === 'Medium' ? 'var(--orange)' : 'var(--yellow)';
+        var bd = v === 'High' ? '#f87171' : v === 'Medium' ? '#fb923c' : '#eab308';
+        sel.style.background = bg; sel.style.color = fg; sel.style.borderColor = bd;
+        row.dataset.risk = v;
+      }
+      calcAuditTotal();
+    }
+    function calcAuditTotal() {
+      var total = 0, high = 0;
+      document.querySelectorAll('#audit-universe-body .bp-row').forEach(function(r) {
+        var hCell = r.querySelector('.ap-hours');
+        if (hCell) total += parseInt(hCell.textContent) || 0;
+        var rSel = r.querySelector('.risk-sel');
+        if (rSel && rSel.value === 'High') high++;
+      });
+      var el = document.getElementById('ap-total-hours');
+      var el2 = document.getElementById('ap-hours-allocated');
+      var hc = document.getElementById('ap-high-count');
+      var bar = document.getElementById('ap-capacity-bar');
+      var status = document.getElementById('ap-capacity-status');
+      if (el) el.textContent = total.toLocaleString() + ' h';
+      if (el2) el2.textContent = total.toLocaleString();
+      if (hc) hc.textContent = high;
+      var pct = Math.min(100, Math.round(total / 4860 * 100));
+      if (bar) bar.style.width = pct + '%';
+      if (status) {
+        if (total <= 4860) { status.textContent = '\u2713 Within capacity'; status.style.color = 'var(--green)'; }
+        else { status.textContent = '\u26a0 Over capacity'; status.style.color = 'var(--red)'; }
+      }
+    }
+    function filterAuditPlan() {
+      var riskF = document.getElementById('filter-risk') ? document.getElementById('filter-risk').value : '';
+      var yearF = document.getElementById('filter-year') ? document.getElementById('filter-year').value : '';
+      document.querySelectorAll('#audit-universe-body .bp-row').forEach(function(r) {
+        var riskOk = !riskF || r.dataset.risk === riskF;
+        var yearOk = !yearF || r.dataset.year === yearF;
+        r.style.display = (riskOk && yearOk) ? '' : 'none';
+      });
+    }
+    // init audit totals on load
+    document.addEventListener('DOMContentLoaded', function() { calcAuditTotal(); });
+function loadBoardReport() {
   const container = document.getElementById('boardreport-content');
   container.innerHTML = '<div class="loading">Loading board report&#8230;</div>';
   let wpData, reconData;
