@@ -667,8 +667,9 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <button class="nav-item nav-contracts" onclick="showTab('contracts',this)">Contracts</button>
     <button class="nav-item nav-register" onclick="showTab('register',this)">Register</button>
     <button class="nav-item nav-reconciliation" onclick="showTab('reconciliation',this)">ICT Register</button>
-    <button class="nav-item nav-workpapers" onclick="showTab('workpapers',this)">Audit Papers</button>
     <button class="nav-item nav-audit" onclick="showTab('audit',this)">Audit Plan</button>
+    <button class="nav-item nav-workpapers" onclick="showTab('workpapers',this)">Audit Papers</button>
+    <button class="nav-item nav-reporting" onclick="showTab('reporting',this)">Reporting</button>
     <button class="nav-item nav-boardreport" onclick="showTab('boardreport',this)">Board Report</button>
     <button class="nav-item nav-protocols" onclick="showTab('protocols',this)" style="color:#0ea5e9;border-left:3px solid #0ea5e9">Protocols</button>
   </nav>
@@ -782,28 +783,539 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div id="recon-content"><div class="loading">Loading reconciliation&#8230;</div></div>
   </div>
 
-  <!-- Working Papers tab (Agent 2) -->
+  <!-- Audit Papers tab — 4-stage approval workflow -->
   <div id="tab-workpapers" class="tab-pane">
     <div class="tab-header">
       <h2>Audit Papers</h2>
-      <div class="agent-label">DORA Art. 30 ICT Third-Party Contract Testing</div>
+      <div class="agent-label">Work Paper Workflow — IIA Standards / 4-Stage Approval / Human Review at Every Gate</div>
     </div>
-    <div id="wp-content"></div>
+    <div style="max-width:1100px;margin:0 auto">
+
+      <!-- Approval stage legend -->
+      <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px">
+          <span style="width:14px;height:14px;border-radius:50%;background:#6b7280;display:inline-block"></span>
+          <span style="font-size:12px;color:var(--text)"><strong>Grey</strong> — Initial / In Progress</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px">
+          <span style="width:14px;height:14px;border-radius:50%;background:#22c55e;display:inline-block"></span>
+          <span style="font-size:12px;color:var(--text)"><strong>Green</strong> — Lead Reviewed</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px">
+          <span style="width:14px;height:14px;border-radius:50%;background:#3b82f6;display:inline-block"></span>
+          <span style="font-size:12px;color:var(--text)"><strong>Blue</strong> — QA Approved</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px">
+          <span style="width:14px;height:14px;border-radius:50%;background:#eab308;display:inline-block"></span>
+          <span style="font-size:12px;color:var(--text)"><strong>Gold</strong> — CAE Approved</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);padding:8px 0;align-self:center">&#9432; Human approval required at every gate. AI assists with structuring only.</div>
+      </div>
+
+      <!-- Engagement 1: Full Audit -->
+      <div class="card" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--text)">IAM &amp; Access Control — Full Audit</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">Gamma7 Finans A/S · IT Operations · 2025-Q3 · 220 hours · Auditee: IT Security Team</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="background:rgba(59,130,246,0.2);color:#3b82f6;border-radius:12px;padding:3px 10px;font-size:11px;font-weight:600">QA Approved</span>
+            <span style="background:rgba(74,222,128,0.1);color:var(--green);border:1px solid var(--green);border-radius:4px;padding:2px 8px;font-size:11px">Full Audit</span>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table style="font-size:11px">
+            <thead>
+              <tr><th>Work Paper</th><th>Control / Test</th><th>ISO 27001 Ref</th><th>Sample</th><th>Test Result</th><th>Finding</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>WP-IAM-01</td><td>User account provisioning &amp; deprovisioning</td><td>A.9.2.1–A.9.2.3</td><td>30 joiners/leavers</td>
+                <td><span style="color:var(--green)">&#10003; Pass</span></td>
+                <td style="color:var(--muted)">None</td>
+                <td><span style="background:rgba(59,130,246,0.2);color:#3b82f6;border-radius:10px;padding:2px 8px;font-size:10px">&#9679; Blue</span></td>
+              </tr>
+              <tr>
+                <td>WP-IAM-02</td><td>Privileged access review (admin accounts)</td><td>A.9.2.5, A.9.4.1</td><td>All 14 admins</td>
+                <td><span style="color:var(--red)">&#10007; Exception</span></td>
+                <td style="color:var(--orange)">3 stale admin accounts — P2</td>
+                <td><span style="background:rgba(59,130,246,0.2);color:#3b82f6;border-radius:10px;padding:2px 8px;font-size:10px">&#9679; Blue</span></td>
+              </tr>
+              <tr>
+                <td>WP-IAM-03</td><td>MFA enforcement for remote access</td><td>A.9.4.2</td><td>All VPN users</td>
+                <td><span style="color:var(--green)">&#10003; Pass</span></td>
+                <td style="color:var(--muted)">None</td>
+                <td><span style="background:rgba(59,130,246,0.2);color:#3b82f6;border-radius:10px;padding:2px 8px;font-size:10px">&#9679; Blue</span></td>
+              </tr>
+              <tr>
+                <td>WP-IAM-04</td><td>Role separation — finance vs. IT</td><td>A.9.1.2, A.6.1.2</td><td>15 cross-role users</td>
+                <td><span style="color:var(--yellow)">&#9888; Partial</span></td>
+                <td style="color:var(--yellow)">2 users with conflicting roles — P3</td>
+                <td><span style="background:rgba(107,114,128,0.2);color:#9ca3af;border-radius:10px;padding:2px 8px;font-size:10px">&#9679; Grey</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <button onclick="this.style.background='rgba(34,197,94,0.2)';this.style.color='var(--green)';this.style.borderColor='#22c55e'" style="padding:6px 14px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:12px">&#10003; Lead Review</button>
+          <button onclick="this.style.background='rgba(59,130,246,0.2)';this.style.color='#3b82f6';this.style.borderColor='#3b82f6'" style="padding:6px 14px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:12px">&#9679; QA Approve</button>
+          <button onclick="this.style.background='rgba(234,179,8,0.2)';this.style.color='var(--yellow)';this.style.borderColor='#eab308'" style="padding:6px 14px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:12px">&#11088; CAE Approve</button>
+          <span style="font-size:11px;color:var(--muted);padding:6px 0;align-self:center">Approval is irreversible and timestamped. Ensure all work papers are complete before approving.</span>
+        </div>
+      </div>
+
+      <!-- Engagement 2: Follow-up Audit -->
+      <div class="card" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--text)">GDPR Data Processing — Follow-up Audit</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">Gamma7 Finans A/S · Compliance (2nd Line) · 2025-Q2 · 100 hours · Auditee: Compliance Officer</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="background:rgba(234,179,8,0.2);color:var(--yellow);border-radius:12px;padding:3px 10px;font-size:11px;font-weight:600">CAE Approved</span>
+            <span style="background:rgba(74,222,128,0.1);color:var(--orange);border:1px solid var(--orange);border-radius:4px;padding:2px 8px;font-size:11px">Follow-up Audit</span>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table style="font-size:11px">
+            <thead>
+              <tr><th>Work Paper</th><th>Control / Test</th><th>GDPR Ref</th><th>Sample</th><th>Test Result</th><th>Prior Finding</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>WP-GDPR-01</td><td>DPA agreements — all data processors</td><td>Art. 28</td><td>12 processors</td>
+                <td><span style="color:var(--green)">&#10003; Closed</span></td>
+                <td style="color:var(--green)">P2 — Remediated</td>
+                <td><span style="background:rgba(234,179,8,0.2);color:#eab308;border-radius:10px;padding:2px 8px;font-size:10px">&#11088; Gold</span></td>
+              </tr>
+              <tr>
+                <td>WP-GDPR-02</td><td>Data retention &amp; deletion procedures</td><td>Art. 5(1)(e)</td><td>5 systems</td>
+                <td><span style="color:var(--yellow)">&#9888; Partial</span></td>
+                <td style="color:var(--orange)">P3 — Still open (1 system)</td>
+                <td><span style="background:rgba(234,179,8,0.2);color:#eab308;border-radius:10px;padding:2px 8px;font-size:10px">&#11088; Gold</span></td>
+              </tr>
+              <tr>
+                <td>WP-GDPR-03</td><td>Consent records &amp; withdrawal process</td><td>Art. 7</td><td>200 records</td>
+                <td><span style="color:var(--green)">&#10003; Pass</span></td>
+                <td style="color:var(--green)">P3 — Remediated</td>
+                <td><span style="background:rgba(234,179,8,0.2);color:#eab308;border-radius:10px;padding:2px 8px;font-size:10px">&#11088; Gold</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;font-size:11px;color:var(--green)">&#10003; All approval stages complete. CAE sign-off: 2025-06-30. Report issued to Compliance Officer and ExCo.</div>
+      </div>
+
+      <!-- Engagement 3: DI Review -->
+      <div class="card" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--text)">Customer Data &amp; Sales Conduct — DI Review</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">Gamma7 Finans A/S · Commercial/Sales · 2025-Q4 · 50 hours · Auditee: Head of Sales</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="background:rgba(107,114,128,0.2);color:#9ca3af;border-radius:12px;padding:3px 10px;font-size:11px;font-weight:600">In Progress</span>
+            <span style="background:rgba(234,179,8,0.1);color:var(--yellow);border:1px solid var(--yellow);border-radius:4px;padding:2px 8px;font-size:11px">DI Review</span>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table style="font-size:11px">
+            <thead>
+              <tr><th>Work Paper</th><th>Control / Test</th><th>Ref</th><th>Sample</th><th>Test Result</th><th>Finding</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>WP-COM-01</td><td>CRM data quality &amp; completeness check</td><td>A.8.1, MiFID II</td><td>50 customer records</td>
+                <td><span style="color:var(--muted)">Pending</span></td>
+                <td style="color:var(--muted)">—</td>
+                <td><span style="background:rgba(107,114,128,0.2);color:#9ca3af;border-radius:10px;padding:2px 8px;font-size:10px">&#9679; Grey</span></td>
+              </tr>
+              <tr>
+                <td>WP-COM-02</td><td>Sales conduct — suitability assessment documentation</td><td>MiFID II Art. 25</td><td>20 cases</td>
+                <td><span style="color:var(--muted)">Pending</span></td>
+                <td style="color:var(--muted)">—</td>
+                <td><span style="background:rgba(107,114,128,0.2);color:#9ca3af;border-radius:10px;padding:2px 8px;font-size:10px">&#9679; Grey</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;font-size:11px;color:var(--muted)">Work papers not yet started. Upload meeting notes to generate structured work paper drafts. AI output requires human review before any approval stage.</div>
+      </div>
+
+    </div>
   </div>
 
-  <!-- Audit Intelligence tab (Agent 4) -->
+  <!-- Audit Plan tab (Agent 4) -->
   <div id="tab-audit" class="tab-pane">
     <div class="tab-header">
       <h2>Audit Plan</h2>
-      <div class="agent-label">Internal Audit &amp; Board Reporting — ISO 27001 / ISAE 3402 / IIA Standards</div>
-      <table class="def-table" style="margin-top:10px">
-        <tr><td class="term">Audit Universe</td><td class="def">Complete inventory of controls, processes and systems subject to this engagement.</td></tr>
-        <tr><td class="term">Risk Matrix</td><td class="def">3×3 Likelihood × Impact (1–9). Heatmap shows inherent risk × test result.</td></tr>
-        <tr><td class="term">Draft Audit Report</td><td class="def">Working papers support each DAR. Click a report card to view scope and findings summary.</td></tr>
-        <tr><td class="term">Agent 2 vs Agent 4</td><td class="def">Agent 2 covers ICT supplier assurance (DORA Art. 30 contract testing). Agent 4 covers broader internal audit, ISO 27001 control testing, and board reporting (ISAE 3402 / IIA).</td></tr>
-      </table>
+      <div class="agent-label">Risk-Based Audit Universe — ISO 27001 / IIA Standards / 3 FTE Annual Capacity</div>
     </div>
-    <div id="audit-content"></div>
+    <div style="max-width:1100px;margin:0 auto">
+
+      <!-- Capacity summary -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+        <div class="card" style="border-top:3px solid var(--accent)">
+          <div class="label">Annual Capacity</div>
+          <div class="value">4,884 h</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">3 FTE × 10 working months</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--green)">
+          <div class="label">Planned Audits</div>
+          <div class="value green" id="ap-planned-count">25</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Risk-based schedule</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--yellow)">
+          <div class="label">Hours Allocated</div>
+          <div class="value yellow" id="ap-hours-allocated">3,620</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">of 4,884 h budgeted</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--orange)">
+          <div class="label">High-Risk Areas</div>
+          <div class="value orange">4</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Annual full audit required</div>
+        </div>
+      </div>
+
+      <!-- Capacity legend -->
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px">
+        <strong style="color:var(--text)">3 FTE capacity model:</strong>
+        3 auditors × 10 working months/year (excl. leave &amp; training) × 162 h/month = <strong style="color:var(--accent)">4,884 h/year</strong> &nbsp;|&nbsp;
+        Full Audit = 220 h &nbsp;·&nbsp; Follow-up Audit = 100 h &nbsp;·&nbsp; DI Review = 50 h &nbsp;|&nbsp;
+        <strong style="color:var(--red)">High risk</strong> → Full Audit every year &nbsp;·&nbsp;
+        <strong style="color:var(--orange)">Medium risk</strong> → Full Y1&amp;Y3 / Follow-up Y2 &nbsp;·&nbsp;
+        <strong style="color:var(--yellow)">Low risk</strong> → DI Review Y3 only
+      </div>
+
+      <!-- Audit Universe table -->
+      <div class="section-title" style="margin-bottom:12px">Audit Universe — Gamma7 Finans A/S</div>
+      <div class="table-wrap">
+        <table id="audit-universe-table" style="font-size:12px">
+          <thead>
+            <tr>
+              <th style="width:160px">Business Area</th>
+              <th style="width:140px">Process / System</th>
+              <th style="width:160px">ISO 27001 Controls</th>
+              <th style="width:120px">Critical System</th>
+              <th style="width:110px">Inherent Risk</th>
+              <th style="width:120px">Audit Type</th>
+              <th style="width:70px">Hours</th>
+              <th style="width:80px">Year 1</th>
+              <th style="width:80px">Year 2</th>
+              <th style="width:80px">Year 3</th>
+            </tr>
+          </thead>
+          <tbody id="audit-universe-body">
+            <!-- IT Operations -->
+            <tr>
+              <td style="font-weight:600;color:var(--accent)" rowspan="3">IT Operations</td>
+              <td>Identity &amp; Access Management (IAM)</td>
+              <td><code style="font-size:10px">A.9.1–A.9.4, A.8.2</code></td>
+              <td>Azure AD / Entra ID</td>
+              <td><select onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
+              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+            </tr>
+            <tr>
+              <td>Patch &amp; Vulnerability Management</td>
+              <td><code style="font-size:10px">A.12.6, A.14.2</code></td>
+              <td>Tenable.io / SIEM</td>
+              <td><select onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
+              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+            </tr>
+            <tr>
+              <td>Business Continuity &amp; DR</td>
+              <td><code style="font-size:10px">A.17.1–A.17.2</code></td>
+              <td>CBS / Core Systems</td>
+              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+            </tr>
+            <!-- Procurement / Vendor -->
+            <tr>
+              <td style="font-weight:600;color:var(--accent)" rowspan="2">Procurement / Vendor</td>
+              <td>DORA Art. 30 ICT Contract Compliance</td>
+              <td><code style="font-size:10px">DORA Art.28–30</code></td>
+              <td>All ICT critical providers</td>
+              <td><select onchange="updateAuditRow(this)" style="background:rgba(248,113,113,0.15);color:var(--red);border:1px solid #f87171;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>High</option><option>Medium</option><option>Low</option></select></td>
+              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+            </tr>
+            <tr>
+              <td>Vendor Onboarding &amp; Due Diligence</td>
+              <td><code style="font-size:10px">A.15.1–A.15.2</code></td>
+              <td>Procurement system</td>
+              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+            </tr>
+            <!-- Compliance / 2nd Line -->
+            <tr>
+              <td style="font-weight:600;color:var(--accent)" rowspan="2">Compliance (2nd Line)</td>
+              <td>GDPR Data Processing &amp; DPA Agreements</td>
+              <td><code style="font-size:10px">GDPR Art.28, A.18.1</code></td>
+              <td>CRM / Data warehouse</td>
+              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+            </tr>
+            <tr>
+              <td>Regulatory Reporting &amp; FIU Compliance</td>
+              <td><code style="font-size:10px">A.18.1, AML/4AMLD</code></td>
+              <td>RegRep system</td>
+              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+            </tr>
+            <!-- Commercial / Sales -->
+            <tr>
+              <td style="font-weight:600;color:var(--accent)">Commercial / Sales</td>
+              <td>Customer Data &amp; Sales Conduct</td>
+              <td><code style="font-size:10px">A.8.1, MiFID II</code></td>
+              <td>CRM / Sales platform</td>
+              <td><select onchange="updateAuditRow(this)" style="background:rgba(234,179,8,0.15);color:var(--yellow);border:1px solid #eab308;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option>Medium</option><option selected>Low</option></select></td>
+              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>Full Audit</option><option>Follow-up Audit</option><option selected>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">50</td>
+              <td style="text-align:center"><span style="color:var(--muted);font-size:10px">—</span></td>
+              <td style="text-align:center"><span style="color:var(--muted);font-size:10px">—</span></td>
+              <td style="text-align:center"><span style="background:rgba(234,179,8,0.2);color:var(--yellow);border-radius:4px;padding:2px 6px;font-size:10px">DI</span></td>
+            </tr>
+            <!-- Supply Chain -->
+            <tr>
+              <td style="font-weight:600;color:var(--accent)">Supply Chain</td>
+              <td>Supplier Assurance &amp; Sub-contractor Risk</td>
+              <td><code style="font-size:10px">A.15.1–A.15.2</code></td>
+              <td>ERP / Supplier portal</td>
+              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>Full Audit</option><option selected>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">100</td>
+              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
+            </tr>
+            <!-- Finance -->
+            <tr>
+              <td style="font-weight:600;color:var(--accent)" rowspan="2">Finance</td>
+              <td>Financial Reporting &amp; General Ledger Controls</td>
+              <td><code style="font-size:10px">A.18.1, ISAE 3402</code></td>
+              <td>ERP / GL system</td>
+              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+            </tr>
+            <tr>
+              <td>Treasury &amp; Payments Oversight</td>
+              <td><code style="font-size:10px">A.9.4, PCI-DSS</code></td>
+              <td>Payment gateway / CBS</td>
+              <td><select onchange="updateAuditRow(this)" style="background:rgba(251,146,60,0.15);color:var(--orange);border:1px solid #fb923c;border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option>High</option><option selected>Medium</option><option>Low</option></select></td>
+              <td><select onchange="updateAuditRow(this)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:11px;width:100%"><option selected>Full Audit</option><option>Follow-up Audit</option><option>DI Review</option></select></td>
+              <td class="ap-hours" style="text-align:center;font-weight:600;color:var(--text)">220</td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+              <td style="text-align:center"><span style="background:rgba(251,146,60,0.2);color:var(--orange);border-radius:4px;padding:2px 6px;font-size:10px">Follow-up</span></td>
+              <td style="text-align:center"><span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:4px;padding:2px 6px;font-size:10px">Full</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Total hours bar -->
+      <div style="margin-top:16px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;gap:16px">
+        <div style="font-size:13px;font-weight:600;color:var(--text)">Total planned:</div>
+        <div style="font-size:18px;font-weight:700;color:var(--accent)" id="ap-total-hours">1,890 h</div>
+        <div style="flex:1;background:var(--surface2);border-radius:4px;height:10px;overflow:hidden">
+          <div id="ap-capacity-bar" style="height:10px;background:var(--accent);border-radius:4px;width:38%"></div>
+        </div>
+        <div style="font-size:12px;color:var(--muted)">of 4,884 h capacity</div>
+        <div style="font-size:11px;color:var(--green)">&#10003; Within capacity</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reporting tab — formal audit reports -->
+  <div id="tab-reporting" class="tab-pane">
+    <div class="tab-header">
+      <h2>Reporting</h2>
+      <div class="agent-label">Formal Audit Reports — P1-P4 Priority Framework / Nexi ICS Rating / Risk Matrix</div>
+    </div>
+    <div style="max-width:1100px;margin:0 auto">
+
+      <!-- P1-P4 Priority framework -->
+      <div class="section-title" style="margin-bottom:12px">P1-P4 Priority Framework</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px">
+        <div style="background:rgba(248,113,113,0.1);border:1px solid #f87171;border-radius:8px;padding:14px">
+          <div style="font-size:13px;font-weight:700;color:#f87171;margin-bottom:6px">P1 — Critical</div>
+          <div style="font-size:11px;color:var(--text);margin-bottom:6px">Immediate control failure. Regulatory breach risk or material financial exposure.</div>
+          <div style="font-size:11px;color:var(--muted)">Escalation: <strong style="color:var(--text)">CEO + Board</strong></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">Deadline: <strong style="color:var(--text)">3 months</strong></div>
+        </div>
+        <div style="background:rgba(251,146,60,0.1);border:1px solid #fb923c;border-radius:8px;padding:14px">
+          <div style="font-size:13px;font-weight:700;color:#fb923c;margin-bottom:6px">P2 — Relevant</div>
+          <div style="font-size:11px;color:var(--text);margin-bottom:6px">Significant control weakness. Elevated risk requiring management attention.</div>
+          <div style="font-size:11px;color:var(--muted)">Escalation: <strong style="color:var(--text)">ExCo</strong></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">Deadline: <strong style="color:var(--text)">6 months</strong></div>
+        </div>
+        <div style="background:rgba(234,179,8,0.1);border:1px solid #eab308;border-radius:8px;padding:14px">
+          <div style="font-size:13px;font-weight:700;color:#eab308;margin-bottom:6px">P3 — Medium</div>
+          <div style="font-size:11px;color:var(--text);margin-bottom:6px">Control improvement needed. Limited business impact if unaddressed short-term.</div>
+          <div style="font-size:11px;color:var(--muted)">Escalation: <strong style="color:var(--text)">Process Owner</strong></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">Deadline: <strong style="color:var(--text)">12 months</strong></div>
+        </div>
+        <div style="background:rgba(74,222,128,0.1);border:1px solid var(--green);border-radius:8px;padding:14px">
+          <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:6px">P4 — Low</div>
+          <div style="font-size:11px;color:var(--text);margin-bottom:6px">Best practice gap. Low risk; address in routine operational review.</div>
+          <div style="font-size:11px;color:var(--muted)">Escalation: <strong style="color:var(--text)">Process Owner</strong></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">Deadline: <strong style="color:var(--text)">Annual</strong></div>
+        </div>
+      </div>
+
+      <!-- Nexi ICS Rating Model + Risk Matrix side by side -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px">
+
+        <!-- Nexi ICS Rating -->
+        <div>
+          <div class="section-title" style="margin-bottom:12px">Nexi ICS Rating Model</div>
+          <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:120px 1fr;background:var(--surface2);padding:8px 12px;font-size:11px;font-weight:600;color:var(--muted)">
+              <span>Rating</span><span>Meaning &amp; Rolling Average Rule</span>
+            </div>
+            <div style="display:grid;grid-template-columns:120px 1fr;padding:10px 12px;background:rgba(6,182,212,0.1);border-top:1px solid rgba(6,182,212,0.3)">
+              <span style="font-weight:700;color:#06b6d4;font-size:12px">&#11044; Good</span>
+              <span style="font-size:11px;color:var(--text)">Controls effective. No significant findings. Rolling avg ≥ 85%.</span>
+            </div>
+            <div style="display:grid;grid-template-columns:120px 1fr;padding:10px 12px;background:rgba(74,222,128,0.1);border-top:1px solid rgba(74,222,128,0.2)">
+              <span style="font-weight:700;color:var(--green);font-size:12px">&#11044; Satisfactory</span>
+              <span style="font-size:11px;color:var(--text)">Controls mostly effective. Minor gaps. Rolling avg 70–84%.</span>
+            </div>
+            <div style="display:grid;grid-template-columns:120px 1fr;padding:10px 12px;background:rgba(234,179,8,0.1);border-top:1px solid rgba(234,179,8,0.2)">
+              <span style="font-weight:700;color:var(--yellow);font-size:12px">&#11044; Unsatisfactory</span>
+              <span style="font-size:11px;color:var(--text)">Control weaknesses present. P2 findings. Rolling avg 50–69%.</span>
+            </div>
+            <div style="display:grid;grid-template-columns:120px 1fr;padding:10px 12px;background:rgba(248,113,113,0.1);border-top:1px solid rgba(248,113,113,0.2)">
+              <span style="font-weight:700;color:var(--red);font-size:12px">&#11044; Poor</span>
+              <span style="font-size:11px;color:var(--text)">Systemic failure. P1 finding. Immediate escalation. Rolling avg &lt; 50%.</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px">Rolling average is computed over the last 4 audit cycles per business area.</div>
+        </div>
+
+        <!-- Risk Matrix 3×3 -->
+        <div>
+          <div class="section-title" style="margin-bottom:12px">Risk Matrix — Impact &#215; Likelihood (3&#215;3)</div>
+          <div style="display:grid;grid-template-columns:60px repeat(3,1fr);gap:4px;max-width:380px">
+            <!-- header row -->
+            <div></div>
+            <div style="text-align:center;font-size:10px;color:var(--muted);padding:4px">Low Impact</div>
+            <div style="text-align:center;font-size:10px;color:var(--muted);padding:4px">Med Impact</div>
+            <div style="text-align:center;font-size:10px;color:var(--muted);padding:4px">High Impact</div>
+            <!-- High likelihood row -->
+            <div style="font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px">High L</div>
+            <div style="background:rgba(234,179,8,0.35);border-radius:4px;padding:10px 4px;text-align:center;font-size:10px;color:var(--yellow)">Medium</div>
+            <div style="background:rgba(248,113,113,0.35);border-radius:4px;padding:10px 4px;text-align:center;font-size:10px;color:var(--red)">High</div>
+            <div style="background:rgba(248,113,113,0.5);border-radius:4px;padding:10px 4px;text-align:center;font-size:10px;color:var(--red);font-weight:700">Critical</div>
+            <!-- Med likelihood row -->
+            <div style="font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px">Med L</div>
+            <div style="background:rgba(74,222,128,0.2);border-radius:4px;padding:10px 4px;text-align:center;font-size:10px;color:var(--green)">Low</div>
+            <div style="background:rgba(234,179,8,0.35);border-radius:4px;padding:10px 4px;text-align:center;font-size:10px;color:var(--yellow)">Medium</div>
+            <div style="background:rgba(248,113,113,0.35);border-radius:4px;padding:10px 4px;text-align:center;font-size:10px;color:var(--red)">High</div>
+            <!-- Low likelihood row -->
+            <div style="font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px">Low L</div>
+            <div style="background:rgba(74,222,128,0.1);border-radius:4px;padding:10px 4px;text-align:center;font-size:10px;color:var(--green)">Minimal</div>
+            <div style="background:rgba(74,222,128,0.2);border-radius:4px;padding:10px 4px;text-align:center;font-size:10px;color:var(--green)">Low</div>
+            <div style="background:rgba(234,179,8,0.35);border-radius:4px;padding:10px 4px;text-align:center;font-size:10px;color:var(--yellow)">Medium</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo Audit Report 1 -->
+      <div class="section-title" style="margin-bottom:12px">Audit Reports — Gamma7 Finans A/S</div>
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <span style="font-size:15px;font-weight:700;color:var(--text)">Revisionsrapport — IAM &amp; Adgangskontrol</span>
+              <span style="background:rgba(234,179,8,0.2);color:var(--yellow);border-radius:12px;padding:3px 10px;font-size:11px;font-weight:600">Utilfredsstillende</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+              <div><div style="font-size:10px;color:var(--muted)">Virksomhed</div><div style="font-size:12px;color:var(--text)">Gamma7 Finans A/S</div></div>
+              <div><div style="font-size:10px;color:var(--muted)">Systemer/processer</div><div style="font-size:12px;color:var(--text)">Azure AD / Entra ID</div></div>
+              <div><div style="font-size:10px;color:var(--muted)">Revisionsperiode</div><div style="font-size:12px;color:var(--text)">2025-Q3 (Jul–Sep)</div></div>
+              <div><div style="font-size:10px;color:var(--muted)">Dato</div><div style="font-size:12px;color:var(--text)">2025-10-15</div></div>
+              <div><div style="font-size:10px;color:var(--muted)">Udført af</div><div style="font-size:12px;color:var(--text)">Intern Revision, IT Sikkerhed</div></div>
+              <div><div style="font-size:10px;color:var(--muted)">ICS-rating</div><div style="font-size:12px;color:var(--yellow)">&#11044; Unsatisfactory</div></div>
+            </div>
+            <div style="font-size:12px;color:var(--text);margin-bottom:12px"><strong>Konklusion:</strong> Revisionen identificerede 2 væsentlige fund (P2) vedrørende forældede administratorkonti og rollekonflikter. Stikprøvekontrol af 14 administrative brugere afslørede 3 konti med adgang ud over nødvendighedsprincippet. Overordnet vurdering: Utilfredsstillende. Ledelseshandling påkrævet inden for 6 måneder.</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table style="font-size:11px">
+            <thead><tr><th>Fund #</th><th>Prioritet</th><th>Beskrivelse</th><th>Risiko</th><th>Anbefaling</th><th>Deadline</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>F-2025-01</td>
+                <td><span style="background:rgba(251,146,60,0.2);color:#fb923c;border-radius:4px;padding:1px 6px;font-size:10px">P2</span></td>
+                <td>3 stale admin accounts active &gt; 90 days after offboarding</td>
+                <td>Unauthorized access, privilege escalation</td>
+                <td>Immediate deprovisioning; quarterly IAM review process</td>
+                <td>2026-01-15</td>
+              </tr>
+              <tr>
+                <td>F-2025-02</td>
+                <td><span style="background:rgba(234,179,8,0.2);color:#eab308;border-radius:4px;padding:1px 6px;font-size:10px">P3</span></td>
+                <td>2 users hold conflicting Finance + IT Admin roles</td>
+                <td>Segregation of duties failure</td>
+                <td>Role review by IT Security and Finance within 90 days</td>
+                <td>2026-04-15</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Demo Audit Report 2 -->
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span style="font-size:15px;font-weight:700;color:var(--text)">Revisionsrapport — GDPR Databehandling</span>
+          <span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:12px;padding:3px 10px;font-size:11px;font-weight:600">Tilfredsstillende</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+          <div><div style="font-size:10px;color:var(--muted)">Virksomhed</div><div style="font-size:12px;color:var(--text)">Gamma7 Finans A/S</div></div>
+          <div><div style="font-size:10px;color:var(--muted)">Systemer/processer</div><div style="font-size:12px;color:var(--text)">CRM / Data Warehouse</div></div>
+          <div><div style="font-size:10px;color:var(--muted)">Revisionsperiode</div><div style="font-size:12px;color:var(--text)">2025-Q2 (Apr–Jun)</div></div>
+          <div><div style="font-size:10px;color:var(--muted)">Dato</div><div style="font-size:12px;color:var(--text)">2025-07-10</div></div>
+          <div><div style="font-size:10px;color:var(--muted)">Udført af</div><div style="font-size:12px;color:var(--text)">Intern Revision, Compliance</div></div>
+          <div><div style="font-size:10px;color:var(--muted)">ICS-rating</div><div style="font-size:12px;color:var(--green)">&#11044; Satisfactory</div></div>
+        </div>
+        <div style="font-size:12px;color:var(--text);margin-bottom:12px"><strong>Konklusion:</strong> Opfølgningsrevision bekræfter lukning af 2 af 3 tidligere fund. Ét fund (P3 — dataopbevaringsprocedure for ét system) forbliver åbent. Samlet bedømmelse: Tilfredsstillende. Fremskridt i kontrollerne er dokumenteret og vurderet tilstrækkeligt.</div>
+        <div style="font-size:11px;color:var(--green)">&#10003; Rapport godkendt af CAE og fremsendt til Compliance Officer og ExCo — 2025-07-15.</div>
+      </div>
+
+    </div>
   </div>
 
   <!-- Board Report tab -->
@@ -1506,54 +2018,6 @@ async function loadBoardReport() {
       <span><strong style="color:var(--text)">Control Strength:</strong> Effective (0 findings) &nbsp;·&nbsp; Partially Effective (1–5) &nbsp;·&nbsp; Weak Controls (6+)</span>
       <span style="border-left:1px solid var(--border);padding-left:12px"><strong style="color:var(--text)">Residual Risk:</strong> Inherent risk score adjusted by control strength</span>
       <span style="border-left:1px solid var(--border);padding-left:12px"><strong style="color:var(--text)">Risk Matrix:</strong> <span style="color:var(--red)">■</span> High (6–9) &nbsp; <span style="color:var(--orange)">■</span> Medium (3–5) &nbsp; <span style="color:var(--green)">■</span> Low (1–2)</span>
-    </div>
-
-    <!-- Risk Matrix for Board -->
-    <div style="margin-bottom:24px">
-      <div class="section-title" style="margin-bottom:4px">Risk Matrix — Impact &#215; Likelihood (3&#215;3)</div>
-      <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Board-ready risk quadrant. Red = High risk (score 6–9) &nbsp;|&nbsp; Orange = Medium risk (3–5) &nbsp;|&nbsp; Green = Low risk (1–2).</p>
-      <div style="display:grid;grid-template-columns:60px repeat(3,1fr);gap:4px;max-width:720px">
-        <div style="font-size:10px;color:var(--muted);display:flex;align-items:flex-end;padding-bottom:4px;line-height:1.3">Impact &#8595;<br>Likelihood &#8594;</div>
-        <div style="font-size:11px;color:var(--muted);text-align:center;padding:4px 2px;border-bottom:1px solid var(--border)">Low (1)</div>
-        <div style="font-size:11px;color:var(--muted);text-align:center;padding:4px 2px;border-bottom:1px solid var(--border)">Medium (2)</div>
-        <div style="font-size:11px;color:var(--muted);text-align:center;padding:4px 2px;border-bottom:1px solid var(--border)">High (3)</div>
-        <!-- Row: Impact High (3) -->
-        <div style="font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;text-align:right">High (3)</div>
-        <div style="background:rgba(251,146,60,0.18);border:1px solid #fb923c;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
-          <div>&#8226; BCP / DR Not Fully Tested</div>
-        </div>
-        <div style="background:rgba(248,113,113,0.18);border:1px solid #f87171;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
-          <div>&#8226; Access Control Gaps (IAM)</div>
-          <div>&#8226; Exit Strategy Missing</div>
-        </div>
-        <div style="background:rgba(248,113,113,0.18);border:1px solid #f87171;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
-          <div>&#8226; ICT Contract Gaps (DORA Art.30)</div>
-        </div>
-        <!-- Row: Impact Medium (2) -->
-        <div style="font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;text-align:right">Med (2)</div>
-        <div style="background:rgba(74,222,128,0.14);border:1px solid #4ade80;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
-          <div>&#8226; Encryption Key Rotation</div>
-        </div>
-        <div style="background:rgba(251,146,60,0.18);border:1px solid #fb923c;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
-          <div>&#8226; DPA Art.28 Gaps (GDPR)</div>
-          <div>&#8226; SLA / Sub-contractor Clause Missing</div>
-        </div>
-        <div style="background:rgba(248,113,113,0.18);border:1px solid #f87171;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
-          <div>&#8226; Patch / Vuln Management Delays</div>
-        </div>
-        <!-- Row: Impact Low (1) -->
-        <div style="font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;text-align:right">Low (1)</div>
-        <div style="background:rgba(74,222,128,0.14);border:1px solid #4ade80;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
-          <div>&#8226; DSR Response Logging</div>
-        </div>
-        <div style="background:rgba(74,222,128,0.14);border:1px solid #4ade80;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
-          <div>&#8226; User Training Compliance</div>
-          <div>&#8226; Register Maintenance Lag</div>
-        </div>
-        <div style="background:rgba(251,146,60,0.18);border:1px solid #fb923c;border-radius:6px;padding:6px;min-height:70px;font-size:10px;line-height:1.5">
-          <div style="color:var(--muted)">—</div>
-        </div>
-      </div>
     </div>
 
     <!-- Open findings -->
