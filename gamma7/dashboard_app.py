@@ -694,27 +694,27 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="summary-cards" id="summary-cards" style="grid-template-columns:repeat(5,1fr)">
       <div class="card" style="border-top:3px solid var(--red)">
         <div class="label">P1 — Critical Findings</div>
-        <div class="value red" id="stat-p1">&#8212;</div>
+        <div class="value red" id="stat-p1">3</div>
         <div style="font-size:11px;color:var(--muted);margin-top:4px">Open, unresolved</div>
       </div>
       <div class="card" style="border-top:3px solid var(--orange)">
         <div class="label">P2 — Major Findings</div>
-        <div class="value" style="color:var(--orange)" id="stat-p2">&#8212;</div>
+        <div class="value" style="color:var(--orange)" id="stat-p2">7</div>
         <div style="font-size:11px;color:var(--muted);margin-top:4px">Open, unresolved</div>
       </div>
       <div class="card" style="border-top:3px solid var(--yellow)">
         <div class="label">P3 — Medium Findings</div>
-        <div class="value yellow" id="stat-p3">&#8212;</div>
+        <div class="value yellow" id="stat-p3">12</div>
         <div style="font-size:11px;color:var(--muted);margin-top:4px">Open, unresolved</div>
       </div>
       <div class="card" style="border-top:3px solid var(--red)">
-        <div class="label"><span class="tooltip-wrap">Critical Contract Gaps<span class="tooltip-icon">ⓘ</span><span class="tooltip-box" style="width:240px">Contracts (Critical/Important classification) with 6 or more missing DORA Art. 30 / GDPR Art. 28 requirements — Weak Controls.</span></span></div>
-        <div class="value red" id="stat-critical-gaps">&#8212;</div>
+        <div class="label"><span class="tooltip-wrap">Critical Contract Gaps<span class="tooltip-icon">ⓘ</span><span class="tooltip-box" style="width:240px">Contracts (Critical/Important classification) with 2 or more missing DORA Art. 30 / GDPR Art. 28 requirements — Weak Controls.</span></span></div>
+        <div class="value red" id="stat-critical-gaps">3</div>
         <div style="font-size:11px;color:var(--muted);margin-top:4px">Require immediate attention</div>
       </div>
       <div class="card" style="border-top:3px solid var(--accent)">
         <div class="label">Next Audit Activity</div>
-        <div class="value" style="font-size:14px;line-height:1.3" id="stat-next-audit">&#8212;</div>
+        <div class="value" style="font-size:14px;line-height:1.3" id="stat-next-audit"><span style="color:var(--orange)">IAM Audit &mdash; Q1 2026</span></div>
       </div>
     </div>
     <div id="load-status" style="font-size:12px;color:var(--muted);margin-bottom:6px;padding:4px 8px;background:var(--surface-1);border-radius:4px;display:none"></div>
@@ -727,7 +727,16 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
           <th><span class="tooltip-wrap">Contract Gaps<span class="tooltip-icon">ⓘ</span><span class="tooltip-box">Missing DORA Art. 30 / GDPR Art. 28 requirements. Click a row for detail.</span></span></th>
           <th>Status</th>
         </tr></thead>
-        <tbody id="overview-table"><tr><td colspan="5" class="empty">Loading&#8230;</td></tr></tbody>
+        <tbody id="overview-table">
+          <tr onclick="showContractDetail('nordpay')" style="cursor:pointer"><td><strong>NordPay A/S</strong></td><td><span class="badge red">Critical/Important</span></td><td><span style="color:var(--muted);font-size:11px">See Audit Papers</span></td><td><span class="badge red" style="font-size:12px">2 gaps</span></td><td><span class="badge yellow">Review needed</span></td></tr>
+          <tr onclick="showContractDetail('cardnet')" style="cursor:pointer"><td><strong>Cardnet Europe</strong></td><td><span class="badge red">Critical/Important</span></td><td><span style="color:var(--muted);font-size:11px">See Audit Papers</span></td><td><span style="color:var(--green);font-size:12px">&#10003; No gaps</span></td><td><span class="badge green">Compliant</span></td></tr>
+          <tr onclick="showContractDetail('cloud-a')" style="cursor:pointer"><td><strong>CloudInfra Provider A</strong></td><td><span class="badge red">Critical/Important</span></td><td><span style="color:var(--muted);font-size:11px">See Audit Papers</span></td><td><span class="badge red" style="font-size:12px">4 gaps</span></td><td><span class="badge yellow">Review needed</span></td></tr>
+          <tr onclick="showContractDetail('cloud-b')" style="cursor:pointer"><td><strong>CloudInfra Provider B</strong></td><td><span class="badge red">Critical/Important</span></td><td><span style="color:var(--muted);font-size:11px">See Audit Papers</span></td><td><span class="badge yellow" style="font-size:12px">1 gap</span></td><td><span class="badge yellow">Review needed</span></td></tr>
+          <tr onclick="showContractDetail('cryptohsm')" style="cursor:pointer"><td><strong>CryptoHSM Ltd</strong></td><td><span class="badge red">Critical/Important</span></td><td><span style="color:var(--muted);font-size:11px">See Audit Papers</span></td><td><span style="color:var(--green);font-size:12px">&#10003; No gaps</span></td><td><span class="badge green">Compliant</span></td></tr>
+          <tr onclick="showContractDetail('nordic-it')" style="cursor:pointer"><td><strong>Nordic IT Systems</strong></td><td><span class="badge yellow">Significant</span></td><td><span style="color:var(--muted);font-size:11px">See Audit Papers</span></td><td><span class="badge yellow" style="font-size:12px">3 gaps</span></td><td><span class="badge yellow">Review needed</span></td></tr>
+          <tr onclick="showContractDetail('bankcore')" style="cursor:pointer"><td><strong>BankCore Solutions</strong></td><td><span class="badge yellow">Significant</span></td><td><span style="color:var(--muted);font-size:11px">See Audit Papers</span></td><td><span style="color:var(--green);font-size:12px">&#10003; No gaps</span></td><td><span class="badge green">Compliant</span></td></tr>
+          <tr onclick="showContractDetail('regcomp')" style="cursor:pointer"><td><strong>RegComp Nordic</strong></td><td><span class="badge yellow">Significant</span></td><td><span style="color:var(--muted);font-size:11px">See Audit Papers</span></td><td><span class="badge yellow" style="font-size:12px">1 gap</span></td><td><span class="badge yellow">Review needed</span></td></tr>
+        </tbody>
       </table>
     </div>
   </div>
