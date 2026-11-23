@@ -2346,18 +2346,12 @@ const DEMO_ORG_STRUCTURE = [
 async function loadAuditIntelligence() {
   const container = document.getElementById('audit-content');
   container.innerHTML = '<div class="loading">Loading audit intelligence&#8230;</div>';
-  let wpData;
+  let wpData = { work_papers: [] };
   try {
     const res = await fetch('/api/workpapers');
-    wpData = await res.json();
-  } catch(e) {
-    container.innerHTML = '<div class="empty">Could not load audit data.</div>';
-    return;
-  }
-  if (wpData.message) {
-    container.innerHTML = '<div class="empty">' + wpData.message + '</div>';
-    return;
-  }
+    const json = await res.json();
+    if (!json.message) wpData = json;
+  } catch(e) {}
 
   const wps = wpData.work_papers || [];
   const openFindings = wps.flatMap(w => (w.findings||[]).filter(f => f.status === 'open'));
