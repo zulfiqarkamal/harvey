@@ -2346,7 +2346,7 @@ const DEMO_ORG_STRUCTURE = [
 async function loadAuditIntelligence() {
   const container = document.getElementById('audit-content');
   container.innerHTML = '<div class="loading">Loading audit intelligence&#8230;</div>';
-  let wpData = { work_papers: [] };
+  let wpData = { work_papers: [], engagement_id: '—', organisation: 'Demo Organisation', scope: 'Full Audit Universe', total_controls: 0, tested_count: 0, passed_count: 0, exception_count: 0, open_findings: 0 };
   try {
     const res = await fetch('/api/workpapers');
     const json = await res.json();
