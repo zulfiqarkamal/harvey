@@ -1802,6 +1802,20 @@ async function showContractDetail(id) {
   const statusLabel = s => ({missing:'Non-Compliant',ambiguous:'Needs Clarification',satisfied:'Compliant',na:'N/A',not_assessed:'Not Assessed'}[s]||s);
   const statusCls   = s => ({missing:'status-missing',ambiguous:'status-ambiguous',satisfied:'status-satisfied',na:'status-na'}[s]||'');
   const riskLabel   = r => r ? r.replace(/_/g,' ') : '—';
+  const effortBadge = (lvl, days) => {
+    if (!lvl) return '<span style="color:var(--muted)">—</span>';
+    const c = lvl==='H'?'var(--red)':lvl==='M'?'var(--orange)':'var(--green)';
+    const d = days ? ` · ${days}d` : '';
+    return `<span style="background:rgba(255,255,255,0.07);border-radius:4px;padding:2px 7px;font-size:11px;color:${c};font-weight:600;white-space:nowrap">${lvl==='H'?'High':lvl==='M'?'Medium':'Low'}${d}</span>`;
+  };
+  const progressCell = (pct, verified, tdate) => {
+    if (pct === undefined || pct === null) return '<span style="color:var(--muted)">—</span>';
+    const p = Number(pct)||0;
+    const bc = p>=100?'var(--green)':p>=50?'var(--accent)':p>0?'var(--orange)':'rgba(255,255,255,0.15)';
+    const vBadge = verified ? '<span style="font-size:10px;color:var(--green);margin-left:4px">&#10003; Verified</span>' : '';
+    const ds = tdate ? `<div style="font-size:10px;color:var(--muted);margin-top:2px">Target: ${tdate}</div>` : '';
+    return `<div><div style="display:flex;align-items:center;gap:4px"><div style="flex:1;min-width:60px;background:var(--surface2);border-radius:3px;height:6px;overflow:hidden"><div style="width:${p}%;background:${bc};height:100%;border-radius:3px"></div></div><span style="font-size:11px;color:var(--muted);white-space:nowrap">${p}%</span>${vBadge}</div>${ds}</div>`;
+  };
 
   // Legislation banner
   const isDORA = assessments.some(a=>(a.requirement_id||'').startsWith('ART30'));
@@ -1818,6 +1832,8 @@ async function showContractDetail(id) {
       <td style="font-size:12px;color:var(--muted)">${a.gap_description||'—'}</td>
       <td class="consequence-cell">${getConsequence(a.requirement_id)}</td>
       <td style="font-size:12px;color:var(--accent)">${a.remediation_suggestion||'—'}</td>
+      <td style="font-size:12px">${effortBadge(a.effort_level, a.fte_days)}</td>
+      <td style="min-width:120px">${progressCell(a.completion_pct, a.verified, a.target_date)}</td>
     </tr>`).join('');
 
   const hasFindings = findingsRows.length > 0;
@@ -1840,7 +1856,7 @@ async function showContractDetail(id) {
         <div class="section-title" style="margin-bottom:8px">Manglende/tvetydige krav (${assessments.filter(a=>a.status!=='satisfied'&&a.status!=='na').length})</div>
         <div style="overflow-x:auto"><table class="findings-table">
           <thead><tr>
-            <th>Article</th><th>Beskrivelse</th><th>Status</th><th>Risiko</th><th>Hvad mangler</th><th>Konsekvens</th><th>Anbefalet Remedy</th>
+            <th>Article</th><th>Beskrivelse</th><th>Status</th><th>Risiko</th><th>Hvad mangler</th><th>Konsekvens</th><th>Anbefalet Remedy</th><th>Indsats</th><th>Fremdrift</th>
           </tr></thead>
           <tbody>${findingsRows}</tbody>
         </table></div>
@@ -2496,6 +2512,48 @@ async function loadAuditIntelligence() {
 
   const reportsHtml = '';
 
+  // --- P1-P4 Finding Priority Framework ---
+  const p1p4Html = '<div style="margin-bottom:24px"><div class="section-title" style="margin-bottom:8px">Finding Priority Framework — P1 to P4</div>'
+    + '<p style="font-size:12px;color:var(--muted);margin:0 0 12px">IIA-aligned finding severity model. Priority assigned at time of audit conclusion. All P1 findings trigger automatic Board escalation and 3-month remediation deadline.</p>'
+    + '<div class="table-wrap"><table style="font-size:12px"><thead><tr><th>Priority</th><th>Severity</th><th>Escalation</th><th>Deadline</th><th>Example</th></tr></thead><tbody>'
+    + '<tr><td><span style="color:var(--red);font-weight:700;font-size:13px">P1</span></td><td style="color:var(--red);font-weight:600">Critical</td><td>Board / CEO</td><td>&#8804; 3 months</td><td style="color:var(--muted)">Regulatory breach; material financial exposure; audit rights completely missing from critical ICT contract</td></tr>'
+    + '<tr><td><span style="color:var(--orange);font-weight:700;font-size:13px">P2</span></td><td style="color:var(--orange);font-weight:600">Relevant</td><td>ExCo / CRO</td><td>&#8804; 6 months</td><td style="color:var(--muted)">Operational risk increase; missing DORA Art. 30 clause in critical supplier; incomplete BCP test coverage</td></tr>'
+    + '<tr><td><span style="color:var(--yellow);font-weight:700;font-size:13px">P3</span></td><td style="color:var(--yellow);font-weight:600">Medium</td><td>Process Owner</td><td>&#8804; 12 months</td><td style="color:var(--muted)">Process control gap; partial SLA documentation; GDPR retention schedule incomplete</td></tr>'
+    + '<tr><td><span style="color:var(--green);font-weight:700;font-size:13px">P4</span></td><td style="color:var(--green);font-weight:600">Low</td><td>Process Owner</td><td>Annual review</td><td style="color:var(--muted)">Best practice improvement; minor documentation gap; low-risk observation</td></tr>'
+    + '</tbody></table></div></div>';
+
+  // --- Nexi Audit Conclusion / ICS Rating Model ---
+  const nexiHtml = '<div style="margin-bottom:24px"><div class="section-title" style="margin-bottom:8px">Nexi ICS Rating Model — Audit Conclusion Framework</div>'
+    + '<p style="font-size:12px;color:var(--muted);margin:0 0 12px">Each finalised audit report carries an ICS (Internal Control System) conclusion. The rolling average over 4 consecutive audits on the same process updates the inherent risk rating in the audit universe.</p>'
+    + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:12px">'
+    + '<div style="background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.3);border-radius:8px;padding:12px"><div style="color:#22d3ee;font-weight:700;font-size:14px;margin-bottom:4px">Good — ICS Fully Satisfactory</div><div style="font-size:12px;color:var(--muted)">No material findings. Controls operating effectively. Risk level may decrease one tier at next annual review.</div></div>'
+    + '<div style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);border-radius:8px;padding:12px"><div style="color:var(--green);font-weight:700;font-size:14px;margin-bottom:4px">Satisfactory — Slight Positive</div><div style="font-size:12px;color:var(--muted)">Minor observations only (P3–P4). ICS broadly effective. Risk level unchanged. Standard follow-up cycle applies.</div></div>'
+    + '<div style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:8px;padding:12px"><div style="color:var(--yellow);font-weight:700;font-size:14px;margin-bottom:4px">Unsatisfactory — Risk Increases</div><div style="font-size:12px;color:var(--muted)">P1–P2 findings present. Control gaps increase operational risk. Risk level escalated one tier. Follow-up audit within 12 months.</div></div>'
+    + '<div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:12px"><div style="color:var(--red);font-weight:700;font-size:14px;margin-bottom:4px">Poor — Significant Risk Increase</div><div style="font-size:12px;color:var(--muted)">Multiple P1 findings. ICS materially deficient. Risk level escalated to High. Mandatory re-audit within 6 months. Board escalation required.</div></div>'
+    + '</div>'
+    + '<div class="info-box" style="font-size:12px"><strong>Rolling average rule:</strong> When the same process receives 4 consecutive audit conclusions, their average rating feeds into the audit universe risk model. Good × 4 → risk reduced; Poor × 2 or more in 4 → risk upgraded to High and annual full audit triggered regardless of original risk tier.</div>'
+    + '</div>';
+
+  // --- FTE Capacity Planning ---
+  const ftePlanningHtml = '<div style="margin-bottom:24px"><div class="section-title" style="margin-bottom:8px">FTE Capacity Planning — Internal Audit</div>'
+    + '<p style="font-size:12px;color:var(--muted);margin:0 0 12px">3 FTE Internal Audit: 1 Lead Auditor + 2 Senior Auditors. 220 working days/year per FTE. 70% utilisation = 154 chargeable days / 1,232 hrs per FTE. Total team capacity: 3,696 hrs/year.</p>'
+    + '<div class="table-wrap" style="margin-bottom:12px"><table style="font-size:12px"><thead><tr><th>Sub-process</th><th>Risk</th><th>Year 1 (hrs)</th><th>Year 2 (hrs)</th><th>Year 3 (hrs)</th><th>3-yr Total</th></tr></thead><tbody>'
+    + '<tr><td>Identity &amp; Access Management</td><td><span style="color:var(--red);font-weight:600">High</span></td><td>240</td><td>240</td><td>240</td><td style="font-weight:600">720</td></tr>'
+    + '<tr><td>Data Protection &amp; Encryption</td><td><span style="color:var(--orange);font-weight:600">Medium</span></td><td>160</td><td>40</td><td>160</td><td style="font-weight:600">360</td></tr>'
+    + '<tr><td>Vulnerability Management</td><td><span style="color:var(--red);font-weight:600">High</span></td><td>240</td><td>240</td><td>240</td><td style="font-weight:600">720</td></tr>'
+    + '<tr><td>Supplier Onboarding &amp; Due Diligence</td><td><span style="color:var(--orange);font-weight:600">Medium</span></td><td>160</td><td>40</td><td>160</td><td style="font-weight:600">360</td></tr>'
+    + '<tr><td>Contract Governance (DORA Art. 30)</td><td><span style="color:var(--red);font-weight:600">High</span></td><td>240</td><td>240</td><td>240</td><td style="font-weight:600">720</td></tr>'
+    + '<tr><td>Exit Strategy &amp; Concentration Risk</td><td><span style="color:var(--red);font-weight:600">High</span></td><td>240</td><td>240</td><td>240</td><td style="font-weight:600">720</td></tr>'
+    + '<tr><td>Business Continuity &amp; Disaster Recovery</td><td><span style="color:var(--orange);font-weight:600">Medium</span></td><td>160</td><td>40</td><td>160</td><td style="font-weight:600">360</td></tr>'
+    + '<tr><td>Incident Response &amp; Recovery</td><td><span style="color:var(--orange);font-weight:600">Medium</span></td><td>160</td><td>40</td><td>160</td><td style="font-weight:600">360</td></tr>'
+    + '<tr><td>Art. 28 Processor Agreements (GDPR)</td><td><span style="color:var(--orange);font-weight:600">Medium</span></td><td>160</td><td>40</td><td>160</td><td style="font-weight:600">360</td></tr>'
+    + '<tr><td>Data Subject Rights (DSR)</td><td><span style="color:var(--green);font-weight:600">Low</span></td><td>13</td><td>14</td><td>13</td><td style="font-weight:600">40</td></tr>'
+    + '<tr style="border-top:2px solid var(--border);font-weight:700"><td>Total hours / year</td><td></td><td style="color:var(--accent)">1,773 hrs</td><td style="color:var(--muted)">1,174 hrs</td><td style="color:var(--accent)">1,773 hrs</td><td>4,720 hrs</td></tr>'
+    + '<tr style="font-size:11px;color:var(--muted)"><td>FTE utilisation (÷1,232 hrs)</td><td></td><td>1.44 FTE</td><td>0.95 FTE</td><td>1.44 FTE</td><td>avg 1.28 FTE</td></tr>'
+    + '</tbody></table></div>'
+    + '<div class="info-box" style="font-size:12px"><strong>Surplus capacity:</strong> Year 2 leaves ~1.5 FTE capacity for ad-hoc assignments, special investigations, and regulatory liaison. Lead Auditor time is allocated ~25% to board reporting, quality review, and IIA standards compliance. External co-sourcing recommended for specialist IT audit areas (penetration testing, cloud security) at ~15 consultant days/year.</div>'
+    + '</div>';
+
   // --- Open Findings (compact) ---
   let findingsHtml = '';
   if (openFindings.length) {
@@ -2565,6 +2623,9 @@ async function loadAuditIntelligence() {
     + '</div>'
     + infoBox
     + methodologyHtml
+    + ftePlanningHtml
+    + p1p4Html
+    + nexiHtml
     + riskMatrixHtml
     + accordionHtml
     + findingsHtml;
@@ -2743,35 +2804,35 @@ def _load_demo_results() -> tuple[list[PipelineResult], list[RegisterEntry]]:
     contracts_dir = pathlib.Path(__file__).parent / "synthetic_contracts"
 
     _DEMO_ASSESSMENTS_GAPS = [
-        {"requirement_id": "ART30-1", "requirement_article": "DORA Art. 30(1)", "requirement_summary": "Written contract required", "status": "missing", "risk_level": "High", "gap_detail": "No formal SLA or written agreement found."},
-        {"requirement_id": "ART30-2a", "requirement_article": "DORA Art. 30(2)(a)", "requirement_summary": "Service description", "status": "partial", "risk_level": "Medium", "gap_detail": "Service description present but lacks measurable SLAs."},
-        {"requirement_id": "ART30-2b", "requirement_article": "DORA Art. 30(2)(b)", "requirement_summary": "Locations of data processing", "status": "missing", "risk_level": "High", "gap_detail": "Data processing locations not specified."},
-        {"requirement_id": "ART30-2c", "requirement_article": "DORA Art. 30(2)(c)", "requirement_summary": "Availability provisions", "status": "missing", "risk_level": "High", "gap_detail": "No uptime/availability SLA present."},
-        {"requirement_id": "ART30-3", "requirement_article": "DORA Art. 30(3)", "requirement_summary": "Audit rights", "status": "missing", "risk_level": "High", "gap_detail": "Contract does not grant audit rights to the financial entity."},
-        {"requirement_id": "ART30-4", "requirement_article": "DORA Art. 30(4)", "requirement_summary": "Sub-contracting provisions", "status": "missing", "risk_level": "Medium", "gap_detail": "Sub-contracting chain not disclosed."},
-        {"requirement_id": "GDPR28-3c", "requirement_article": "GDPR Art. 28(3)(c)", "requirement_summary": "Security measures", "status": "partial", "risk_level": "Medium", "gap_detail": "Generic security language; no specific technical measures."},
-        {"requirement_id": "GDPR28-3h", "requirement_article": "GDPR Art. 28(3)(h)", "requirement_summary": "Deletion/return of data", "status": "missing", "risk_level": "Medium", "gap_detail": "No data return or deletion obligation on termination."},
+        {"requirement_id": "ART30-1", "requirement_article": "DORA Art. 30(1)", "requirement_summary": "Written contract required", "status": "missing", "risk_level": "High", "gap_detail": "No formal SLA or written agreement found.", "effort_level": "H", "fte_days": 15, "completion_pct": 0, "target_date": "2026-03-31", "verified": False},
+        {"requirement_id": "ART30-2a", "requirement_article": "DORA Art. 30(2)(a)", "requirement_summary": "Service description", "status": "partial", "risk_level": "Medium", "gap_detail": "Service description present but lacks measurable SLAs.", "effort_level": "M", "fte_days": 5, "completion_pct": 20, "target_date": "2026-03-31", "verified": False},
+        {"requirement_id": "ART30-2b", "requirement_article": "DORA Art. 30(2)(b)", "requirement_summary": "Locations of data processing", "status": "missing", "risk_level": "High", "gap_detail": "Data processing locations not specified.", "effort_level": "M", "fte_days": 5, "completion_pct": 0, "target_date": "2026-04-30", "verified": False},
+        {"requirement_id": "ART30-2c", "requirement_article": "DORA Art. 30(2)(c)", "requirement_summary": "Availability provisions", "status": "missing", "risk_level": "High", "gap_detail": "No uptime/availability SLA present.", "effort_level": "M", "fte_days": 5, "completion_pct": 0, "target_date": "2026-04-30", "verified": False},
+        {"requirement_id": "ART30-3", "requirement_article": "DORA Art. 30(3)", "requirement_summary": "Audit rights", "status": "missing", "risk_level": "High", "gap_detail": "Contract does not grant audit rights to the financial entity.", "effort_level": "H", "fte_days": 10, "completion_pct": 0, "target_date": "2026-06-30", "verified": False},
+        {"requirement_id": "ART30-4", "requirement_article": "DORA Art. 30(4)", "requirement_summary": "Sub-contracting provisions", "status": "missing", "risk_level": "Medium", "gap_detail": "Sub-contracting chain not disclosed.", "effort_level": "L", "fte_days": 3, "completion_pct": 0, "target_date": "2026-06-30", "verified": False},
+        {"requirement_id": "GDPR28-3c", "requirement_article": "GDPR Art. 28(3)(c)", "requirement_summary": "Security measures", "status": "partial", "risk_level": "Medium", "gap_detail": "Generic security language; no specific technical measures.", "effort_level": "M", "fte_days": 5, "completion_pct": 10, "target_date": "2026-03-31", "verified": False},
+        {"requirement_id": "GDPR28-3h", "requirement_article": "GDPR Art. 28(3)(h)", "requirement_summary": "Deletion/return of data", "status": "missing", "risk_level": "Medium", "gap_detail": "No data return or deletion obligation on termination.", "effort_level": "M", "fte_days": 4, "completion_pct": 0, "target_date": "2026-04-30", "verified": False},
     ]
 
     _DEMO_ASSESSMENTS_PARTIAL = [
-        {"requirement_id": "ART30-1", "requirement_article": "DORA Art. 30(1)", "requirement_summary": "Written contract required", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
-        {"requirement_id": "ART30-2a", "requirement_article": "DORA Art. 30(2)(a)", "requirement_summary": "Service description", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
-        {"requirement_id": "ART30-2b", "requirement_article": "DORA Art. 30(2)(b)", "requirement_summary": "Locations of data processing", "status": "partial", "risk_level": "Medium", "gap_detail": "EU processing stated but specific countries not listed."},
-        {"requirement_id": "ART30-2c", "requirement_article": "DORA Art. 30(2)(c)", "requirement_summary": "Availability provisions", "status": "partial", "risk_level": "Medium", "gap_detail": "99.5% uptime stated but no degraded service compensation."},
-        {"requirement_id": "ART30-3", "requirement_article": "DORA Art. 30(3)", "requirement_summary": "Audit rights", "status": "missing", "risk_level": "High", "gap_detail": "Audit rights not explicitly granted."},
-        {"requirement_id": "GDPR28-3c", "requirement_article": "GDPR Art. 28(3)(c)", "requirement_summary": "Security measures", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
-        {"requirement_id": "GDPR28-3h", "requirement_article": "GDPR Art. 28(3)(h)", "requirement_summary": "Deletion/return of data", "status": "partial", "risk_level": "Medium", "gap_detail": "Deletion on request stated; retention schedule absent."},
+        {"requirement_id": "ART30-1", "requirement_article": "DORA Art. 30(1)", "requirement_summary": "Written contract required", "status": "compliant", "risk_level": "Low", "gap_detail": "", "effort_level": "L", "fte_days": 0, "completion_pct": 100, "target_date": "2025-12-31", "verified": True},
+        {"requirement_id": "ART30-2a", "requirement_article": "DORA Art. 30(2)(a)", "requirement_summary": "Service description", "status": "compliant", "risk_level": "Low", "gap_detail": "", "effort_level": "L", "fte_days": 0, "completion_pct": 100, "target_date": "2025-12-31", "verified": True},
+        {"requirement_id": "ART30-2b", "requirement_article": "DORA Art. 30(2)(b)", "requirement_summary": "Locations of data processing", "status": "partial", "risk_level": "Medium", "gap_detail": "EU processing stated but specific countries not listed.", "effort_level": "L", "fte_days": 2, "completion_pct": 60, "target_date": "2026-02-28", "verified": False},
+        {"requirement_id": "ART30-2c", "requirement_article": "DORA Art. 30(2)(c)", "requirement_summary": "Availability provisions", "status": "partial", "risk_level": "Medium", "gap_detail": "99.5% uptime stated but no degraded service compensation.", "effort_level": "M", "fte_days": 4, "completion_pct": 50, "target_date": "2026-02-28", "verified": False},
+        {"requirement_id": "ART30-3", "requirement_article": "DORA Art. 30(3)", "requirement_summary": "Audit rights", "status": "missing", "risk_level": "High", "gap_detail": "Audit rights not explicitly granted.", "effort_level": "H", "fte_days": 10, "completion_pct": 25, "target_date": "2026-05-31", "verified": False},
+        {"requirement_id": "GDPR28-3c", "requirement_article": "GDPR Art. 28(3)(c)", "requirement_summary": "Security measures", "status": "compliant", "risk_level": "Low", "gap_detail": "", "effort_level": "L", "fte_days": 0, "completion_pct": 100, "target_date": "2025-12-31", "verified": True},
+        {"requirement_id": "GDPR28-3h", "requirement_article": "GDPR Art. 28(3)(h)", "requirement_summary": "Deletion/return of data", "status": "partial", "risk_level": "Medium", "gap_detail": "Deletion on request stated; retention schedule absent.", "effort_level": "L", "fte_days": 3, "completion_pct": 70, "target_date": "2026-02-28", "verified": False},
     ]
 
     _DEMO_ASSESSMENTS_COMPLIANT = [
-        {"requirement_id": "ART30-1", "requirement_article": "DORA Art. 30(1)", "requirement_summary": "Written contract required", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
-        {"requirement_id": "ART30-2a", "requirement_article": "DORA Art. 30(2)(a)", "requirement_summary": "Service description", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
-        {"requirement_id": "ART30-2b", "requirement_article": "DORA Art. 30(2)(b)", "requirement_summary": "Locations of data processing", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
-        {"requirement_id": "ART30-2c", "requirement_article": "DORA Art. 30(2)(c)", "requirement_summary": "Availability provisions", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
-        {"requirement_id": "ART30-3", "requirement_article": "DORA Art. 30(3)", "requirement_summary": "Audit rights", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
-        {"requirement_id": "ART30-4", "requirement_article": "DORA Art. 30(4)", "requirement_summary": "Sub-contracting provisions", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
-        {"requirement_id": "GDPR28-3c", "requirement_article": "GDPR Art. 28(3)(c)", "requirement_summary": "Security measures", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
-        {"requirement_id": "GDPR28-3h", "requirement_article": "GDPR Art. 28(3)(h)", "requirement_summary": "Deletion/return of data", "status": "compliant", "risk_level": "Low", "gap_detail": ""},
+        {"requirement_id": "ART30-1", "requirement_article": "DORA Art. 30(1)", "requirement_summary": "Written contract required", "status": "compliant", "risk_level": "Low", "gap_detail": "", "effort_level": "L", "fte_days": 0, "completion_pct": 100, "target_date": "2025-10-31", "verified": True},
+        {"requirement_id": "ART30-2a", "requirement_article": "DORA Art. 30(2)(a)", "requirement_summary": "Service description", "status": "compliant", "risk_level": "Low", "gap_detail": "", "effort_level": "L", "fte_days": 0, "completion_pct": 100, "target_date": "2025-10-31", "verified": True},
+        {"requirement_id": "ART30-2b", "requirement_article": "DORA Art. 30(2)(b)", "requirement_summary": "Locations of data processing", "status": "compliant", "risk_level": "Low", "gap_detail": "", "effort_level": "L", "fte_days": 0, "completion_pct": 100, "target_date": "2025-10-31", "verified": True},
+        {"requirement_id": "ART30-2c", "requirement_article": "DORA Art. 30(2)(c)", "requirement_summary": "Availability provisions", "status": "compliant", "risk_level": "Low", "gap_detail": "", "effort_level": "L", "fte_days": 0, "completion_pct": 100, "target_date": "2025-10-31", "verified": True},
+        {"requirement_id": "ART30-3", "requirement_article": "DORA Art. 30(3)", "requirement_summary": "Audit rights", "status": "compliant", "risk_level": "Low", "gap_detail": "", "effort_level": "L", "fte_days": 0, "completion_pct": 100, "target_date": "2025-10-31", "verified": True},
+        {"requirement_id": "ART30-4", "requirement_article": "DORA Art. 30(4)", "requirement_summary": "Sub-contracting provisions", "status": "compliant", "risk_level": "Low", "gap_detail": "", "effort_level": "L", "fte_days": 0, "completion_pct": 100, "target_date": "2025-10-31", "verified": True},
+        {"requirement_id": "GDPR28-3c", "requirement_article": "GDPR Art. 28(3)(c)", "requirement_summary": "Security measures", "status": "compliant", "risk_level": "Low", "gap_detail": "", "effort_level": "L", "fte_days": 0, "completion_pct": 100, "target_date": "2025-10-31", "verified": True},
+        {"requirement_id": "GDPR28-3h", "requirement_article": "GDPR Art. 28(3)(h)", "requirement_summary": "Deletion/return of data", "status": "compliant", "risk_level": "Low", "gap_detail": "", "effort_level": "L", "fte_days": 0, "completion_pct": 100, "target_date": "2025-10-31", "verified": True},
     ]
 
     specs = [
