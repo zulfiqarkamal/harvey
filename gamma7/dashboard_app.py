@@ -660,6 +660,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     .nav-item::before { display: none; }
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 <div class="app-shell">
@@ -778,7 +779,16 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
           <th>Entry ID</th><th>Supplier</th><th>Country</th><th>Service Type</th>
           <th>Contract Ref</th><th>Classification</th><th>Exit Strategy</th>
         </tr></thead>
-        <tbody id="register-table"><tr><td colspan="7" class="empty">Loading&#8230;</td></tr></tbody>
+        <tbody id="register-table">
+          <tr><td>REG-001</td><td>NordPay A/S</td><td>Denmark</td><td>Payment Processing</td><td>CTR-2023-001</td><td><span class="badge badge-critical">Critical</span></td><td><span style="color:var(--green)">&#10003; Documented</span></td></tr>
+          <tr><td>REG-002</td><td>Cardnet Europe</td><td>Belgium</td><td>Card Network Services</td><td>CTR-2023-002</td><td><span class="badge badge-critical">Critical</span></td><td><span style="color:var(--green)">&#10003; Documented</span></td></tr>
+          <tr><td>REG-003</td><td>CloudInfra Provider A</td><td>Ireland</td><td>Cloud Infrastructure (IaaS)</td><td>CTR-2023-003</td><td><span class="badge badge-critical">Critical</span></td><td><span style="color:var(--orange)">&#9888; In Review</span></td></tr>
+          <tr><td>REG-004</td><td>CloudInfra Provider B</td><td>Netherlands</td><td>Cloud Infrastructure (SaaS)</td><td>CTR-2024-001</td><td><span class="badge badge-critical">Critical</span></td><td><span style="color:var(--green)">&#10003; Documented</span></td></tr>
+          <tr><td>REG-005</td><td>CryptoHSM Ltd</td><td>Germany</td><td>HSM / Key Management</td><td>CTR-2024-002</td><td><span class="badge badge-critical">Critical</span></td><td><span style="color:var(--green)">&#10003; Documented</span></td></tr>
+          <tr><td>REG-006</td><td>Nordic IT Systems</td><td>Sweden</td><td>Managed IT Support</td><td>CTR-2024-003</td><td><span class="badge badge-non-critical">Non-critical</span></td><td><span style="color:var(--yellow)">&#9888; Pending</span></td></tr>
+          <tr><td>REG-007</td><td>BankCore Solutions</td><td>Finland</td><td>Core Banking System</td><td>CTR-2022-001</td><td><span class="badge badge-critical">Critical</span></td><td><span style="color:var(--green)">&#10003; Documented</span></td></tr>
+          <tr><td>REG-008</td><td>RegComp Nordic</td><td>Denmark</td><td>Compliance Reporting</td><td>CTR-2025-001</td><td><span class="badge badge-non-critical">Non-critical</span></td><td><span style="color:var(--green)">&#10003; Documented</span></td></tr>
+        </tbody>
       </table>
     </div>
   </div>
@@ -795,15 +805,105 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
         <tr><td class="term">Supervisory readiness</td><td class="def">You must demonstrate (a) the register is complete and (b) every critical/important provider has been assessed. Click any row to view the analysis or register entry.</td></tr>
       </table>
     </div>
-    <div id="recon-content"><div class="loading">Loading reconciliation&#8230;</div></div>
+    <div id="recon-content">
+      <!-- Summary cards -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+        <div class="card" style="border-top:3px solid var(--green)"><div class="label">Matched</div><div class="value green">6</div><div style="font-size:11px;color:var(--muted);margin-top:4px">In register + analysed</div></div>
+        <div class="card" style="border-top:3px solid var(--orange)"><div class="label">Register Only</div><div class="value orange">2</div><div style="font-size:11px;color:var(--muted);margin-top:4px">No contract analysis</div></div>
+        <div class="card" style="border-top:3px solid var(--yellow)"><div class="label">Contract Only</div><div class="value yellow">1</div><div style="font-size:11px;color:var(--muted);margin-top:4px">Not in register</div></div>
+        <div class="card" style="border-top:3px solid var(--accent)"><div class="label">Total Suppliers</div><div class="value">9</div><div style="font-size:11px;color:var(--muted);margin-top:4px">Across all sources</div></div>
+      </div>
+      <div class="table-wrap"><table style="font-size:12px">
+        <thead><tr><th>Supplier</th><th>In Register</th><th>Contract Analysed</th><th>Classification</th><th>Gaps</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>NordPay A/S</td><td><span style="color:var(--green)">&#10003; REG-001</span></td><td><span style="color:var(--green)">&#10003; CTR-2023-001</span></td><td><span class="badge badge-critical">Critical</span></td><td style="color:var(--orange)">3</td><td><span style="color:var(--green)">&#10003; Matched</span></td></tr>
+          <tr><td>Cardnet Europe</td><td><span style="color:var(--green)">&#10003; REG-002</span></td><td><span style="color:var(--green)">&#10003; CTR-2023-002</span></td><td><span class="badge badge-critical">Critical</span></td><td style="color:var(--orange)">5</td><td><span style="color:var(--green)">&#10003; Matched</span></td></tr>
+          <tr><td>CloudInfra Provider A</td><td><span style="color:var(--green)">&#10003; REG-003</span></td><td><span style="color:var(--green)">&#10003; CTR-2023-003</span></td><td><span class="badge badge-critical">Critical</span></td><td style="color:var(--red)">7</td><td><span style="color:var(--green)">&#10003; Matched</span></td></tr>
+          <tr><td>CloudInfra Provider B</td><td><span style="color:var(--green)">&#10003; REG-004</span></td><td><span style="color:var(--green)">&#10003; CTR-2024-001</span></td><td><span class="badge badge-critical">Critical</span></td><td style="color:var(--yellow)">2</td><td><span style="color:var(--green)">&#10003; Matched</span></td></tr>
+          <tr><td>CryptoHSM Ltd</td><td><span style="color:var(--green)">&#10003; REG-005</span></td><td><span style="color:var(--green)">&#10003; CTR-2024-002</span></td><td><span class="badge badge-critical">Critical</span></td><td style="color:var(--green)">1</td><td><span style="color:var(--green)">&#10003; Matched</span></td></tr>
+          <tr><td>BankCore Solutions</td><td><span style="color:var(--green)">&#10003; REG-007</span></td><td><span style="color:var(--green)">&#10003; CTR-2022-001</span></td><td><span class="badge badge-critical">Critical</span></td><td style="color:var(--orange)">4</td><td><span style="color:var(--green)">&#10003; Matched</span></td></tr>
+          <tr style="background:rgba(251,146,60,0.05)"><td>Nordic IT Systems</td><td><span style="color:var(--green)">&#10003; REG-006</span></td><td><span style="color:var(--red)">&#10007; None</span></td><td><span class="badge badge-non-critical">Non-critical</span></td><td>—</td><td><span style="color:var(--orange)">&#9888; Register Only</span></td></tr>
+          <tr style="background:rgba(251,146,60,0.05)"><td>RegComp Nordic</td><td><span style="color:var(--green)">&#10003; REG-008</span></td><td><span style="color:var(--red)">&#10007; None</span></td><td><span class="badge badge-non-critical">Non-critical</span></td><td>—</td><td><span style="color:var(--orange)">&#9888; Register Only</span></td></tr>
+          <tr style="background:rgba(234,179,8,0.05)"><td>DataStore Nordic</td><td><span style="color:var(--red)">&#10007; Missing</span></td><td><span style="color:var(--green)">&#10003; CTR-2025-002</span></td><td><span class="badge badge-non-critical">Non-critical</span></td><td style="color:var(--yellow)">2</td><td><span style="color:var(--yellow)">&#9888; Contract Only</span></td></tr>
+        </tbody>
+      </table></div>
+    </div>
   </div>
 
   <!-- Audit Papers tab — 4-stage approval workflow -->
   <div id="tab-workpapers" class="tab-pane">
-    <div class="tab-header">
-      <h2>Audit Papers</h2>
-      <div class="agent-label">Work Paper Workflow — IIA Standards / 4-Stage Approval / Human Review at Every Gate</div>
+    <div class="tab-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+      <div>
+        <h2>Audit Papers</h2>
+        <div class="agent-label">Work Paper Workflow — IIA Standards / 4-Stage Approval / Human Review at Every Gate</div>
+      </div>
+      <button onclick="showAddWpModal()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:12px;cursor:pointer;font-weight:600;white-space:nowrap">+ Add Work Paper</button>
     </div>
+
+    <!-- Add Work Paper Modal -->
+    <div id="add-wp-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 32px;width:600px;max-width:95vw;max-height:90vh;overflow-y:auto">
+        <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:20px">Add Work Paper</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Work Paper ID *</label><input id="wp-id" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px" placeholder="e.g. WP-NET-01"></div>
+          <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Control / Test *</label><input id="wp-control" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px" placeholder="e.g. Access review"></div>
+          <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Reference (ISO/Reg)</label><input id="wp-ref" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px" placeholder="e.g. A.9.2.1"></div>
+          <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Sample Size</label><input id="wp-sample" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px" placeholder="e.g. 20 users"></div>
+          <div style="grid-column:1/-1"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Audit Objective *</label><textarea id="wp-objective" rows="2" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px;resize:vertical" placeholder="Describe the audit objective..."></textarea></div>
+          <div style="grid-column:1/-1"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Scope &amp; Testing Approach *</label><textarea id="wp-scope" rows="2" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px;resize:vertical" placeholder="Describe scope and testing..."></textarea></div>
+          <div style="grid-column:1/-1"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Evidence &amp; Conclusion</label><textarea id="wp-conclusion" rows="2" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px;resize:vertical" placeholder="Evidence gathered and conclusion..."></textarea></div>
+          <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Conclusion Rating</label>
+            <select id="wp-rating" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px">
+              <option value="Adequate">Adequate</option><option value="Partially Adequate">Partially Adequate</option><option value="Inadequate">Inadequate</option>
+            </select>
+          </div>
+          <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Engagement</label><input id="wp-engagement" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px" placeholder="e.g. IAM Full Audit 2025-Q4"></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:10px">
+          <button onclick="closeAddWpModal()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 18px;font-size:12px;cursor:pointer">Cancel</button>
+          <button onclick="saveAddWp()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:7px 18px;font-size:12px;cursor:pointer;font-weight:600">Add Work Paper</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Work Paper Detail Panel -->
+    <div id="wp-detail-panel" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 16px">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 32px;width:760px;max-width:95vw">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <div id="wpd-title" style="font-size:16px;font-weight:700;color:var(--text)">Work Paper Detail</div>
+          <button onclick="closeWpDetail()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:4px 12px;font-size:12px;cursor:pointer">&#10005; Close</button>
+        </div>
+        <div id="wpd-body" style="font-size:13px;color:var(--text);line-height:1.7"></div>
+
+        <!-- Coaching Notes -->
+        <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Coaching Notes</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <!-- QA Note -->
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:14px">
+              <div style="font-size:11px;font-weight:700;color:#3b82f6;margin-bottom:8px">QA Note</div>
+              <div id="wpd-qa-note-display" style="font-size:12px;color:var(--muted);min-height:40px;margin-bottom:8px">No coaching note.</div>
+              <textarea id="wpd-qa-note-input" rows="3" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px;resize:vertical;display:none" placeholder="Enter QA coaching note..."></textarea>
+              <div style="display:flex;gap:6px;margin-top:6px">
+                <button id="wpd-qa-add-btn" onclick="addCoachingNote('qa')" style="background:rgba(59,130,246,0.15);color:#3b82f6;border:1px solid #3b82f6;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer">+ Add Note</button>
+                <button id="wpd-qa-clear-btn" onclick="clearCoachingNote('qa')" style="display:none;background:rgba(74,222,128,0.15);color:var(--green);border:1px solid var(--green);border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer">&#10003; Clear Note</button>
+              </div>
+            </div>
+            <!-- CAE Note -->
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:14px">
+              <div style="font-size:11px;font-weight:700;color:#eab308;margin-bottom:8px">CAE Note</div>
+              <div id="wpd-cae-note-display" style="font-size:12px;color:var(--muted);min-height:40px;margin-bottom:8px">No coaching note.</div>
+              <textarea id="wpd-cae-note-input" rows="3" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px;resize:vertical;display:none" placeholder="Enter CAE coaching note..."></textarea>
+              <div style="display:flex;gap:6px;margin-top:6px">
+                <button id="wpd-cae-add-btn" onclick="addCoachingNote('cae')" style="background:rgba(234,179,8,0.15);color:#eab308;border:1px solid #eab308;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer">+ Add Note</button>
+                <button id="wpd-cae-clear-btn" onclick="clearCoachingNote('cae')" style="display:none;background:rgba(74,222,128,0.15);color:var(--green);border:1px solid var(--green);border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer">&#10003; Clear Note</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div style="max-width:1100px;margin:0 auto">
 
       <!-- Approval stage legend -->
@@ -845,38 +945,38 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
               <tr><th>Work Paper</th><th>Control / Test</th><th>ISO 27001 Ref</th><th>Sample</th><th>Test Result</th><th>Finding</th><th>Status</th></tr>
             </thead>
             <tbody>
-              <tr>
-                <td>WP-IAM-01</td><td>User account provisioning &amp; deprovisioning</td><td>A.9.2.1–A.9.2.3</td><td>30 joiners/leavers</td>
+              <tr onclick="openWpDetail('WP-IAM-01')" style="cursor:pointer" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+                <td>WP-IAM-01</td><td>User account provisioning &amp; deprovisioning</td><td>A.9.2.1&#8211;A.9.2.3</td><td>30 joiners/leavers</td>
                 <td><span style="color:var(--green)">&#10003; Pass</span></td>
                 <td style="color:var(--muted)">None</td>
                 <td><span style="background:rgba(59,130,246,0.2);color:#3b82f6;border-radius:10px;padding:2px 8px;font-size:10px">&#9679; Blue</span></td>
               </tr>
-              <tr>
+              <tr onclick="openWpDetail('WP-IAM-02')" style="cursor:pointer" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
                 <td>WP-IAM-02</td><td>Privileged access review (admin accounts)</td><td>A.9.2.5, A.9.4.1</td><td>All 14 admins</td>
                 <td><span style="color:var(--red)">&#10007; Exception</span></td>
-                <td style="color:var(--orange)">3 stale admin accounts — P2</td>
+                <td style="color:var(--orange)">3 stale admin accounts &#8212; P2</td>
                 <td><span style="background:rgba(59,130,246,0.2);color:#3b82f6;border-radius:10px;padding:2px 8px;font-size:10px">&#9679; Blue</span></td>
               </tr>
-              <tr>
+              <tr onclick="openWpDetail('WP-IAM-03')" style="cursor:pointer" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
                 <td>WP-IAM-03</td><td>MFA enforcement for remote access</td><td>A.9.4.2</td><td>All VPN users</td>
                 <td><span style="color:var(--green)">&#10003; Pass</span></td>
                 <td style="color:var(--muted)">None</td>
                 <td><span style="background:rgba(59,130,246,0.2);color:#3b82f6;border-radius:10px;padding:2px 8px;font-size:10px">&#9679; Blue</span></td>
               </tr>
-              <tr>
-                <td>WP-IAM-04</td><td>Role separation — finance vs. IT</td><td>A.9.1.2, A.6.1.2</td><td>15 cross-role users</td>
+              <tr onclick="openWpDetail('WP-IAM-04')" style="cursor:pointer" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+                <td>WP-IAM-04</td><td>Role separation &#8212; finance vs. IT</td><td>A.9.1.2, A.6.1.2</td><td>15 cross-role users</td>
                 <td><span style="color:var(--yellow)">&#9888; Partial</span></td>
-                <td style="color:var(--yellow)">2 users with conflicting roles — P3</td>
+                <td style="color:var(--yellow)">2 users with conflicting roles &#8212; P3</td>
                 <td><span style="background:rgba(107,114,128,0.2);color:#9ca3af;border-radius:10px;padding:2px 8px;font-size:10px">&#9679; Grey</span></td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-          <button onclick="this.style.background='rgba(34,197,94,0.2)';this.style.color='var(--green)';this.style.borderColor='#22c55e'" style="padding:6px 14px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:12px">&#10003; Lead Review</button>
-          <button onclick="this.style.background='rgba(59,130,246,0.2)';this.style.color='#3b82f6';this.style.borderColor='#3b82f6'" style="padding:6px 14px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:12px">&#9679; QA Approve</button>
-          <button onclick="this.style.background='rgba(234,179,8,0.2)';this.style.color='var(--yellow)';this.style.borderColor='#eab308'" style="padding:6px 14px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:12px">&#11088; CAE Approve</button>
-          <span style="font-size:11px;color:var(--muted);padding:6px 0;align-self:center">Approval is irreversible and timestamped. Ensure all work papers are complete before approving.</span>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button id="eng-iam-lead-btn" onclick="toggleWpApproval('eng-iam','lead')" style="padding:6px 14px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:12px">&#10003; Lead Review</button>
+          <button id="eng-iam-qa-btn" onclick="toggleWpApproval('eng-iam','qa')" style="padding:6px 14px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:12px">&#9679; QA Approve</button>
+          <button id="eng-iam-cae-btn" onclick="toggleWpApproval('eng-iam','cae')" style="padding:6px 14px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:12px">&#11088; CAE Approve</button>
+          <span id="eng-iam-approval-note" style="font-size:11px;color:var(--muted);padding:6px 0">Click a work paper row to view details or add coaching notes.</span>
         </div>
       </div>
 
@@ -898,19 +998,19 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
               <tr><th>Work Paper</th><th>Control / Test</th><th>GDPR Ref</th><th>Sample</th><th>Test Result</th><th>Prior Finding</th><th>Status</th></tr>
             </thead>
             <tbody>
-              <tr>
-                <td>WP-GDPR-01</td><td>DPA agreements — all data processors</td><td>Art. 28</td><td>12 processors</td>
+              <tr onclick="openWpDetail('WP-GDPR-01')" style="cursor:pointer" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+                <td>WP-GDPR-01</td><td>DPA agreements &#8212; all data processors</td><td>Art. 28</td><td>12 processors</td>
                 <td><span style="color:var(--green)">&#10003; Closed</span></td>
                 <td style="color:var(--green)">P2 — Remediated</td>
                 <td><span style="background:rgba(234,179,8,0.2);color:#eab308;border-radius:10px;padding:2px 8px;font-size:10px">&#11088; Gold</span></td>
               </tr>
-              <tr>
+              <tr onclick="openWpDetail('WP-GDPR-02')" style="cursor:pointer" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
                 <td>WP-GDPR-02</td><td>Data retention &amp; deletion procedures</td><td>Art. 5(1)(e)</td><td>5 systems</td>
                 <td><span style="color:var(--yellow)">&#9888; Partial</span></td>
                 <td style="color:var(--orange)">P3 — Still open (1 system)</td>
                 <td><span style="background:rgba(234,179,8,0.2);color:#eab308;border-radius:10px;padding:2px 8px;font-size:10px">&#11088; Gold</span></td>
               </tr>
-              <tr>
+              <tr onclick="openWpDetail('WP-GDPR-03')" style="cursor:pointer" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
                 <td>WP-GDPR-03</td><td>Consent records &amp; withdrawal process</td><td>Art. 7</td><td>200 records</td>
                 <td><span style="color:var(--green)">&#10003; Pass</span></td>
                 <td style="color:var(--green)">P3 — Remediated</td>
@@ -940,14 +1040,14 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
               <tr><th>Work Paper</th><th>Control / Test</th><th>Ref</th><th>Sample</th><th>Test Result</th><th>Finding</th><th>Status</th></tr>
             </thead>
             <tbody>
-              <tr>
+              <tr onclick="openWpDetail('WP-COM-01')" style="cursor:pointer" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
                 <td>WP-COM-01</td><td>CRM data quality &amp; completeness check</td><td>A.8.1, MiFID II</td><td>50 customer records</td>
                 <td><span style="color:var(--muted)">Pending</span></td>
                 <td style="color:var(--muted)">—</td>
                 <td><span style="background:rgba(107,114,128,0.2);color:#9ca3af;border-radius:10px;padding:2px 8px;font-size:10px">&#9679; Grey</span></td>
               </tr>
-              <tr>
-                <td>WP-COM-02</td><td>Sales conduct — suitability assessment documentation</td><td>MiFID II Art. 25</td><td>20 cases</td>
+              <tr onclick="openWpDetail('WP-COM-02')" style="cursor:pointer" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+                <td>WP-COM-02</td><td>Sales conduct &#8212; suitability assessment documentation</td><td>MiFID II Art. 25</td><td>20 cases</td>
                 <td><span style="color:var(--muted)">Pending</span></td>
                 <td style="color:var(--muted)">—</td>
                 <td><span style="background:rgba(107,114,128,0.2);color:#9ca3af;border-radius:10px;padding:2px 8px;font-size:10px">&#9679; Grey</span></td>
@@ -1031,6 +1131,41 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
         <div style="margin-left:auto;display:flex;gap:8px">
           <button onclick="expandAllBP()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer">Expand All</button>
           <button onclick="collapseAllBP()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer">Collapse All</button>
+        </div>
+      </div>
+
+      <!-- Audit universe header with Add Process button -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="section-title" style="margin:0">Audit Universe</div>
+        <button onclick="showAddProcessModal()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-weight:600">+ Add Process</button>
+      </div>
+
+      <!-- Add Process Modal -->
+      <div id="add-process-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 32px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto">
+          <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:20px">Add Audit Process</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+            <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Sub-Process Name *</label><input id="ap-subprocess" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px" placeholder="e.g. Privileged Access Review"></div>
+            <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">ISO / Regulation *</label><input id="ap-isoreg" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px" placeholder="e.g. ISO 27001 A.9.2"></div>
+            <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Critical System</label><input id="ap-system" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px" placeholder="e.g. Azure AD"></div>
+            <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Audit Objective *</label><input id="ap-objective" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px" placeholder="e.g. Verify access controls"></div>
+            <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Inherent Risk</label>
+              <select id="ap-risk" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px">
+                <option value="High">High</option><option value="Medium" selected>Medium</option><option value="Low">Low</option>
+              </select>
+            </div>
+            <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Audit Type</label>
+              <select id="ap-type" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px">
+                <option value="Full Audit">Full Audit</option><option value="Follow-up">Follow-up</option><option value="DI Review">DI Review</option>
+              </select>
+            </div>
+            <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Scheduled Quarter</label><input id="ap-quarter" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px" placeholder="e.g. Q2-2026"></div>
+            <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Hours Estimate</label><input id="ap-hours" type="number" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px" placeholder="e.g. 220"></div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px">
+            <button onclick="closeAddProcessModal()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 18px;font-size:12px;cursor:pointer">Cancel</button>
+            <button onclick="saveAddProcess()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:7px 18px;font-size:12px;cursor:pointer;font-weight:600">Add to Plan</button>
+          </div>
         </div>
       </div>
 
@@ -1338,7 +1473,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   <div id="tab-reporting" class="tab-pane">
     <div class="tab-header">
       <h2>Reporting</h2>
-      <div class="agent-label">Formal Audit Reports — P1-P4 Priority Framework / Nexi ICS Rating / Risk Matrix</div>
+      <div class="agent-label">Formal Audit Reports — P1-P4 Priority Framework / Conclusion Rating / Risk Matrix</div>
     </div>
     <div style="max-width:1100px;margin:0 auto">
 
@@ -1371,12 +1506,12 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- Nexi ICS Rating Model + Risk Matrix side by side -->
+      <!-- Conclusion Rating Model + Risk Matrix side by side -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px">
 
-        <!-- Nexi ICS Rating -->
+        <!-- Conclusion Rating -->
         <div>
-          <div class="section-title" style="margin-bottom:12px">Nexi ICS Rating Model</div>
+          <div class="section-title" style="margin-bottom:12px">Conclusion Rating Model</div>
           <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
             <div style="display:grid;grid-template-columns:120px 1fr;background:var(--surface2);padding:8px 12px;font-size:11px;font-weight:600;color:var(--muted)">
               <span>Rating</span><span>Meaning &amp; Rolling Average Rule</span>
@@ -1429,14 +1564,29 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
         </div>
       </div>
 
+      <!-- Report send compose modal -->
+      <div id="report-send-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px 32px;width:600px;max-width:95vw">
+          <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:18px" id="send-modal-title">Draft Email — Audit Report</div>
+          <div style="margin-bottom:12px"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">To (Auditee)</label><input id="send-modal-to" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px"></div>
+          <div style="margin-bottom:12px"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Subject</label><input id="send-modal-subject" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px"></div>
+          <div style="margin-bottom:16px"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Message</label><textarea id="send-modal-body" rows="6" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 10px;font-size:12px;resize:vertical"></textarea></div>
+          <div style="background:rgba(234,179,8,0.1);border:1px solid var(--yellow);border-radius:6px;padding:8px 12px;font-size:11px;color:var(--yellow);margin-bottom:16px">&#9888; This is a draft only. Review before sending. This system does not send emails automatically.</div>
+          <div style="display:flex;justify-content:flex-end;gap:10px">
+            <button onclick="document.getElementById('report-send-modal').style.display='none'" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 18px;font-size:12px;cursor:pointer">Close</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Demo Audit Report 1 -->
       <div class="section-title" style="margin-bottom:12px">Audit Reports — Gamma7 Finans A/S</div>
       <div class="card" style="margin-bottom:16px">
         <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start">
           <div>
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
               <span style="font-size:15px;font-weight:700;color:var(--text)">Revisionsrapport — IAM &amp; Adgangskontrol</span>
               <span style="background:rgba(234,179,8,0.2);color:var(--yellow);border-radius:12px;padding:3px 10px;font-size:11px;font-weight:600">Utilfredsstillende</span>
+              <button onclick="openSendToAuditee('IAM')" style="background:rgba(59,130,246,0.15);color:#3b82f6;border:1px solid #3b82f6;border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer">&#9993; Send to Auditee</button>
             </div>
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
               <div><div style="font-size:10px;color:var(--muted)">Virksomhed</div><div style="font-size:12px;color:var(--text)">Gamma7 Finans A/S</div></div>
@@ -1476,9 +1626,10 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
 
       <!-- Demo Audit Report 2 -->
       <div class="card" style="margin-bottom:16px">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
           <span style="font-size:15px;font-weight:700;color:var(--text)">Revisionsrapport — GDPR Databehandling</span>
           <span style="background:rgba(74,222,128,0.2);color:var(--green);border-radius:12px;padding:3px 10px;font-size:11px;font-weight:600">Tilfredsstillende</span>
+          <button onclick="openSendFinalReport('GDPR')" style="background:rgba(74,222,128,0.15);color:var(--green);border:1px solid var(--green);border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer">&#10148; Send Final Report</button>
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
           <div><div style="font-size:10px;color:var(--muted)">Virksomhed</div><div style="font-size:12px;color:var(--text)">Gamma7 Finans A/S</div></div>
@@ -1509,7 +1660,126 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
         <tr><td class="term">Next Quarter Focus</td><td class="def">Internal audit plan priorities for the upcoming quarter. <strong style="color:var(--orange)">Human review required</strong> before distributing to governance bodies.</td></tr>
       </table>
     </div>
-    <div id="boardreport-content"></div>
+    <div id="boardreport-content">
+      <!-- P1/P2/P3 Findings Trend Chart -->
+      <div class="card" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div class="section-title" style="margin:0">Findings Trend — P1/P2/P3 by Quarter</div>
+          <div style="display:flex;gap:16px;font-size:11px">
+            <span style="color:#ef4444">&#9644; P1 Critical</span>
+            <span style="color:#fb923c">&#9644; P2 High</span>
+            <span style="color:#eab308">&#9644; P3 Medium</span>
+          </div>
+        </div>
+        <div style="position:relative;height:220px"><canvas id="findings-trend-chart"></canvas></div>
+      </div>
+
+      <!-- Quarterly New/Open/Closed Table -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="section-title" style="margin-bottom:12px">Q3 2025 — Findings Summary (New / Open / Closed)</div>
+        <div class="table-wrap">
+          <table style="font-size:12px">
+            <thead><tr><th>Priority</th><th>New This Quarter</th><th>Open (Carry-over)</th><th>Closed This Quarter</th><th>Total Open</th></tr></thead>
+            <tbody>
+              <tr><td><span style="background:rgba(239,68,68,0.15);color:var(--red);border-radius:4px;padding:2px 7px;font-size:11px">P1</span></td><td>0</td><td>0</td><td>0</td><td style="color:var(--green);font-weight:600">0</td></tr>
+              <tr><td><span style="background:rgba(251,146,60,0.15);color:#fb923c;border-radius:4px;padding:2px 7px;font-size:11px">P2</span></td><td>3</td><td>1</td><td>2</td><td style="color:#fb923c;font-weight:600">2</td></tr>
+              <tr><td><span style="background:rgba(234,179,8,0.15);color:#eab308;border-radius:4px;padding:2px 7px;font-size:11px">P3</span></td><td>4</td><td>3</td><td>5</td><td style="color:#eab308;font-weight:600">2</td></tr>
+              <tr><td><span style="background:rgba(74,222,128,0.1);color:var(--green);border-radius:4px;padding:2px 7px;font-size:11px">P4</span></td><td>2</td><td>1</td><td>3</td><td style="color:var(--green);font-weight:600">0</td></tr>
+              <tr style="border-top:1px solid var(--border);font-weight:600"><td>Total</td><td>9</td><td>5</td><td>10</td><td>4</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Reports Status Table -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="section-title" style="margin-bottom:12px">Audit Reports — Completed &amp; Upcoming</div>
+        <div class="table-wrap">
+          <table style="font-size:12px">
+            <thead><tr><th>Report</th><th>Audit Type</th><th>Status</th><th>Issued / Scheduled</th><th>Conclusion</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>IAM &amp; Access Control Full Audit</td><td>IT Audit</td>
+                <td><span style="background:rgba(74,222,128,0.15);color:var(--green);border-radius:4px;padding:2px 7px;font-size:11px">Completed</span></td>
+                <td>2025-10-15</td><td style="color:var(--orange)">Partially Adequate</td>
+              </tr>
+              <tr>
+                <td>GDPR Data Processing Follow-up</td><td>Compliance Audit</td>
+                <td><span style="background:rgba(74,222,128,0.15);color:var(--green);border-radius:4px;padding:2px 7px;font-size:11px">Completed</span></td>
+                <td>2025-06-30</td><td style="color:var(--green)">Adequate</td>
+              </tr>
+              <tr>
+                <td>Customer Data &amp; Sales Conduct DI Review</td><td>DI Review</td>
+                <td><span style="background:rgba(234,179,8,0.15);color:#eab308;border-radius:4px;padding:2px 7px;font-size:11px">In Progress</span></td>
+                <td>2025-Q4 (target Dec)</td><td style="color:var(--muted)">Pending</td>
+              </tr>
+              <tr>
+                <td>DORA ICT Risk Assessment</td><td>ICT/DORA Audit</td>
+                <td><span style="background:rgba(59,130,246,0.15);color:#3b82f6;border-radius:4px;padding:2px 7px;font-size:11px">Scheduled</span></td>
+                <td>2026-Q1 (Jan)</td><td style="color:var(--muted)">—</td>
+              </tr>
+              <tr>
+                <td>Third-Party Risk Review</td><td>Vendor Audit</td>
+                <td><span style="background:rgba(59,130,246,0.15);color:#3b82f6;border-radius:4px;padding:2px 7px;font-size:11px">Scheduled</span></td>
+                <td>2026-Q2 (Apr)</td><td style="color:var(--muted)">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Prior Quarter Follow-up -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="section-title" style="margin-bottom:12px">Follow-up on Q2 2025 Activities</div>
+        <div class="table-wrap">
+          <table style="font-size:12px">
+            <thead><tr><th>Finding Ref</th><th>Description</th><th>Owner</th><th>Due</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>F-2024-08</td><td>Stale service accounts in legacy directory</td><td>IT Security</td><td>2025-06-30</td>
+                <td><span style="color:var(--green)">&#10003; Closed</span></td>
+              </tr>
+              <tr>
+                <td>F-2024-11</td><td>Missing DPA for processor in Belgium</td><td>Legal &amp; Compliance</td><td>2025-05-31</td>
+                <td><span style="color:var(--green)">&#10003; Closed</span></td>
+              </tr>
+              <tr>
+                <td>F-2025-01</td><td>3 stale admin accounts active &gt;90 days</td><td>IT Security</td><td>2026-01-15</td>
+                <td><span style="color:#fb923c">&#9888; Open</span></td>
+              </tr>
+              <tr>
+                <td>F-2025-02</td><td>SoD conflict: Finance + IT Admin roles</td><td>IT Security / CFO</td><td>2026-04-15</td>
+                <td><span style="color:#fb923c">&#9888; Open</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AI Audit Intelligence -->
+      <div class="card" style="margin-bottom:20px;border:1px solid rgba(59,130,246,0.3)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+          <div class="section-title" style="margin:0">Audit Intelligence</div>
+          <span style="background:rgba(59,130,246,0.15);color:#3b82f6;border-radius:10px;padding:2px 10px;font-size:11px;font-weight:600">AI-generated draft &#8212; human review required</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Q3 2025 Conclusion</div>
+            <div style="font-size:13px;color:var(--text);line-height:1.6">The Q3 internal audit programme identified 9 new findings across 2 completed engagements. The IAM audit revealed control weaknesses in privileged access management (3 stale admin accounts, P2) and segregation of duties (2 role conflicts, P3). The GDPR follow-up confirmed remediation of 2 prior findings, with 1 P3 retention finding remaining open. No P1 findings were raised. Overall audit coverage was 100% of the Q3 plan. Management responses are pending on 2 open findings.</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Q4 2025 / Q1 2026 Focus Areas</div>
+            <ul style="font-size:13px;color:var(--text);line-height:1.8;margin:0;padding-left:18px">
+              <li>Customer Data &amp; Sales Conduct DI Review — finalise Q4 2025</li>
+              <li>DORA ICT Risk Assessment kick-off — Q1 2026</li>
+              <li>Follow-up on 2 open findings (P2 + P3) due Jan &amp; Apr 2026</li>
+              <li>Third-party risk review planning — Q2 2026</li>
+              <li>Update audit universe for 2026 annual plan</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="tab-protocols" class="tab-pane">
@@ -1728,6 +1998,375 @@ function showTab(name, el) {
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   if (el) el.classList.add('active');
+  if (name === 'boardreport') setTimeout(initFindingsTrendChart, 100);
+}
+
+let _findingsChart = null;
+function initFindingsTrendChart() {
+  const canvas = document.getElementById('findings-trend-chart');
+  if (!canvas) return;
+  if (_findingsChart) { _findingsChart.destroy(); _findingsChart = null; }
+  const labels = ['Q1 2024','Q2 2024','Q3 2024','Q4 2024','Q1 2025','Q2 2025','Q3 2025'];
+  _findingsChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'P1 Critical', data: [1,0,0,1,0,0,0], borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.08)', tension:0.3, pointRadius:4, borderWidth:2 },
+        { label: 'P2 High',     data: [2,3,1,2,1,2,3], borderColor:'#fb923c', backgroundColor:'rgba(251,146,60,0.08)', tension:0.3, pointRadius:4, borderWidth:2 },
+        { label: 'P3 Medium',   data: [3,4,5,3,4,3,4], borderColor:'#eab308', backgroundColor:'rgba(234,179,8,0.08)',  tension:0.3, pointRadius:4, borderWidth:2 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color: getComputedStyle(document.documentElement).getPropertyValue('--text') || '#e2e8f0', boxWidth:12, font:{size:11} } } },
+      scales:{
+        x:{ ticks:{ color:'#94a3b8', font:{size:11} }, grid:{ color:'rgba(255,255,255,0.05)' } },
+        y:{ beginAtZero:true, ticks:{ color:'#94a3b8', font:{size:11}, stepSize:1 }, grid:{ color:'rgba(255,255,255,0.05)' } }
+      }
+    }
+  });
+}
+
+function openSendToAuditee(reportId) {
+  const titles = { IAM: 'IAM & Access Control Full Audit', GDPR: 'GDPR Data Processing Follow-up', COM: 'Customer Data & Sales Conduct DI Review' };
+  const title = titles[reportId] || reportId;
+  document.getElementById('send-modal-title').textContent = 'Send Draft Report to Auditee — ' + title;
+  document.getElementById('send-modal-subject').value = 'Draft Audit Report: ' + title;
+  document.getElementById('send-modal-body').value = 'Dear Auditee,\n\nPlease find enclosed the draft audit report for your review and management response.\n\nReport: ' + title + '\n\nPlease provide your management response within 10 business days.\n\nBest regards,\nInternal Audit';
+  document.getElementById('report-send-modal').style.display = 'flex';
+}
+
+function openSendFinalReport(reportId) {
+  const titles = { IAM: 'IAM & Access Control Full Audit', GDPR: 'GDPR Data Processing Follow-up', COM: 'Customer Data & Sales Conduct DI Review' };
+  const title = titles[reportId] || reportId;
+  document.getElementById('send-modal-title').textContent = 'Send Final Report — ' + title;
+  document.getElementById('send-modal-subject').value = 'Final Audit Report: ' + title;
+  document.getElementById('send-modal-body').value = 'Dear Distribution List,\n\nPlease find the final audit report for the above engagement.\n\nReport: ' + title + '\n\nConclusion: [see attached report]\n\nThis report is classified as Internal. Please handle accordingly.\n\nBest regards,\nInternal Audit';
+  document.getElementById('report-send-modal').style.display = 'flex';
+}
+
+function closeSendModal() {
+  document.getElementById('report-send-modal').style.display = 'none';
+}
+
+// === Audit Plan: Add Process Modal ===
+function showAddProcessModal() {
+  const m = document.getElementById('add-process-modal');
+  if (m) { m.style.display = 'flex'; }
+}
+function closeAddProcessModal() {
+  const m = document.getElementById('add-process-modal');
+  if (m) { m.style.display = 'none'; }
+}
+function saveAddProcess() {
+  const sub = document.getElementById('ap-subprocess').value.trim();
+  if (!sub) { alert('Sub-process name is required.'); return; }
+  const tbody = document.getElementById('audit-universe-table');
+  if (!tbody) { closeAddProcessModal(); return; }
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${sub}</td><td>${document.getElementById('ap-isoreg').value||'—'}</td><td>${document.getElementById('ap-system').value||'—'}</td><td>${document.getElementById('ap-objective').value||'—'}</td><td>${document.getElementById('ap-risk').value||'—'}</td><td>${document.getElementById('ap-type').value||'—'}</td><td>${document.getElementById('ap-quarter').value||'—'}</td><td>${document.getElementById('ap-hours').value||'—'}</td><td><span style="background:rgba(107,114,128,0.2);color:#9ca3af;border-radius:4px;padding:2px 7px;font-size:10px">Pending</span></td>`;
+  tbody.appendChild(tr);
+  ['ap-subprocess','ap-isoreg','ap-system','ap-objective','ap-quarter','ap-hours'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('ap-risk').value = 'High';
+  document.getElementById('ap-type').value = 'Full Audit';
+  closeAddProcessModal();
+}
+
+// === Audit Papers: Work Paper detail data ===
+const _wpData = {
+  'WP-IAM-01': {
+    title: 'WP-IAM-01: User Account Provisioning & Deprovisioning',
+    engagement: 'IAM & Access Control Full Audit',
+    ref: 'ISO 27001 A.9.2.1–A.9.2.3',
+    sample: '30 joiners/leavers (Q4 2024)',
+    objective: 'Verify that user accounts are provisioned and deprovisioned promptly and in accordance with the access management policy.',
+    scope: 'HR-initiated joiner/leaver process from Q4 2024. Testing covers: (1) evidence of approved access request prior to provisioning, (2) timely deactivation within 24h of termination, (3) account audit trail in Active Directory.',
+    testing: 'Inspected 30 HR change notifications against AD provisioning timestamps. Cross-referenced with Leaver Register for all Q4 terminations.',
+    evidence: 'AD export, HR Leaver Register, 3 access request forms sampled. All 30 accounts confirmed provisioned/deprovisioned within policy thresholds.',
+    conclusion: 'Control is operating effectively. No exceptions noted.',
+    rating: 'Adequate',
+    findings: []
+  },
+  'WP-IAM-02': {
+    title: 'WP-IAM-02: Privileged Access Review (Admin Accounts)',
+    engagement: 'IAM & Access Control Full Audit',
+    ref: 'ISO 27001 A.9.2.5, A.9.4.1',
+    sample: 'All 14 administrators',
+    objective: 'Assess whether privileged access is reviewed periodically and stale accounts are removed.',
+    scope: 'Review of all 14 AD admin accounts as of 2024-11-30. Testing covers: last login date, role justification, quarterly review sign-off.',
+    testing: 'Extracted AD admin account list. Identified 3 accounts with no login for over 90 days with no documented review. Cross-checked against IT Asset Register for role holders.',
+    evidence: 'AD admin export, IT Asset Register, Access Review Form Q3-2024.',
+    conclusion: '3 stale admin accounts identified with no login >90 days and no documented justification. Classified as P2 finding.',
+    rating: 'Inadequate',
+    findings: [{ priority: 'P2', title: 'Stale admin accounts not disabled', detail: '3 admin accounts inactive >90 days. No quarterly review sign-off. Recommend immediate disable and policy update.' }]
+  },
+  'WP-IAM-03': {
+    title: 'WP-IAM-03: MFA Enforcement for Remote Access',
+    engagement: 'IAM & Access Control Full Audit',
+    ref: 'ISO 27001 A.9.4.2',
+    sample: 'All VPN users (42 active)',
+    objective: 'Confirm that MFA is enforced for all remote access connections.',
+    scope: 'All 42 active VPN user accounts as of 2024-11-30.',
+    testing: 'Reviewed Azure AD Conditional Access policies. Sampled 42 VPN connection logs. Confirmed MFA prompt recorded for all sessions.',
+    evidence: 'Azure AD Conditional Access export, VPN session log (42 records), IT Security Policy v3.1.',
+    conclusion: 'MFA is fully enforced. All 42 remote sessions required MFA. No exceptions noted.',
+    rating: 'Adequate',
+    findings: []
+  },
+  'WP-IAM-04': {
+    title: 'WP-IAM-04: Role Separation — Finance vs. IT',
+    engagement: 'IAM & Access Control Full Audit',
+    ref: 'ISO 27001 A.9.1.2, A.6.1.2',
+    sample: '15 cross-functional users',
+    objective: 'Verify segregation of duties between finance system access and IT administration roles.',
+    scope: '15 users identified with both finance system roles and IT admin roles.',
+    testing: 'Extracted user-role matrix from ERP and AD. Identified 2 users with conflicting role combinations (finance approver + IT admin). Reviewed SoD waiver register.',
+    evidence: 'ERP user-role extract, AD groups export, SoD Waiver Register.',
+    conclusion: '2 users hold conflicting finance and IT roles without documented SoD waiver. Classified as P3 finding.',
+    rating: 'Partially Adequate',
+    findings: [{ priority: 'P3', title: 'SoD conflict: Finance + IT Admin roles', detail: '2 users hold finance approver and IT admin roles simultaneously. No SoD waiver on file. Recommend role separation or formal documented waiver.' }]
+  },
+  'WP-GDPR-01': {
+    title: 'WP-GDPR-01: DPA Agreements — All Data Processors',
+    engagement: 'GDPR Data Processing Follow-up Audit',
+    ref: 'GDPR Art. 28',
+    sample: '12 data processors',
+    objective: 'Confirm that valid DPA agreements are in place with all data processors.',
+    scope: 'All 12 suppliers classified as data processors in the ROPA as of 2025-Q2.',
+    testing: 'Reviewed DPA register. Confirmed signed DPA exists for all 12 processors. Verified against updated SCCs post-Schrems II.',
+    evidence: 'DPA register, 3 DPA documents sampled, Processor list from ROPA.',
+    conclusion: 'All 12 data processors have valid DPAs. Prior P2 finding is remediated.',
+    rating: 'Adequate',
+    findings: []
+  },
+  'WP-GDPR-02': {
+    title: 'WP-GDPR-02: Data Retention & Deletion Procedures',
+    engagement: 'GDPR Data Processing Follow-up Audit',
+    ref: 'GDPR Art. 5(1)(e)',
+    sample: '5 systems',
+    objective: 'Verify data retention schedules are implemented across all in-scope systems.',
+    scope: '5 systems holding personal data as per ROPA.',
+    testing: 'Reviewed retention schedule implementation. Confirmed 4/5 systems have automated deletion. 1 legacy CRM system still requires manual deletion.',
+    evidence: 'Retention policy, System inventory, Deletion log from 4 systems, CRM ticket #IT-4421.',
+    conclusion: '1 of 5 systems still relies on manual deletion process without automation. Prior P3 finding partially remediated.',
+    rating: 'Partially Adequate',
+    findings: [{ priority: 'P3', title: 'Manual deletion in legacy CRM', detail: 'Legacy CRM (CRM-v1) still requires manual data deletion. No automated purge job implemented. Automation scheduled for Q3 2025.' }]
+  },
+  'WP-GDPR-03': {
+    title: 'WP-GDPR-03: Consent Records & Withdrawal Process',
+    engagement: 'GDPR Data Processing Follow-up Audit',
+    ref: 'GDPR Art. 7',
+    sample: '200 consent records',
+    objective: 'Verify consent is recorded and withdrawal requests are processed within 30 days.',
+    scope: '200 randomly sampled consent records from the consent management platform.',
+    testing: 'Reviewed 200 consent records. Confirmed all include timestamp, channel, and version. Tested 10 withdrawal requests — all processed within 72 hours.',
+    evidence: 'Consent platform export (200 records), 10 withdrawal request tickets.',
+    conclusion: 'Consent records are complete and withdrawal process is effective. Prior P3 finding is fully remediated.',
+    rating: 'Adequate',
+    findings: []
+  },
+  'WP-COM-01': {
+    title: 'WP-COM-01: CRM Data Quality & Completeness',
+    engagement: 'Customer Data & Sales Conduct — DI Review',
+    ref: 'ISO 27001 A.8.1, MiFID II',
+    sample: '50 customer records',
+    objective: 'Assess the quality and completeness of customer data in the CRM system.',
+    scope: '50 randomly selected customer records from CRM as of 2025-Q4.',
+    testing: 'Work paper not yet started.',
+    evidence: 'Pending.',
+    conclusion: 'Pending.',
+    rating: 'Pending',
+    findings: []
+  },
+  'WP-COM-02': {
+    title: 'WP-COM-02: Sales Conduct — Suitability Assessment Documentation',
+    engagement: 'Customer Data & Sales Conduct — DI Review',
+    ref: 'MiFID II Art. 25',
+    sample: '20 cases',
+    objective: 'Verify that suitability assessments are documented for all investment advice given.',
+    scope: '20 randomly selected advice cases from Q3 2025.',
+    testing: 'Work paper not yet started.',
+    evidence: 'Pending.',
+    conclusion: 'Pending.',
+    rating: 'Pending',
+    findings: []
+  }
+};
+
+// In-memory coaching notes per workpaper
+const _wpNotes = {};
+// In-memory approval state per engagement (lead/qa/cae)
+const _engApproval = {};
+let _currentWpId = null;
+
+function openWpDetail(wpId) {
+  _currentWpId = wpId;
+  const d = _wpData[wpId];
+  if (!d) return;
+  document.getElementById('wpd-title').textContent = d.title;
+  const ratingColor = d.rating === 'Adequate' ? 'var(--green)' : d.rating === 'Inadequate' ? 'var(--red)' : d.rating === 'Pending' ? 'var(--muted)' : 'var(--orange)';
+  let findingsHtml = '';
+  if (d.findings && d.findings.length) {
+    findingsHtml = '<table style="width:100%;font-size:12px;border-collapse:collapse;margin-top:8px"><thead><tr><th style="text-align:left;padding:4px 8px;border-bottom:1px solid var(--border)">Priority</th><th style="text-align:left;padding:4px 8px;border-bottom:1px solid var(--border)">Finding</th><th style="text-align:left;padding:4px 8px;border-bottom:1px solid var(--border)">Detail</th></tr></thead><tbody>' +
+      d.findings.map(f => `<tr><td style="padding:4px 8px"><span style="background:rgba(239,68,68,0.15);color:var(--red);border-radius:4px;padding:2px 7px;font-size:11px">${f.priority}</span></td><td style="padding:4px 8px;color:var(--text)">${f.title}</td><td style="padding:4px 8px;color:var(--muted)">${f.detail}</td></tr>`).join('') +
+      '</tbody></table>';
+  } else {
+    findingsHtml = '<div style="color:var(--muted);font-size:12px;margin-top:4px">No findings.</div>';
+  }
+  document.getElementById('wpd-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-bottom:16px;font-size:12px">
+      <div><span style="color:var(--muted)">Engagement:</span> ${d.engagement}</div>
+      <div><span style="color:var(--muted)">Reference:</span> ${d.ref}</div>
+      <div><span style="color:var(--muted)">Sample:</span> ${d.sample}</div>
+      <div><span style="color:var(--muted)">Conclusion Rating:</span> <span style="color:${ratingColor};font-weight:600">${d.rating}</span></div>
+    </div>
+    <div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Audit Objective</div><div style="font-size:13px">${d.objective}</div></div>
+    <div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Scope &amp; Testing</div><div style="font-size:13px">${d.scope}<br><br>${d.testing}</div></div>
+    <div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Evidence</div><div style="font-size:13px">${d.evidence}</div></div>
+    <div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Conclusion</div><div style="font-size:13px">${d.conclusion}</div></div>
+    <div><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Findings</div>${findingsHtml}</div>
+  `;
+  // Load coaching notes
+  const notes = _wpNotes[wpId] || { qa: null, cae: null, qaCleared: false, caeCleared: false };
+  updateCoachingNoteDisplay('qa', notes);
+  updateCoachingNoteDisplay('cae', notes);
+  const panel = document.getElementById('wp-detail-panel');
+  panel.style.display = 'flex';
+}
+
+function closeWpDetail() {
+  document.getElementById('wp-detail-panel').style.display = 'none';
+  _currentWpId = null;
+}
+
+function updateCoachingNoteDisplay(role, notes) {
+  const display = document.getElementById(`wpd-${role}-note-display`);
+  const clearBtn = document.getElementById(`wpd-${role}-clear-btn`);
+  const addBtn = document.getElementById(`wpd-${role}-add-btn`);
+  const input = document.getElementById(`wpd-${role}-note-input`);
+  const noteText = notes[role];
+  const isCleared = notes[role + 'Cleared'];
+  if (noteText && !isCleared) {
+    display.innerHTML = `<span style="color:var(--text)">${noteText}</span>`;
+    clearBtn.style.display = 'inline-block';
+    addBtn.style.display = 'none';
+    input.style.display = 'none';
+  } else if (noteText && isCleared) {
+    display.innerHTML = `<span style="color:var(--green)">&#10003; Cleared: ${noteText}</span>`;
+    clearBtn.style.display = 'none';
+    addBtn.textContent = '+ Update Note';
+    addBtn.style.display = 'inline-block';
+    input.style.display = 'none';
+  } else {
+    display.textContent = 'No coaching note.';
+    clearBtn.style.display = 'none';
+    addBtn.textContent = '+ Add Note';
+    addBtn.style.display = 'inline-block';
+    input.style.display = 'none';
+  }
+}
+
+function addCoachingNote(role) {
+  const input = document.getElementById(`wpd-${role}-note-input`);
+  const addBtn = document.getElementById(`wpd-${role}-add-btn`);
+  if (input.style.display === 'none') {
+    input.style.display = 'block';
+    addBtn.textContent = 'Save Note';
+  } else {
+    const val = input.value.trim();
+    if (!val) { input.style.display = 'none'; addBtn.textContent = '+ Add Note'; return; }
+    if (!_wpNotes[_currentWpId]) _wpNotes[_currentWpId] = { qa: null, cae: null, qaCleared: false, caeCleared: false };
+    _wpNotes[_currentWpId][role] = val;
+    _wpNotes[_currentWpId][role + 'Cleared'] = false;
+    input.value = '';
+    updateCoachingNoteDisplay(role, _wpNotes[_currentWpId]);
+  }
+}
+
+function clearCoachingNote(role) {
+  if (!_wpNotes[_currentWpId]) return;
+  _wpNotes[_currentWpId][role + 'Cleared'] = true;
+  updateCoachingNoteDisplay(role, _wpNotes[_currentWpId]);
+}
+
+function hasUnclearedNotes(wpId) {
+  const notes = _wpNotes[wpId];
+  if (!notes) return false;
+  return (notes.qa && !notes.qaCleared) || (notes.cae && !notes.caeCleared);
+}
+
+function toggleWpApproval(engId, role) {
+  if (!_engApproval[engId]) _engApproval[engId] = { lead: false, qa: false, cae: false };
+  const btn = document.getElementById(`${engId}-${role}-btn`);
+  const noteEl = document.getElementById(`${engId}-approval-note`);
+  const current = _engApproval[engId][role];
+  // CAE approval requires lead + qa first
+  if (role === 'cae' && !_engApproval[engId].lead) {
+    if (noteEl) noteEl.textContent = 'Lead Review must be completed before CAE approval.';
+    return;
+  }
+  if (role === 'cae' && !_engApproval[engId].qa) {
+    if (noteEl) noteEl.textContent = 'QA Approval must be completed before CAE approval.';
+    return;
+  }
+  _engApproval[engId][role] = !current;
+  if (!current) {
+    // Approving
+    if (role === 'lead') { btn.style.background = 'rgba(34,197,94,0.2)'; btn.style.color = 'var(--green)'; btn.style.borderColor = '#22c55e'; btn.textContent = '✓ Lead Reviewed'; }
+    if (role === 'qa') { btn.style.background = 'rgba(59,130,246,0.2)'; btn.style.color = '#3b82f6'; btn.style.borderColor = '#3b82f6'; btn.textContent = '● QA Approved'; }
+    if (role === 'cae') { btn.style.background = 'rgba(234,179,8,0.2)'; btn.style.color = '#eab308'; btn.style.borderColor = '#eab308'; btn.textContent = '★ CAE Approved'; }
+    if (noteEl) noteEl.textContent = role.toUpperCase() + ' approval recorded.';
+  } else {
+    // Un-approving
+    if (role === 'lead') { btn.style.background = 'var(--surface2)'; btn.style.color = 'var(--muted)'; btn.style.borderColor = 'var(--border)'; btn.textContent = '✓ Lead Review'; }
+    if (role === 'qa') { btn.style.background = 'var(--surface2)'; btn.style.color = 'var(--muted)'; btn.style.borderColor = 'var(--border)'; btn.textContent = '● QA Approve'; }
+    if (role === 'cae') { btn.style.background = 'var(--surface2)'; btn.style.color = 'var(--muted)'; btn.style.borderColor = 'var(--border)'; btn.textContent = '★ CAE Approve'; }
+    // Reset downstream approvals
+    if (role === 'lead') {
+      _engApproval[engId].qa = false; _engApproval[engId].cae = false;
+      const qaBtn = document.getElementById(`${engId}-qa-btn`); if(qaBtn){ qaBtn.style.background='var(--surface2)';qaBtn.style.color='var(--muted)';qaBtn.style.borderColor='var(--border)';qaBtn.textContent='● QA Approve'; }
+      const caeBtn = document.getElementById(`${engId}-cae-btn`); if(caeBtn){ caeBtn.style.background='var(--surface2)';caeBtn.style.color='var(--muted)';caeBtn.style.borderColor='var(--border)';caeBtn.textContent='★ CAE Approve'; }
+    }
+    if (role === 'qa') {
+      _engApproval[engId].cae = false;
+      const caeBtn = document.getElementById(`${engId}-cae-btn`); if(caeBtn){ caeBtn.style.background='var(--surface2)';caeBtn.style.color='var(--muted)';caeBtn.style.borderColor='var(--border)';caeBtn.textContent='★ CAE Approve'; }
+    }
+    if (noteEl) noteEl.textContent = role.toUpperCase() + ' approval removed.';
+  }
+}
+
+// === Add Work Paper Modal ===
+function showAddWpModal() {
+  const m = document.getElementById('add-wp-modal');
+  if (m) { m.style.display = 'flex'; }
+}
+function closeAddWpModal() {
+  const m = document.getElementById('add-wp-modal');
+  if (m) { m.style.display = 'none'; }
+}
+function saveAddWp() {
+  const id = document.getElementById('wp-id').value.trim();
+  const control = document.getElementById('wp-control').value.trim();
+  if (!id || !control) { alert('Work Paper ID and Control are required.'); return; }
+  const rating = document.getElementById('wp-rating').value;
+  const engagement = document.getElementById('wp-engagement').value.trim() || 'Manual Entry';
+  _wpData[id] = {
+    title: `${id}: ${control}`,
+    engagement,
+    ref: document.getElementById('wp-ref').value.trim() || '—',
+    sample: document.getElementById('wp-sample').value.trim() || '—',
+    objective: document.getElementById('wp-objective').value.trim() || '—',
+    scope: document.getElementById('wp-scope').value.trim() || '—',
+    testing: 'Manual entry — testing notes not provided.',
+    evidence: '—',
+    conclusion: document.getElementById('wp-conclusion').value.trim() || 'Pending.',
+    rating,
+    findings: []
+  };
+  closeAddWpModal();
+  // Clear form
+  ['wp-id','wp-control','wp-ref','wp-sample','wp-objective','wp-scope','wp-conclusion','wp-engagement'].forEach(i => { const e = document.getElementById(i); if(e) e.value=''; });
 }
 
 function statusBadge(status) {
