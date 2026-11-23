@@ -1409,7 +1409,90 @@ async function loadBoardReport() {
     }).join('')}
   </div>`;
 
-  container.innerHTML = darSection + `
+  // --- Section 0: Quarterly P1-P4 Trend Chart ---
+  const buildQuarterlyChart = () => {
+    // Demo data: P1-P4 findings per quarter (current Q, prior Q, same Q last year)
+    const quarters = ['Q1 2025','Q2 2025','Q3 2025','Q4 2025'];
+    const currentQ = 'Q4 2025';
+    const data = {
+      'Q1 2025': { p1:0, p2:1, p3:2, p4:1 },
+      'Q2 2025': { p1:1, p2:2, p3:3, p4:2 },
+      'Q3 2025': { p1:0, p2:1, p3:2, p4:3 },
+      'Q4 2025': { p1:1, p2:3, p3:2, p4:1 },
+    };
+    const sameQLY = { p1:0, p2:2, p3:4, p4:2 }; // Q4 2024
+    const priorQ  = data['Q3 2025'];
+    const curQ    = data['Q4 2025'];
+    // SVG grouped bar chart: 4 groups (P1-P4), 3 bars each (cur, prior, ly)
+    const svgW = 540, svgH = 240, padL = 40, padB = 40, padT = 20, padR = 20;
+    const chartW = svgW - padL - padR;
+    const chartH = svgH - padB - padT;
+    const groups = ['p1','p2','p3','p4'];
+    const labels = ['P1 Critical','P2 Relevant','P3 Medium','P4 Low'];
+    const colors = { p1:'var(--red)', p2:'var(--orange)', p3:'var(--yellow)', p4:'var(--green)' };
+    const maxVal = 5;
+    const groupW = chartW / groups.length;
+    const barW = groupW / 4; // 3 bars + gap
+    const scaleY = v => chartH - (v / maxVal) * chartH;
+    const bar = (x, y, w, h, fill, opacity) =>
+      `<rect x="${x.toFixed(1)}" y="${(padT+y).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${fill}" opacity="${opacity}" rx="2"/>`;
+    let bars = '';
+    groups.forEach((p, gi) => {
+      const gx = padL + gi * groupW + barW * 0.4;
+      const vals = [curQ[p], priorQ[p], sameQLY[p]];
+      const opacities = [0.95, 0.5, 0.25];
+      vals.forEach((v, bi) => {
+        const bx = gx + bi * barW;
+        const by = scaleY(v);
+        const bh = chartH - scaleY(v);
+        bars += bar(bx, by, barW * 0.85, bh, colors[p], opacities[bi]);
+        if (v > 0) bars += `<text x="${(bx + barW*0.42).toFixed(1)}" y="${(padT+by-3).toFixed(1)}" text-anchor="middle" font-size="9" fill="currentColor" opacity="0.7">${v}</text>`;
+      });
+      // X-axis label
+      bars += `<text x="${(padL + gi*groupW + groupW/2).toFixed(1)}" y="${(svgH-10).toFixed(1)}" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.6">${labels[gi]}</text>`;
+    });
+    // Y-axis ticks
+    let axes = '';
+    for (let v = 0; v <= maxVal; v++) {
+      const y = padT + scaleY(v);
+      axes += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${svgW-padR}" y2="${y.toFixed(1)}" stroke="currentColor" stroke-opacity="0.08" stroke-width="1"/>`;
+      axes += `<text x="${(padL-4).toFixed(1)}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="9" fill="currentColor" opacity="0.5">${v}</text>`;
+    }
+    // Legend
+    const legendItems = [
+      {label:'Current Q (Q4 2025)',op:'0.95'},{label:'Prior Q (Q3 2025)',op:'0.5'},{label:'Same Q LY (Q4 2024)',op:'0.25'}
+    ];
+    let legend = `<g transform="translate(${padL},8)">`;
+    legendItems.forEach((li, i) => {
+      legend += `<rect x="${i*140}" y="0" width="10" height="10" fill="var(--accent)" opacity="${li.op}" rx="2"/>`;
+      legend += `<text x="${i*140+14}" y="9" font-size="9" fill="currentColor" opacity="0.7">${li.label}</text>`;
+    });
+    legend += '</g>';
+    return `<div style="margin-bottom:24px">
+      <div class="section-title" style="margin-bottom:8px">Findings Trend — P1-P4 by Quarter</div>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Grouped bar chart comparing current quarter, prior quarter, and same quarter last year. Darker bar = current quarter.</p>
+      <div style="overflow-x:auto">
+        <svg viewBox="0 0 ${svgW} ${svgH}" style="width:100%;max-width:${svgW}px;height:auto;display:block">
+          ${legend}${axes}${bars}
+        </svg>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px">
+        ${groups.map((p,i) => {
+          const cur = curQ[p]; const prior = priorQ[p]; const ly = sameQLY[p];
+          const delta = cur - prior;
+          const trend = delta > 0 ? `<span style="color:var(--red)">&#9650;${delta}</span>` : delta < 0 ? `<span style="color:var(--green)">&#9660;${Math.abs(delta)}</span>` : `<span style="color:var(--muted)">&#9644;</span>`;
+          return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:${['var(--red)','var(--orange)','var(--yellow)','var(--green)'][i]};font-weight:600;margin-bottom:4px">${labels[i]}</div>
+            <div style="font-size:28px;font-weight:700;line-height:1">${cur}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px">vs ${prior} prior Q ${trend}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  };
+  const sec0 = buildQuarterlyChart();
+
+  container.innerHTML = sec0 + darSection + `
     <!-- Executive summary cards -->
     <div class="summary-cards" style="margin-bottom:24px">
       <div class="card"><div class="label">Total Controls Tested</div><div class="value">${wpData.tested_count||0} / ${wpData.total_controls||0}</div></div>
