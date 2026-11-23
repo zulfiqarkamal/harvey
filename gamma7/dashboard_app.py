@@ -1983,7 +1983,7 @@ async
     }
     // init audit totals on load
     document.addEventListener('DOMContentLoaded', function() { calcAuditTotal(); });
-function loadBoardReport() {
+async function loadBoardReport() {
   const container = document.getElementById('boardreport-content');
   container.innerHTML = '<div class="loading">Loading board report&#8230;</div>';
   let wpData, reconData;
