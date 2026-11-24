@@ -34,7 +34,7 @@ import secrets
 from typing import Optional
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, Query, UploadFile, File
 from fastapi.responses import HTMLResponse, JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -344,11 +344,39 @@ def get_risk_heatmap():
     }
 
 
+_VALID_TABS = {
+    "overview", "contracts", "register", "reconciliation",
+    "audit", "workpapers", "reporting", "boardreport", "protocols",
+}
+
+
 @app.get("/", response_class=HTMLResponse)
-def dashboard():
-    """Serve the main dashboard HTML."""
+def dashboard(tab: str = Query(default="overview")):
+    """Serve the main dashboard HTML with the requested tab active."""
+    if tab not in _VALID_TABS:
+        tab = "overview"
+    html = _DASHBOARD_HTML
+    if tab != "overview":
+        # Remove active from the default overview nav + pane
+        html = html.replace(
+            'class="nav-item nav-overview active"',
+            'class="nav-item nav-overview"',
+        )
+        html = html.replace(
+            '<div id="tab-overview" class="tab-pane active">',
+            '<div id="tab-overview" class="tab-pane">',
+        )
+        # Add active to requested nav + pane
+        html = html.replace(
+            f'class="nav-item nav-{tab}"',
+            f'class="nav-item nav-{tab} active"',
+        )
+        html = html.replace(
+            f'<div id="tab-{tab}" class="tab-pane">',
+            f'<div id="tab-{tab}" class="tab-pane active">',
+        )
     return HTMLResponse(
-        content=_DASHBOARD_HTML,
+        content=html,
         headers={
             "Cache-Control": "no-store, no-cache, must-revalidate",
             "Pragma": "no-cache",
@@ -407,6 +435,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     font-size: 13px; color: var(--secondary); cursor: pointer; border: none; background: none;
     width: 100%; text-align: left; border-left: 2px solid transparent;
     transition: color 0.12s, background 0.12s, border-color 0.12s; margin-bottom: 2px;
+    text-decoration: none; box-sizing: border-box;
   }
   .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.05); }
   .nav-item.active { color: var(--text); border-left-color: var(--accent); background: rgba(124,58,237,0.12); }
@@ -670,15 +699,15 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="logo-sub">Audit &amp; Compliance</div>
   </div>
   <nav class="sidebar-nav">
-    <button class="nav-item nav-overview active" onclick="showTab('overview',this)">Overview</button>
-    <button class="nav-item nav-contracts" onclick="showTab('contracts',this)">Contracts</button>
-    <button class="nav-item nav-register" onclick="showTab('register',this)">Register</button>
-    <button class="nav-item nav-reconciliation" onclick="showTab('reconciliation',this)">ICT Register</button>
-    <button class="nav-item nav-audit" onclick="showTab('audit',this)">Audit Plan</button>
-    <button class="nav-item nav-workpapers" onclick="showTab('workpapers',this)">Audit Papers</button>
-    <button class="nav-item nav-reporting" onclick="showTab('reporting',this)">Reporting</button>
-    <button class="nav-item nav-boardreport" onclick="showTab('boardreport',this)">Board Report</button>
-    <button class="nav-item nav-protocols" onclick="showTab('protocols',this)" style="color:#0ea5e9;border-left:3px solid #0ea5e9">Protocols</button>
+    <a class="nav-item nav-overview active" href="?tab=overview" onclick="event.preventDefault();showTab('overview',this)">Overview</a>
+    <a class="nav-item nav-contracts" href="?tab=contracts" onclick="event.preventDefault();showTab('contracts',this)">Contracts</a>
+    <a class="nav-item nav-register" href="?tab=register" onclick="event.preventDefault();showTab('register',this)">Register</a>
+    <a class="nav-item nav-reconciliation" href="?tab=reconciliation" onclick="event.preventDefault();showTab('reconciliation',this)">ICT Register</a>
+    <a class="nav-item nav-audit" href="?tab=audit" onclick="event.preventDefault();showTab('audit',this)">Audit Plan</a>
+    <a class="nav-item nav-workpapers" href="?tab=workpapers" onclick="event.preventDefault();showTab('workpapers',this)">Audit Papers</a>
+    <a class="nav-item nav-reporting" href="?tab=reporting" onclick="event.preventDefault();showTab('reporting',this)">Reporting</a>
+    <a class="nav-item nav-boardreport" href="?tab=boardreport" onclick="event.preventDefault();showTab('boardreport',this)">Board Report</a>
+    <a class="nav-item nav-protocols" href="?tab=protocols" onclick="event.preventDefault();showTab('protocols',this)" style="color:#0ea5e9;border-left:3px solid #0ea5e9">Protocols</a>
   </nav>
   <div class="sidebar-footer">
     <div class="lang-toggle" style="display:flex;gap:6px;justify-content:center;margin-bottom:8px">
@@ -4220,6 +4249,32 @@ setTimeout(() => {
     const tb = document.getElementById('overview-table');
     if (tb) tb.innerHTML = `<tr><td colspan="5" class="empty" style="color:var(--red)">Init error: ${e.message}</td></tr>`;
   }
+})();
+</script>
+<!-- Tab-nav script isolated from main block: survives any main-script error -->
+<script>
+(function(){
+  function switchTab(name, el) {
+    document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelectorAll('.nav-item').forEach(function(b){ b.classList.remove('active'); });
+    var pane = document.getElementById('tab-' + name);
+    if (pane) pane.classList.add('active');
+    if (el) el.classList.add('active');
+    try { history.replaceState(null,'','?tab='+name); } catch(e){}
+    if (name === 'boardreport' && typeof initFindingsTrendChart === 'function') {
+      setTimeout(initFindingsTrendChart, 100);
+    }
+  }
+  // Override window.showTab so onclick handlers use this safe version
+  window.showTab = switchTab;
+  // On load, honour ?tab= if JS missed it (e.g. server already set it, so this is a no-op)
+  document.addEventListener('DOMContentLoaded', function(){
+    var t = new URLSearchParams(location.search).get('tab');
+    if (t) {
+      var el = document.querySelector('.nav-' + t);
+      switchTab(t, el);
+    }
+  });
 })();
 </script>
 </body>
