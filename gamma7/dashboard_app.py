@@ -2428,7 +2428,7 @@ function residualRiskClassWP(inherentRisk, missing) {
 
 // ── Consequence lookup (client-side, no backend changes needed) ───────────
 const CONSEQUENCES = {
-  'ART30-001': 'The contract does not restrict sub-contracting of critical ICT functions. As a result, core services may be delegated to undisclosed sub-processors without customer approval. This creates an uncontrolled chain of ICT dependency outside the financial entity\\'s oversight framework, in breach of DORA Art. 30(3).',
+  'ART30-001': 'The contract does not restrict sub-contracting of critical ICT functions. As a result, core services may be delegated to undisclosed sub-processors without customer approval. This creates an uncontrolled chain of ICT dependency outside the financial entity\'s oversight framework, in breach of DORA Art. 30(3).',
   'ART30-002': 'The contract does not specify permitted data locations. Customer data may be processed or stored in jurisdictions without an adequate level of protection, in violation of GDPR Chapter V and DORA Art. 30(2)(j). The financial entity cannot demonstrate lawful transfers to supervisory authorities.',
   'ART30-003': 'No minimum information security requirements are contractually defined. In the event of a data breach, the financial entity cannot rely on the contract to attribute fault or trigger liability. This gap undermines the ability to demonstrate adequate vendor oversight under DORA Art. 30(2)(d).',
   'ART30-004': 'The contract contains no enforceable service level targets. The financial entity cannot hold the supplier accountable for degraded performance or outages. Without SLAs, the operational resilience framework required by DORA Art. 30(2)(d) is not supported by contractual controls.',
@@ -2436,7 +2436,7 @@ const CONSEQUENCES = {
   'ART30-006': 'The contract does not grant audit or inspection rights over the supplier. The financial entity cannot verify DORA Art. 30 compliance through independent testing or reviews. This exposes it to supervisory scrutiny for failing to demonstrate adequate third-party oversight.',
   'ART30-007': 'No exit strategy or termination plan is documented. If the supplier fails or the relationship ends, the financial entity has no contractual basis to demand orderly transition of services or data. Operational continuity is at risk, contrary to DORA Art. 30(2)(g).',
   'ART30-008': 'The contract does not guarantee data portability on exit or termination. In the event of supplier failure, data retrieval may be delayed or blocked, increasing recovery time and regulatory exposure. This conflicts with DORA Art. 30(2)(h) continuity requirements.',
-  'ART30-009': 'Business continuity obligations are not contractually specified. The supplier is not required to maintain or test resilience capabilities aligned with the financial entity\\'s own BCP/DR framework. This creates an unverifiable dependency contrary to DORA Art. 30(2)(e).',
+  'ART30-009': 'Business continuity obligations are not contractually specified. The supplier is not required to maintain or test resilience capabilities aligned with the financial entity\'s own BCP/DR framework. This creates an unverifiable dependency contrary to DORA Art. 30(2)(e).',
   'ART30-010': 'The contract imposes no obligation to test business continuity or recovery plans. Supplier resilience is assumed but unverified. The financial entity cannot demonstrate to supervisors that ICT resilience across the supply chain has been tested, as required under DORA Art. 30(2)(f).',
   'ART30-011': 'No change management or advance notification requirements are contractually defined. The supplier may alter infrastructure, processes or sub-contractors without notifying the financial entity, introducing uncontrolled change risk in breach of DORA Art. 30(2)(i).',
   'ART30-012': 'The contract contains no capacity management provisions. The supplier is not contractually required to scale or maintain performance under demand increases, creating availability and performance risk during peak operational periods.',
@@ -2466,7 +2466,7 @@ const REMEDIES = {
   'ART30-006': {text:'Include a right-to-audit clause with at least annual inspection rights, including access to sub-processors.',effort:'Low'},
   'ART30-007': {text:'Develop and attach a formal exit strategy covering transition timelines, data handover, and knowledge transfer obligations.',effort:'High'},
   'ART30-008': {text:'Include a data portability clause guaranteeing extraction in a standard, machine-readable format within a specified timeframe.',effort:'Low'},
-  'ART30-009': {text:'Require the supplier to maintain a BCP aligned with the financial entity\\'s own requirements and provide evidence on request.',effort:'Medium'},
+  'ART30-009': {text:'Require the supplier to maintain a BCP aligned with the financial entity\'s own requirements and provide evidence on request.',effort:'Medium'},
   'ART30-010': {text:'Mandate annual BCP/DR testing and require the supplier to provide test results to the financial entity.',effort:'Medium'},
   'ART30-011': {text:'Include a change management clause requiring advance notice (minimum 30 days) for significant infrastructure or process changes.',effort:'Low'},
   'ART30-012': {text:'Define capacity thresholds and require the supplier to notify and address capacity constraints before they impact service.',effort:'Low'},
@@ -3188,7 +3188,7 @@ async function loadOverview() {
       const gapBadge = miss === 0
         ? '<span style="color:var(--green);font-size:12px">&#10003; No gaps</span>'
         : `<span class="badge ${rrC}" style="font-size:12px">${miss} gap${miss > 1 ? 's' : ''}</span>`;
-      return `<tr onclick="showContractDetail('${(a.contract_key || a.analysis_id).replace(/'/g,"\\'")}')" style="cursor:pointer">
+      return `<tr onclick="showContractDetail('${(a.contract_key || a.analysis_id).replace(/'/g,"\'")}')" style="cursor:pointer">
         <td><strong>${a.supplier_name}</strong></td>
         <td>${classBadge(a.classification)}</td>
         <td>${findingsCell}</td>
@@ -3227,7 +3227,7 @@ async function loadContracts() {
     const gapCell = miss === 0
       ? '<span style="color:var(--green);font-size:12px">&#10003; None</span>'
       : `<span class="badge ${rrC}">${miss} gap${miss > 1 ? 's' : ''}</span>`;
-    return `<tr onclick="showContractDetail('${(a.contract_key || a.analysis_id).replace(/'/g,"\\'")}')" style="cursor:pointer">
+    return `<tr onclick="showContractDetail('${(a.contract_key || a.analysis_id).replace(/'/g,"\'")}')" style="cursor:pointer">
       <td><strong>${a.supplier_name}</strong></td>
       <td>${classBadge(a.classification)}</td>
       <td>${gapCell}</td>
@@ -3337,7 +3337,7 @@ async function loadRegister() {
     <td>${e.supplier_name}</td>
     <td>${e.supplier_country}</td>
     <td style="color:var(--muted);font-size:12px">${e.service_type.replace(/_/g, ' ')}</td>
-    <td style="font-size:12px"><button onclick="openContractForSupplier('${e.supplier_name.replace(/'/g,"\\'")}',event)" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:monospace;font-size:12px;padding:0;text-decoration:underline">${e.contract_reference}</button></td>
+    <td style="font-size:12px"><button onclick="openContractForSupplier('${e.supplier_name.replace(/'/g,"\'")}',event)" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:monospace;font-size:12px;padding:0;text-decoration:underline">${e.contract_reference}</button></td>
     <td>${classBadge(e.classification)}</td>
     <td>${e.exit_strategy_documented
       ? `<span class="tooltip-wrap"><span style="color:var(--green)">&#10003;</span><span class="tooltip-box" style="width:220px">Exit strategy documented — DORA Art. 28(2)(e) requirement met.</span></span>`
@@ -3389,9 +3389,9 @@ async function loadReconciliation() {
       <div class="section-title">Matched (register &#8596; contract)</div>
       <div class="table-wrap"><table>
         <thead><tr><th>Supplier</th><th>Contract Ref</th><th>Classification</th><th>Status</th><th>Missing</th><th>Match via</th></tr></thead>
-        <tbody>${data.matched.map(m => '<tr style="cursor:pointer" onclick="showContractModal(\\'' + (m.analysis_key||m.analysis_id||'') + '\\')">'
+        <tbody>${data.matched.map(m => '<tr style="cursor:pointer" onclick="showContractModal(\'' + (m.analysis_key||m.analysis_id||'') + '\')">'
           + '<td style="font-weight:500">' + m.register_entry.supplier_name + '</td>'
-          + '<td><button onclick="event.stopPropagation();showContractModal(\\'' + (m.analysis_key||m.analysis_id||'') + '\\')" style="background:var(--surface2);color:var(--accent);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer">' + m.register_entry.contract_reference + ' &#8594;</button></td>'
+          + '<td><button onclick="event.stopPropagation();showContractModal(\'' + (m.analysis_key||m.analysis_id||'') + '\')" style="background:var(--surface2);color:var(--accent);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer">' + m.register_entry.contract_reference + ' &#8594;</button></td>'
           + '<td>' + classBadge(m.register_entry.classification) + '</td>'
           + '<td>' + statusBadge(m.overall_status) + '</td>'
           + '<td style="font-weight:600;color:' + (m.missing_count>0?'var(--orange)':'var(--green)') + '">' + m.missing_count + '</td>'
@@ -3893,7 +3893,7 @@ async function loadAuditIntelligence() {
     const statusChip = findingCount ? '<span style="font-size:11px;color:var(--orange);margin-left:8px">&#9888; ' + findingCount + ' finding(s)</span>'
       : passCount ? '<span style="font-size:11px;color:var(--green);margin-left:8px">&#10003; ' + passCount + ' tested</span>'
       : '';
-    accordionHtml += '<div class="proc-header" onclick="const b=document.getElementById(\\'' + domainId + '\\');b.classList.toggle(\\'open\\')">'
+    accordionHtml += '<div class="proc-header" onclick="const b=document.getElementById(\'' + domainId + '\');b.classList.toggle(\'open\')">'
       + '<span style="font-size:13px;font-weight:600">' + proc.process + statusChip + '&nbsp;&nbsp;' + riskBadge(procRisk) + '</span>'
       + '<span style="font-size:11px;color:var(--muted)">' + proc.subprocesses.length + ' sub-process(es) &#9660;</span>'
       + '</div>';
@@ -3920,7 +3920,7 @@ async function loadAuditIntelligence() {
         wpStatusHtml = sp.controls.map(ctrlId => {
           const wp = wpByCtrl[ctrlId];
           const badgeCls = !wp ? 'ctrl-badge-mapped' : wp.test_result === 'PASSED' ? 'ctrl-badge-passed' : wp.test_result === 'EXCEPTION' ? 'ctrl-badge-exception' : 'ctrl-badge-not-tested';
-          return '<span class="ctrl-badge ' + badgeCls + '" onclick="' + (wp ? 'showWPDetail(\\'' + ctrlId + '\\')' : '') + '" style="' + (wp ? 'cursor:pointer;' : '') + 'display:inline-block;margin:1px">' + ctrlId + '</span>';
+          return '<span class="ctrl-badge ' + badgeCls + '" onclick="' + (wp ? 'showWPDetail(\'' + ctrlId + '\')' : '') + '" style="' + (wp ? 'cursor:pointer;' : '') + 'display:inline-block;margin:1px">' + ctrlId + '</span>';
         }).join('');
       } else {
         wpStatusHtml = '<span style="font-size:11px;color:var(--muted)">Scope TBD</span>';
